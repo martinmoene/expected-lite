@@ -428,7 +428,7 @@ public:
     {
         if      (   bool(*this) &&   bool(rhs) ) { contained.value() = *rhs; }
         else if (   bool(*this) && ! bool(rhs) ) { contained.destruct_value();
-                                                   contained.construct_error( error.value() ); }
+                                                   contained.construct_error( error().value() ); }
         else if ( ! bool(*this) && ! bool(rhs) ) { contained.error() = *rhs; }
         else if ( ! bool(*this) &&   bool(rhs) ) { contained.destruct_error();
                                                    contained.construct_value( rhs.value() ); }
@@ -451,7 +451,7 @@ public:
     {
         if      (   bool(*this) &&   bool(rhs) ) { contained.value() = std::move( *rhs ); }
         else if (   bool(*this) && ! bool(rhs) ) { contained.destruct_value();
-                                                   contained.construct_error( std::move( error.value() ) ); }
+                                                   contained.construct_error( std::move( error().value() ) ); }
         else if ( ! bool(*this) && ! bool(rhs) ) { contained.error() = std::move( *rhs ); }
         else if ( ! bool(*this) &&   bool(rhs) ) { contained.destruct_error();
                                                    contained.construct_value( std::move( rhs.value() ) ); }
