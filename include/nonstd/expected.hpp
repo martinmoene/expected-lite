@@ -277,13 +277,37 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
     return unexpected_type< std::exception_ptr >( std::current_exception() );
 }
 
+/// unexpect tag
+
+struct unexpect_t{};
+
+constexpr unexpect_t unexpect{};
+
 /// expected access error
 
+template< typename E >
 class bad_expected_access : public std::logic_error
 {
 public:
-  explicit bad_expected_access( const char * what_arg )
-  : logic_error( what_arg ) {}
+    typedef E error_type;
+    
+    explicit bad_expected_access( error_type error )
+    : logic_error( "bad_expected_access" ) 
+    , m_error( error )
+    {}
+
+    constexpr error_type const & error() const
+    {
+        return m_error;
+    }
+    
+    error_type & error()
+    {
+        return m_error;
+    }
+
+private:
+    error_type m_error;
 };
 
 /// class expected
@@ -300,74 +324,95 @@ public:
     // enable_if: is_default_constructible<T>
     nsel_constexpr14 expected()
     noexcept( std::is_nothrow_default_constructible<T>::value )
-    : is_valid( true )
+    : has_value( true )
     {
         contained.construct_value( value_type() );
     }
 
+    // enable_if: is_copy_constructible<T>::value && is_copy_constructible<E>::value
+    nsel_constexpr14 expected( expected const & rhs )
+    : has_value( rhs.has_value )
+    {
+        if ( has_value ) contained.construct_value( rhs.contained.value() );
+        else             contained.construct_error( rhs.contained.error() );
+    }
+
+    // enable_if: is_move_constructible<T>::value && is_move_constructible<E>::value
+    nsel_constexpr14 expected( expected && rhs )
+    : has_value( rhs.has_value )
+    {
+        if ( has_value ) contained.construct_value( std::move( rhs.contained.value() ) );
+        else             contained.construct_error( std::move( rhs.contained.error() ) );
+    }
+
+    // enable_if: is_copy_constructible<T>::value
     nsel_constexpr14 expected( value_type const & rhs )
-    : is_valid( true )
+    : has_value( true )
     {
         contained.construct_value( rhs );
     }
 
-    // enable_if: is_move_constructible<T>::value && is_move_constructible<E>::value
+    // enable_if: is_move_constructible<T>::value
     nsel_constexpr14 expected( value_type && rhs )
     noexcept(
         std::is_nothrow_move_constructible<T>::value
         && std::is_nothrow_move_constructible<E>::value )
-    : is_valid( true )
+    : has_value( true )
     {
         contained.construct_value( std::move( rhs ) );
     }
 
+    // enable_if: is_constructible<T, Args&&...>::value
     template <class... Args>
     nsel_constexpr14 explicit expected( in_place_t, Args&&... args )
-    : is_valid( true )
+    : has_value( true )
     {
         contained.construct_value( std::forward<Args>( args )... );
     }
 
+    // enable_if: is_constructible<T, initializer_list<U>&, Args&&...>::value
     template< typename U, class... Args>
     nsel_constexpr14 explicit expected( in_place_t, std::initializer_list<U> il, Args&&... args )
-    : is_valid( true )
+    : has_value( true )
     {
         contained.construct_value( il, std::forward<Args>( args )... );
     }
 
-    nsel_constexpr14 expected( expected const & rhs )
-    : is_valid( rhs.is_valid )
-    {
-        if ( is_valid ) contained.construct_value( rhs.contained.value() );
-        else            contained.construct_error( rhs.contained.error() );
-    }
-
-    nsel_constexpr14 expected( expected && rhs )
-    : is_valid( rhs.is_valid )
-    {
-        if ( is_valid ) contained.construct_value( std::move( rhs.contained.value() ) );
-        else            contained.construct_error( std::move( rhs.contained.error() ) );
-    }
-
+    // enable_if: is_copy_constructible<E>::value
     nsel_constexpr14 expected( unexpected_type<E> const & error )
-    : is_valid( false )
+    : has_value( false )
     {
         contained.construct_error( error.value() );
     }
 
+    // enable_if: is_move_constructible<E>::value
     template< typename U >
-    nsel_constexpr14 expected( unexpected_type<U> const & error )
-    : is_valid( false )
+    nsel_constexpr14 expected( unexpected_type<U> && error )
+    : has_value( false )
     {
         contained.construct_error( error.value() );
+    }
+
+    // enable_if: is_constructible<E, Args&&...>::value
+    template< typename... Args >
+    nsel_constexpr14 explicit expected( unexpect_t, Args&&... args )
+    {
+        contained.construct_error( std::forward<Args>( args )... );
+    }
+
+    // enable_if: is_constructible<E, initializer_list<U>&, Args&&...>::value
+    template< typename U, typename... Args >
+    nsel_constexpr14 explicit expected( unexpect_t, std::initializer_list<U> il, Args&&... args )
+    {
+        contained.construct_error( il, std::forward<Args>( args )... );
     }
 
     // destructor
 
     ~expected()
     {
-        if ( is_valid ) contained.destruct_value();
-        else            contained.destruct_error();
+        if ( has_value ) contained.destruct_value();
+        else             contained.destruct_error();
     }
 
     // assignment
@@ -379,14 +424,13 @@ public:
         && std::is_copy_assignable<E>::value,
     expected & >::type operator=( expected const & rhs )
     {
-        if      ( bool(*this) && bool(rhs) ) { contained.value() = *rhs; }
-        else if ( bool(*this) &&     !rhs  ) { contained.destruct_value();
-                                               contained.construct_error( error.value() ); }
-        else if (      !*this &&     !rhs  ) { contained.error() = *rhs; }
-        else if (      !*this && bool(rhs) ) { contained.destruct_error();
-                                               contained.construct_value( rhs.value() ); }
-
-        is_valid = rhs.is_valid;
+        if      (   bool(*this) &&   bool(rhs) ) { contained.value() = *rhs; }
+        else if (   bool(*this) && ! bool(rhs) ) { contained.destruct_value();
+                                                   contained.construct_error( error.value() ); }
+        else if ( ! bool(*this) && ! bool(rhs) ) { contained.error() = *rhs; }
+        else if ( ! bool(*this) &&   bool(rhs) ) { contained.destruct_error();
+                                                   contained.construct_value( rhs.value() ); }
+        has_value = rhs.has_value;
 
         return *this;
     }
@@ -403,14 +447,13 @@ public:
         && std::is_nothrow_move_assignable<E>::value
         && std::is_nothrow_move_constructible<E>::value )
     {
-        if      ( bool(*this) && bool(rhs) ) { contained.value() = std::move( *rhs ); }
-        else if ( bool(*this) &&     !rhs  ) { contained.destruct_value();
-                                               contained.construct_error( std::move( error.value() ) ); }
-        else if (      !*this &&     !rhs  ) { contained.error() = std::move( *rhs ); }
-        else if (      !*this && bool(rhs) ) { contained.destruct_error();
-                                               contained.construct_value( std::move( rhs.value() ) ); }
-
-        is_valid = rhs.is_valid;
+        if      (   bool(*this) &&   bool(rhs) ) { contained.value() = std::move( *rhs ); }
+        else if (   bool(*this) && ! bool(rhs) ) { contained.destruct_value();
+                                                   contained.construct_error( std::move( error.value() ) ); }
+        else if ( ! bool(*this) && ! bool(rhs) ) { contained.error() = std::move( *rhs ); }
+        else if ( ! bool(*this) &&   bool(rhs) ) { contained.destruct_error();
+                                                   contained.construct_value( std::move( rhs.value() ) ); }
+        has_value = rhs.has_value;
 
         return *this;
     }
@@ -429,7 +472,7 @@ public:
         {
             contained.destruct_error();
             contained.construct_value( std::forward( v ) );
-            is_valid = true;
+            has_value = true;
         }
     }
 
@@ -446,7 +489,7 @@ public:
         {
             contained.destruct_value();
             contained.construct_error( u.value() );
-            is_valid = false;
+            has_value = false;
         }
     }
 
@@ -463,7 +506,7 @@ public:
         {
             contained.destruct_value();
             contained.construct_error( std::forward( u.value() ) );
-            is_valid = false;
+            has_value = false;
         }
     }
 
@@ -480,7 +523,7 @@ public:
         {
             contained.destruct_error();
             contained.construct_value( std::forward<Args>( args )... );
-            is_valid = true;
+            has_value = true;
         }
     }
 
@@ -497,7 +540,7 @@ public:
         {
             contained.destruct_error();
             contained.construct_value( il, std::forward<Args>( args )... );
-            is_valid = true;
+            has_value = true;
         }
     }
 
@@ -512,85 +555,100 @@ public:
     {
         using std::swap;
 
-        if      ( bool(*this) && bool(rhs) ) { swap( contained.value(), rhs.contained.value() ); }
-        else if (     !*this  &&     !rhs  ) { swap( contained.error(), rhs.contained.error() ); }
-        else if ( bool(*this) &&     !rhs  ) { error_type t( std::move( rhs.error() ) );
-                                               rhs   = std::move( *( *this ) );
-                                               *this = std::move( t );
-                                               swap( is_valid, rhs.is_valid ); }
-        else if (     !*this  && bool(rhs) ) { rhs.swap( *this ); }
+        if      (   bool(*this) &&   bool(rhs) ) { swap( contained.value(), rhs.contained.value() ); }
+        else if ( ! bool(*this) && ! bool(rhs) ) { swap( contained.error(), rhs.contained.error() ); }
+        else if (   bool(*this) && ! bool(rhs) ) { error_type t( std::move( rhs.error() ) );
+                                                   rhs   = std::move( *( *this ) );
+                                                   *this = std::move( t );
+                                                   swap( has_value, rhs.has_value ); }
+        else if ( ! bool(*this) &&   bool(rhs) ) { rhs.swap( *this ); }
     }
 
     // observers
 
     constexpr value_type const * operator ->() const
     {
-        assert( is_valid );
+        assert( has_value );
         return contained.value_ptr();
     }
 
     value_type * operator ->()
     {
-        assert( is_valid );
+        assert( has_value );
         return contained.value_ptr();
     }
 
     constexpr value_type const & operator *() const &
     {
-        assert( is_valid );
+        assert( has_value );
         return contained.value();
     }
 
     value_type & operator *() &
     {
-        assert( is_valid );
+        assert( has_value );
         return contained.value();
     }
 
     constexpr value_type && operator *() const &&
     {
-        assert( is_valid );
+        assert( has_value );
         return std::move( contained.value() );
     }
 
     constexpr explicit operator bool() const noexcept
     {
-        return is_valid;
+        return has_value;
     }
 
     constexpr value_type const & value() const &
     {
-        return is_valid ? contained.value() : ( std::rethrow_exception( contained.error() ), contained.value() );
+        return has_value 
+            ? contained.value()
+            : std::is_same<error_type, std::exception_ptr>::value
+            ? ( std::rethrow_exception( contained.error() ), contained.value() )
+            : ( throw bad_expected_access<error_type>( contained.error() ), contained.value() );
     }
 
     value_type & value() &
     {
-        return is_valid ? contained.value() : ( std::rethrow_exception( contained.error() ), contained.value() );
+        return has_value 
+            ? contained.value()
+            : std::is_same<error_type, std::exception_ptr>::value
+            ? ( std::rethrow_exception( contained.error() ), contained.value() )
+            : ( throw bad_expected_access<error_type>( contained.error() ), contained.value() );
     }
 
     constexpr value_type && value() const &&
     {
-        return is_valid ? std::move( contained.value() ) : ( std::rethrow_exception( contained.error() ), contained.value() );
+        return has_value 
+            ? std::move( contained.value() )
+            : std::is_same<error_type, std::exception_ptr>::value
+            ? ( std::rethrow_exception( contained.error() ), contained.value() )
+            : ( throw bad_expected_access<error_type>( contained.error() ), contained.value() );
     }
 
     constexpr error_type const & error() const &
     {
-        return is_valid ? (throw nonstd::bad_expected_access("expected: no contained error"), contained.error() ) : contained.error();
+        assert( ! has_value );
+        return contained.error();
     }
 
     error_type & error() &
     {
-        return is_valid ? (throw nonstd::bad_expected_access("expected: no contained error"), contained.error() ) : contained.error();
+        assert( ! has_value );
+        return contained.error();
     }
 
     constexpr error_type && error() const &&
     {
-        return is_valid ? (throw nonstd::bad_expected_access("expected: no contained error"), contained.error() ) : std::move( contained.error() );
+        assert( ! has_value );
+        return std::move( contained.error() );
     }
 
     constexpr unexpected_type<E> get_unexpected() const
     {
-        return unexpected_type<error_type>( contained.error() );
+        return make_unexpected( contained.error() );
     }
 
     template< typename Ex >
@@ -599,24 +657,37 @@ public:
         return ! (*this) && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
     }
 
-    // is_copy_constructible<T>::value && is_convertible<U&&, T>::value.
     template< typename U >
-    constexpr value_type value_or( U && v ) const &
+    constexpr typename std::enable_if<
+        std::is_copy_constructible<T>::value 
+        && std::is_convertible<U&&, T>::value,
+    value_type >::type value_or( U && v ) const &
     {
-        return is_valid ? **this : std::move( v );
+        return has_value ? **this : static_cast<T>( std::forward<U>( v ) );
     }
 
-    // is_move_constructible<T>::value && is_convertible<U&&, T>::value
     template< typename U >
-    value_type value_or( U && v ) const &&
+    typename std::enable_if<
+        std::is_move_constructible<T>::value 
+        && std::is_convertible<U&&, T>::value,
+    value_type >::type value_or( U && v ) const &&
     {
-        return is_valid ? std::move( **this ) :std::move( v );
+        return has_value ? std::move( **this ) : static_cast<T>( std::forward<U>( v ) );
     }
 
     // unwrap()
 
-//  template constexpr ’see below’ unwrap() const&;
-//  template ’see below’ unwrap() &&;
+//  template <class U, class E>
+//  constexpr expected<U,E> expected<expected<U,E>,E>::unwrap() const&;
+
+//  template <class T, class E>
+//  constexpr expected<T,E> expected<T,E>::unwrap() const&;
+
+//  template <class U, class E>
+//  expected<U,E> expected<expected<U,E>, E>::unwrap() &&;
+
+//  template <class T, class E>
+//  template expected<T,E> expected<T,E>::unwrap() &&;
 
     // factories
 
@@ -636,7 +707,7 @@ public:
 //  ’see below’ then(F&& func);
 
 private:
-    bool is_valid;
+    bool has_value;
     expected_detail::storage_t<T,E> contained;
 };
 
@@ -834,21 +905,17 @@ void swap( expected<T,E> & x, expected<T,E> & y ) noexcept( noexcept( x.swap(y) 
     x.swap( y );
 }
 
-//template< typename T >
-//auto make_expected( T const & v ) -> expected<T>
-//{
-//    return expected<T>( v );
-//}
-
 template< typename T>
 constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type >
 {
     return expected< typename std::decay<T>::type >( std::forward( v ) );
 }
 
-//auto make_expected() -> expected<void>
+// expected<void,E> specialization:
+//template< typename E >
+//auto make_expected() -> expected<void, E>
 //{
-//    return expected<void>( in_place );
+//    return expected<void,E>( in_place_t );
 //}
 
 template< typename T>
