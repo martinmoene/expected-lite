@@ -109,8 +109,23 @@ CASE( "A C++11 union can contain non-POD types" )
     };
 }
 
+// -----------------------------------------------------------------------
+// storage_t
+
 CASE( "[storage_t]" )
 {
+}
+
+// -----------------------------------------------------------------------
+// unexpected
+
+// unexpected<>
+
+CASE( "Unexpected disallows default construction" )
+{
+#if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
+    unexpected_type<> u;
+#endif
 }
 
 CASE( "Unexpected allows to copy-construct from error_type" )
@@ -135,6 +150,17 @@ CASE( "Unexpected allows to observe the error" )
 
     EXPECT( u.value() == error_value );
 }
+
+//CASE( "Unexpected allows reset via = {}" )
+//{
+//    unexpected_type<int> u( 3 );
+//    
+//    u = {};
+//}
+
+// unexpected<std::exception_ptr>
+
+// unexpected<> relational operators
 
 CASE( "Unexpected relational operators" )
 {
@@ -171,6 +197,27 @@ CASE( "Unexpected relational operators, std::exception_ptr specialization" )
     SECTION( ">=" ) { EXPECT    ( u >= u ); }
     }
 }
+
+// unexpected: traits
+
+// unexpected: factory
+
+// -----------------------------------------------------------------------
+// expected
+
+// expected<> constructors
+
+// expected<> assignment
+
+// expected<> swap
+
+// expected<> observers
+
+// [expected<> unwrap()]
+
+// [expected<> factories]
+
+// expected<> relational operators
 
 CASE( "Expected relational operators" )
 {
@@ -240,6 +287,8 @@ CASE( "Expected relational operators" )
     }
 }
 
+// -----------------------------------------------------------------------
+//  using as optional
 
 #if 1
 
@@ -256,11 +305,8 @@ using optional = expected<T, nullopt_t>;
 
 #endif
 
-
-
-/*
- * Test driver:
- */
+// -----------------------------------------------------------------------
+// test driver:
 
 int main( int argc, char * argv[] )
 {
