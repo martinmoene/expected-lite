@@ -570,32 +570,27 @@ public:
 
     constexpr value_type const * operator ->() const
     {
-        assert( has_value );
-        return contained.value_ptr();
+        return assert( has_value ), contained.value_ptr();
     }
 
     value_type * operator ->()
     {
-        assert( has_value );
-        return contained.value_ptr();
+        return assert( has_value ), contained.value_ptr();
     }
 
     constexpr value_type const & operator *() const &
     {
-        assert( has_value );
-        return contained.value();
+        return assert( has_value ), contained.value();
     }
 
     value_type & operator *() &
     {
-        assert( has_value );
-        return contained.value();
+        return assert( has_value ), contained.value();
     }
 
     constexpr value_type && operator *() const &&
     {
-        assert( has_value );
-        return std::move( contained.value() );
+        return assert( has_value ), std::move( contained.value() );
     }
 
     constexpr explicit operator bool() const noexcept
@@ -632,20 +627,17 @@ public:
 
     constexpr error_type const & error() const &
     {
-        assert( ! has_value );
-        return contained.error();
+        return assert( ! has_value ), contained.error();
     }
 
     error_type & error() &
     {
-        assert( ! has_value );
-        return contained.error();
+        return assert( ! has_value ), contained.error();
     }
 
     constexpr error_type && error() const &&
     {
-        assert( ! has_value );
-        return std::move( contained.error() );
+        return assert( ! has_value ), std::move( contained.error() );
     }
 
     constexpr unexpected_type<E> get_unexpected() const
@@ -927,7 +919,7 @@ constexpr auto make_expected_from_current_exception() -> expected<T>
 }
 
 template< typename T>
-constexpr auto make_expected_from_exception( std::exception_ptr v ) -> expected<T>
+auto make_expected_from_exception( std::exception_ptr v ) -> expected<T>
 {
     return expected<T>( unexpected_type<>( std::forward<std::exception_ptr>( v ) ) );
 }
