@@ -296,7 +296,7 @@ CASE( "Expected relational operators" )
 
 struct nullopt_t{};
 
-const nullopt_t nullopt;
+const nullopt_t nullopt{};
 
 /// optional expressed in expected
 
