@@ -131,10 +131,6 @@ private:
 
 } // namespace expected_detail
 
-/// in-place tag
-
-struct in_place_t{};
-
 /// class unexpected_type
 
 template< typename E = std::exception_ptr >
@@ -277,7 +273,13 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
     return unexpected_type< std::exception_ptr >( std::current_exception() );
 }
 
-/// unexpect tag
+/// in-place tag: construct a value in-place (should come from std::experimental::optional)
+
+struct in_place_t{};
+
+constexpr in_place_t in_place{};
+
+/// unexpect tag: construct an error
 
 struct unexpect_t{};
 
@@ -915,7 +917,7 @@ constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type
 //template< typename E >
 //auto make_expected() -> expected<void, E>
 //{
-//    return expected<void,E>( in_place_t );
+//    return expected<void,E>( in_place );
 //}
 
 template< typename T>
