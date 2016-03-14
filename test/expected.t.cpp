@@ -21,6 +21,7 @@ using nonstd::unexpected_type;
 using nonstd::bad_expected_access;
 using nonstd::make_expected;
 using nonstd::make_unexpected;
+using nonstd::is_unexpected;
 
 namespace nonstd {
 
@@ -119,21 +120,38 @@ CASE( "[storage_t]" )
 // -----------------------------------------------------------------------
 // unexpected
 
-// unexpected<>
+// unexpected<>, unexpected<std::exception_ptr>
 
 CASE( "Unexpected disallows default construction" )
 {
 #if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
-    unexpected_type<> u;
+    unexpected_type<Oracle> u;
+#endif
+}
+
+CASE( "Unexpected disallows default construction, std::exception_ptr specialization" )
+{
+#if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
+    unexpected_type<std::exception_ptr> u;
 #endif
 }
 
 CASE( "Unexpected allows to copy-construct from error_type" )
 {
     Oracle o;
+
     unexpected_type<Oracle> u{ o };
 
     EXPECT( u.value().s == sCopyConstructed );
+}
+
+CASE( "Unexpected allows to copy-construct from error_type, std::exception_ptr specialization" )
+{
+    auto ep = make_ep();
+
+    unexpected_type<std::exception_ptr> u{ ep };
+
+    EXPECT( u.value() == ep );
 }
 
 CASE( "Unexpected allows to move-construct from error_type" )
@@ -143,12 +161,67 @@ CASE( "Unexpected allows to move-construct from error_type" )
     EXPECT( u.value().s == sMoveConstructed );
 }
 
-CASE( "Unexpected allows to observe the error" )
+CASE( "Unexpected allows to move-construct from error_type, std::exception_ptr specialization" )
+{
+    auto ep_move = make_ep();
+    auto const ep_copy = ep_move;
+
+    unexpected_type<std::exception_ptr> u{ std::move( ep_move ) };
+
+    EXPECT( u.value() == ep_copy );
+}
+
+CASE( "Unexpected allows to copy-construct from an exception, std::exception_ptr specialization" )
+{
+    std::string text = "hello, world";
+
+    unexpected_type<std::exception_ptr> u{ std::logic_error( "hello, world" ) };
+    
+    try
+    {
+         std::rethrow_exception( u.value() );
+    }
+    catch( std::exception const & e )
+    {
+        EXPECT( e.what() == text );
+    }
+}
+
+CASE( "Unexpected allows to observe its value" )
 {
     const int error_value = 7;
     unexpected_type<int> u{ error_value };
 
     EXPECT( u.value() == error_value );
+}
+
+CASE( "Unexpected allows to observe its value, std::exception_ptr specialization" )
+{
+    auto const ep = make_ep();
+    unexpected_type<std::exception_ptr> u{ ep };
+    
+    EXPECT( u.value() == ep );
+}
+
+CASE( "Unexpected allows to modify its value" )
+{
+    const int error_value = 9;
+    unexpected_type<int> u{ 7 };
+    
+    u.value() = error_value;
+
+    EXPECT( u.value() == error_value );
+}
+
+CASE( "Unexpected allows to modify its value, std::exception_ptr specialization" )
+{
+    auto const ep1 = make_ep();
+    auto const ep2 = make_ep();
+    unexpected_type<std::exception_ptr> u{ ep1 };
+    
+    u.value() = ep2;
+
+    EXPECT( u.value() == ep2 );
 }
 
 //CASE( "Unexpected allows reset via = {}" )
@@ -158,11 +231,16 @@ CASE( "Unexpected allows to observe the error" )
 //    u = {};
 //}
 
-// unexpected<std::exception_ptr>
+//CASE( "Unexpected allows reset via = {}, std::exception_ptr specialization" )
+//{
+//    unexpected_type<int> u( 3 );
+//    
+//    u = {};
+//}
 
 // unexpected<> relational operators
 
-CASE( "Unexpected relational operators" )
+CASE( "Unexpected supports relational operators" )
 {
     SETUP( "" ) {
         unexpected_type<int> u1( 6 );
@@ -181,7 +259,7 @@ CASE( "Unexpected relational operators" )
     }
 }
 
-CASE( "Unexpected relational operators, std::exception_ptr specialization" )
+CASE( "Unexpected supports relational operators, std::exception_ptr specialization" )
 {
     SETUP( "" ) {
         unexpected_type<> u( make_ep() );
@@ -199,6 +277,16 @@ CASE( "Unexpected relational operators, std::exception_ptr specialization" )
 }
 
 // unexpected: traits
+
+CASE( "Unexpected trait is_unexpected<X> is true for unexpected_type" )
+{
+    EXPECT( is_unexpected<unexpected_type<>>::value );
+}
+
+CASE( "Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)" )
+{
+    EXPECT_NOT( is_unexpected<int>::value );
+}
 
 // unexpected: factory
 
@@ -219,7 +307,7 @@ CASE( "Unexpected relational operators, std::exception_ptr specialization" )
 
 // expected<> relational operators
 
-CASE( "Expected relational operators" )
+CASE( "Expected supports relational operators" )
 {
     SETUP( "" ) {
         expected<int, char> e1( 6 );
