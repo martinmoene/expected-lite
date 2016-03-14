@@ -256,7 +256,7 @@ template <typename E>
 struct is_unexpected : std::false_type {};
 
 template <typename E>
-struct is_unexpected<unexpected_type<E>> : std::true_type {};
+struct is_unexpected< unexpected_type<E> > : std::true_type {};
 
 // unexpected: factory
 
@@ -950,7 +950,7 @@ namespace std {
 // expected: hash support
 
 template <typename T>
-struct hash<nonstd::expected<T>>
+struct hash< nonstd::expected<T> >
 {
     typedef typename hash<T>::result_type result_type;
     typedef nonstd::expected<T> argument_type;
@@ -962,7 +962,7 @@ struct hash<nonstd::expected<T>>
 };
 
 template <typename T>
-struct hash<nonstd::expected<T&>>
+struct hash< nonstd::expected<T&> >
 {
     typedef typename hash<T>::result_type result_type;
     typedef nonstd::expected<T&> argument_type;
