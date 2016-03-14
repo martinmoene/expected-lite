@@ -154,6 +154,11 @@ public:
         return m_error;
     }
 
+    error_type & value()
+    {
+        return m_error;
+    }
+
 private:
     error_type m_error;
 };
@@ -188,8 +193,13 @@ public:
         return m_error;
     }
 
+    std::exception_ptr & value()
+    {
+        return m_error;
+    }
+
 private:
-    error_type m_error;
+    std::exception_ptr m_error;
 };
 
 // unexpected: relational operators
