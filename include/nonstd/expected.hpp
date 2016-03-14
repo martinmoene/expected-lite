@@ -39,7 +39,7 @@ class expected;
 
 namespace expected_detail {
 
-/// constructed union to hold value.
+/// discriminated union to hold value or 'error'.
 
 template< typename T, typename E >
 union storage_t
