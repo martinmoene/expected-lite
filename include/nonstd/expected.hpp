@@ -701,7 +701,7 @@ public:
     template< typename Ex >
     bool has_exception() const
     {
-        return ! (*this) && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
+        return ! has_value && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
     }
 
     template< typename U >
@@ -711,7 +711,9 @@ public:
 
     value_type ) value_or( U && v ) const &
     {
-        return has_value ? **this : static_cast<T>( std::forward<U>( v ) );
+        return has_value 
+            ? contained.value() 
+            : static_cast<T>( std::forward<U>( v ) );
     }
 
     template< typename U >
@@ -721,7 +723,9 @@ public:
 
     value_type ) value_or( U && v ) const &&
     {
-        return has_value ? std::move( **this ) : static_cast<T>( std::forward<U>( v ) );
+        return has_value 
+            ? std::move( contained.value() ) 
+            : static_cast<T>( std::forward<U>( v ) );
     }
 
     // unwrap()
