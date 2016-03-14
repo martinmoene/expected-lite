@@ -91,8 +91,19 @@ Appendix
 
 ```
 Unexpected disallows default construction
+Unexpected disallows default construction, std::exception_ptr specialization
 Unexpected allows to copy-construct from error_type
+Unexpected allows to copy-construct from error_type, std::exception_ptr specialization
 Unexpected allows to move-construct from error_type
-Unexpected allows to observe the error
-...
+Unexpected allows to move-construct from error_type, std::exception_ptr specialization
+Unexpected allows to copy-construct from an exception, std::exception_ptr specialization
+Unexpected allows to observe its value
+Unexpected allows to observe its value, std::exception_ptr specialization
+Unexpected allows to modify its value
+Unexpected allows to modify its value, std::exception_ptr specialization
+Unexpected supports relational operators
+Unexpected supports relational operators, std::exception_ptr specialization
+Unexpected trait is_unexpected<X> is true for unexpected_type
+Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)
+Expected supports relational operators...
 ```
