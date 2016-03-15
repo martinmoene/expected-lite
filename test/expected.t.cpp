@@ -175,7 +175,7 @@ CASE( "Unexpected allows to copy-construct from an exception, std::exception_ptr
 {
     std::string text = "hello, world";
 
-    unexpected_type<std::exception_ptr> u{ std::logic_error( "hello, world" ) };
+    unexpected_type<std::exception_ptr> u{ std::logic_error( text.c_str() ) };
     
     try
     {
@@ -189,7 +189,7 @@ CASE( "Unexpected allows to copy-construct from an exception, std::exception_ptr
 
 CASE( "Unexpected allows to observe its value" )
 {
-    const int error_value = 7;
+    auto const error_value = 7;
     unexpected_type<int> u{ error_value };
 
     EXPECT( u.value() == error_value );
@@ -205,7 +205,7 @@ CASE( "Unexpected allows to observe its value, std::exception_ptr specialization
 
 CASE( "Unexpected allows to modify its value" )
 {
-    const int error_value = 9;
+    auto const error_value = 9;
     unexpected_type<int> u{ 7 };
     
     u.value() = error_value;
@@ -290,6 +290,37 @@ CASE( "Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)"
 
 // unexpected: factory
 
+CASE( "Make_unexpected allows to create an unexpected<E> from an E" )
+{
+    auto const error = 7;
+    auto u = make_unexpected( error );
+    
+    EXPECT( u.value() == error );
+}
+
+CASE( "Make_unexpected_from_current_exception allows to create an unexpected<std::exception_ptr> from the current exception" )
+{
+    std::string text = "hello, world";
+
+    try
+    {
+         throw std::logic_error( text.c_str() );
+    }
+    catch( std::exception const & e )
+    {
+        auto u = make_unexpected_from_current_exception() ;
+        
+        try
+        {
+            std::rethrow_exception( u.value() );
+        }
+        catch( std::exception const & e )
+        {
+            EXPECT( e.what() == text );
+        }
+    }
+}
+
 // -----------------------------------------------------------------------
 // bad_expected_access
 
@@ -309,6 +340,7 @@ CASE( "Bad_expected_access allows to observe its error" )
 {
     const int error = 7;
     bad_expected_access<int> bea( error );
+    
     EXPECT( bea.error() == error );
 }
 
