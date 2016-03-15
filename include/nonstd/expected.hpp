@@ -415,9 +415,9 @@ public:
         contained.construct_value( value_type() );
     }
 
-    nsel_REQUIRES_0(
-        std::is_copy_constructible<T>::value &&
-        std::is_copy_constructible<E>::value )
+//    nsel_REQUIRES_0(
+//        std::is_copy_constructible<T>::value &&
+//        std::is_copy_constructible<E>::value )
 
     nsel_constexpr14 expected( expected const & rhs )
     : has_value( rhs.has_value )
@@ -426,9 +426,9 @@ public:
         else             contained.construct_error( rhs.contained.error() );
     }
 
-    nsel_REQUIRES_0(
-        std::is_move_constructible<T>::value &&
-        std::is_move_constructible<E>::value )
+//    nsel_REQUIRES_0(
+//        std::is_move_constructible<T>::value &&
+//        std::is_move_constructible<E>::value )
 
     nsel_constexpr14 expected( expected && rhs )
     : has_value( rhs.has_value )
