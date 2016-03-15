@@ -90,27 +90,28 @@ Appendix
 ### A.1 expected lite test specification
 
 ```
-Unexpected disallows default construction
-Unexpected disallows default construction, std::exception_ptr specialization
-Unexpected allows to copy-construct from error_type
-Unexpected allows to copy-construct from error_type, std::exception_ptr specialization
-Unexpected allows to move-construct from error_type
-Unexpected allows to move-construct from error_type, std::exception_ptr specialization
-Unexpected allows to copy-construct from an exception, std::exception_ptr specialization
-Unexpected allows to observe its value
-Unexpected allows to observe its value, std::exception_ptr specialization
-Unexpected allows to modify its value
-Unexpected allows to modify its value, std::exception_ptr specialization
-Unexpected supports relational operators
-Unexpected supports relational operators, std::exception_ptr specialization
-Unexpected trait is_unexpected<X> is true for unexpected_type
-Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)
-Make_unexpected allows to create an unexpected<E> from an E
-Make_unexpected_from_current_exception allows to create an unexpected<std::exception_ptr> from the current exception
-Bad_expected_access disallows default construction
-Bad_expected_access allows construction from error_type
-Bad_expected_access allows to observe its error
-Bad_expected_access allows to change its error
-Expected supports relational operators
+unexpected_type<>: Disallows default construction
+unexpected_type<>: Disallows default construction, std::exception_ptr specialization
+unexpected_type<>: Allows to copy-construct from error_type
+unexpected_type<>: Allows to copy-construct from error_type, std::exception_ptr specialization
+unexpected_type<>: Allows to move-construct from error_type
+unexpected_type<>: Allows to move-construct from error_type, std::exception_ptr specialization
+unexpected_type<>: Allows to copy-construct from an exception, std::exception_ptr specialization
+unexpected_type<>: Allows to observe its value
+unexpected_type<>: Allows to observe its value, std::exception_ptr specialization
+unexpected_type<>: Allows to modify its value
+unexpected_type<>: Allows to modify its value, std::exception_ptr specialization
+unexpected_type<>: Supports relational operators
+unexpected_type<>: Supports relational operators, std::exception_ptr specialization
+is_unexpected<X>: Is true for unexpected_type
+is_unexpected<X>: Is false for non-unexpected_type (int)
+make_unexpected(): Allows to create an unexpected_type<E> from an E
+make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current excep
+tion
+bad_expected_access<>: Disallows default construction
+bad_expected_access<>: Allows construction from error_type
+bad_expected_access<>: Allows to observe its error
+bad_expected_access<>: Allows to change its error
+expected<>: Supports relational operators
 ...
 ```

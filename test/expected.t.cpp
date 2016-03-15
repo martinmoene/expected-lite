@@ -118,25 +118,23 @@ CASE( "[storage_t]" "[.]" )
 }
 
 // -----------------------------------------------------------------------
-// unexpected
+// unexpected_type<>, unexpected_type<std::exception_ptr>
 
-// unexpected<>, unexpected<std::exception_ptr>
-
-CASE( "Unexpected disallows default construction" )
+CASE( "unexpected_type<>: Disallows default construction" )
 {
 #if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
     unexpected_type<Oracle> u;
 #endif
 }
 
-CASE( "Unexpected disallows default construction, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Disallows default construction, std::exception_ptr specialization" )
 {
 #if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
     unexpected_type<std::exception_ptr> u;
 #endif
 }
 
-CASE( "Unexpected allows to copy-construct from error_type" )
+CASE( "unexpected_type<>: Allows to copy-construct from error_type" )
 {
     Oracle o;
 
@@ -145,7 +143,7 @@ CASE( "Unexpected allows to copy-construct from error_type" )
     EXPECT( u.value().s == sCopyConstructed );
 }
 
-CASE( "Unexpected allows to copy-construct from error_type, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Allows to copy-construct from error_type, std::exception_ptr specialization" )
 {
     auto ep = make_ep();
 
@@ -154,14 +152,14 @@ CASE( "Unexpected allows to copy-construct from error_type, std::exception_ptr s
     EXPECT( u.value() == ep );
 }
 
-CASE( "Unexpected allows to move-construct from error_type" )
+CASE( "unexpected_type<>: Allows to move-construct from error_type" )
 {
     unexpected_type<Oracle> u{ Oracle() };
 
     EXPECT( u.value().s == sMoveConstructed );
 }
 
-CASE( "Unexpected allows to move-construct from error_type, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Allows to move-construct from error_type, std::exception_ptr specialization" )
 {
     auto ep_move = make_ep();
     auto const ep_copy = ep_move;
@@ -171,7 +169,7 @@ CASE( "Unexpected allows to move-construct from error_type, std::exception_ptr s
     EXPECT( u.value() == ep_copy );
 }
 
-CASE( "Unexpected allows to copy-construct from an exception, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Allows to copy-construct from an exception, std::exception_ptr specialization" )
 {
     std::string text = "hello, world";
 
@@ -187,7 +185,7 @@ CASE( "Unexpected allows to copy-construct from an exception, std::exception_ptr
     }
 }
 
-CASE( "Unexpected allows to observe its value" )
+CASE( "unexpected_type<>: Allows to observe its value" )
 {
     auto const error_value = 7;
     unexpected_type<int> u{ error_value };
@@ -195,7 +193,7 @@ CASE( "Unexpected allows to observe its value" )
     EXPECT( u.value() == error_value );
 }
 
-CASE( "Unexpected allows to observe its value, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Allows to observe its value, std::exception_ptr specialization" )
 {
     auto const ep = make_ep();
     unexpected_type<std::exception_ptr> u{ ep };
@@ -203,7 +201,7 @@ CASE( "Unexpected allows to observe its value, std::exception_ptr specialization
     EXPECT( u.value() == ep );
 }
 
-CASE( "Unexpected allows to modify its value" )
+CASE( "unexpected_type<>: Allows to modify its value" )
 {
     auto const error_value = 9;
     unexpected_type<int> u{ 7 };
@@ -213,7 +211,7 @@ CASE( "Unexpected allows to modify its value" )
     EXPECT( u.value() == error_value );
 }
 
-CASE( "Unexpected allows to modify its value, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Allows to modify its value, std::exception_ptr specialization" )
 {
     auto const ep1 = make_ep();
     auto const ep2 = make_ep();
@@ -224,23 +222,23 @@ CASE( "Unexpected allows to modify its value, std::exception_ptr specialization"
     EXPECT( u.value() == ep2 );
 }
 
-//CASE( "Unexpected allows reset via = {}" )
+//CASE( "unexpected_type<>: Allows reset via = {}" )
 //{
 //    unexpected_type<int> u( 3 );
 //    
 //    u = {};
 //}
 
-//CASE( "Unexpected allows reset via = {}, std::exception_ptr specialization" )
+//CASE( "unexpected_type<>: Allows reset via = {}, std::exception_ptr specialization" )
 //{
 //    unexpected_type<int> u( 3 );
 //    
 //    u = {};
 //}
 
-// unexpected<> relational operators
+// unexpected_type<> relational operators
 
-CASE( "Unexpected supports relational operators" )
+CASE( "unexpected_type<>: Supports relational operators" )
 {
     SETUP( "" ) {
         unexpected_type<int> u1( 6 );
@@ -259,7 +257,7 @@ CASE( "Unexpected supports relational operators" )
     }
 }
 
-CASE( "Unexpected supports relational operators, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Supports relational operators, std::exception_ptr specialization" )
 {
     SETUP( "" ) {
         unexpected_type<> u( make_ep() );
@@ -278,19 +276,19 @@ CASE( "Unexpected supports relational operators, std::exception_ptr specializati
 
 // unexpected: traits
 
-CASE( "Unexpected trait is_unexpected<X> is true for unexpected_type" )
+CASE( "is_unexpected<X>: Is true for unexpected_type" )
 {
     EXPECT( is_unexpected<unexpected_type<>>::value );
 }
 
-CASE( "Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)" )
+CASE( "is_unexpected<X>: Is false for non-unexpected_type (int)" )
 {
     EXPECT_NOT( is_unexpected<int>::value );
 }
 
 // unexpected: factory
 
-CASE( "Make_unexpected allows to create an unexpected<E> from an E" )
+CASE( "make_unexpected(): Allows to create an unexpected_type<E> from an E" )
 {
     auto const error = 7;
     auto u = make_unexpected( error );
@@ -298,7 +296,7 @@ CASE( "Make_unexpected allows to create an unexpected<E> from an E" )
     EXPECT( u.value() == error );
 }
 
-CASE( "Make_unexpected_from_current_exception allows to create an unexpected<std::exception_ptr> from the current exception" )
+CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current exception" )
 {
     std::string text = "hello, world";
 
@@ -324,19 +322,19 @@ CASE( "Make_unexpected_from_current_exception allows to create an unexpected<std
 // -----------------------------------------------------------------------
 // bad_expected_access
 
-CASE( "Bad_expected_access disallows default construction" )
+CASE( "bad_expected_access<>: Disallows default construction" )
 {
 #if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
     bad_expected_access<int> bad;
 #endif
 }
 
-CASE( "Bad_expected_access allows construction from error_type" )
+CASE( "bad_expected_access<>: Allows construction from error_type" )
 {
     bad_expected_access<int> bea( 123 );
 }
 
-CASE( "Bad_expected_access allows to observe its error" )
+CASE( "bad_expected_access<>: Allows to observe its error" )
 {
     const int error = 7;
     bad_expected_access<int> bea( error );
@@ -344,7 +342,7 @@ CASE( "Bad_expected_access allows to observe its error" )
     EXPECT( bea.error() == error );
 }
 
-CASE( "Bad_expected_access allows to change its error" )
+CASE( "bad_expected_access<>: Allows to change its error" )
 {
     const int old_error = 0;
     const int new_error = 7;
@@ -372,7 +370,7 @@ CASE( "Bad_expected_access allows to change its error" )
 
 // expected<> relational operators
 
-CASE( "Expected supports relational operators" )
+CASE( "expected<>: Supports relational operators" )
 {
     SETUP( "" ) {
         expected<int, char> e1( 6 );
