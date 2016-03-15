@@ -105,5 +105,12 @@ Unexpected supports relational operators
 Unexpected supports relational operators, std::exception_ptr specialization
 Unexpected trait is_unexpected<X> is true for unexpected_type
 Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)
-Expected supports relational operators...
+Make_unexpected allows to create an unexpected<E> from an E
+Make_unexpected_from_current_exception allows to create an unexpected<std::exception_ptr> from the current exception
+Bad_expected_access disallows default construction
+Bad_expected_access allows construction from error_type
+Bad_expected_access allows to observe its error
+Bad_expected_access allows to change its error
+Expected supports relational operators
+...
 ```
