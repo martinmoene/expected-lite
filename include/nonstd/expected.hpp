@@ -146,6 +146,55 @@ private:
     error_type m_error;
 };
 
+/// discriminated union to hold only 'error'.
+
+template< typename E >
+union storage_t<void, E>
+{
+    friend class expected<void,E>;
+
+private:
+    typedef void value_type;
+    typedef E error_type;
+
+    // no-op construction
+    storage_t() {}
+    ~storage_t() {}
+
+    void construct_error( error_type const & e )
+    {
+        new( &m_error ) error_type( e );
+    }
+
+    void construct_error( error_type && e )
+    {
+        new( &m_error ) error_type( std::move( e ) );
+    }
+
+    void destruct_error()
+    {
+        m_error.~error_type();
+    }
+
+    error_type const & error() const
+    {
+        return m_error;
+    }
+
+    error_type & error()
+    {
+        return m_error;
+    }
+
+//    error_type * error_ptr() const
+//    {
+//        return &m_error;
+//    }
+
+private:
+    error_type m_error;
+};
+
 } // namespace expected_detail
 
 /// class unexpected_type
@@ -477,9 +526,8 @@ public:
 //        std::is_copy_constructible<T>::value &&
 //        std::is_copy_assignable<T>::value &&
 //        std::is_copy_constructible<E>::value &&
-//        std::is_copy_assignable<E>::value,
-//
-//    expected & ) 
+//        std::is_copy_assignable<E>::value )
+
     expected operator=( expected const & rhs )
     {
         if      (   bool(*this) &&   bool(rhs) ) { contained.value() = *rhs; }
@@ -769,6 +817,196 @@ private:
     expected_detail::storage_t<T,E> contained;
 };
 
+/// class expected, void specialization
+
+template< typename E >
+class expected<void, E>
+{
+public:    
+    typedef void value_type;
+    typedef E error_type;
+    
+    template< typename U >
+    struct rebind 
+    {
+        typedef expected<U, error_type> type;
+    };
+    
+    // constructors
+
+    constexpr expected() noexcept
+    : has_value( true )
+    { 
+    }
+
+    nsel_REQUIRES_0(
+        std::is_copy_constructible<E>::value )
+
+    expected( expected const & rhs )
+    : has_value( rhs.has_value )
+    { 
+        if ( ! has_value ) contained.construct_error( rhs.contained.error() );
+    }
+
+    nsel_REQUIRES_0(
+        std::is_move_constructible<E>::value )
+
+    expected( expected && rhs ) noexcept
+    (
+true
+    )
+    : has_value( false )
+    { 
+        if ( ! has_value ) contained.construct_error( std::move( rhs.contained.error() ) );
+    }
+
+    nsel_REQUIRES_0(
+        std::is_default_constructible<E>::value )
+
+    constexpr explicit expected( in_place_t ) 
+    : has_value( true )
+    { 
+    }
+
+//    nsel_REQUIRES(
+//        std::is_copy_constructible<E>::value &&
+//        std::is_assignable<E&, E>::value )
+
+    nsel_constexpr14 expected( unexpected_type<E> const & error )
+    : has_value( false )
+    {
+        contained.construct_error( error.value() );
+    }
+
+    // ?? expected( unexpected_type<E> && error )
+    
+    template <class Err>
+    nsel_constexpr14 expected( unexpected_type<Err> const & error )
+    : has_value( false )
+    {
+        contained.construct_error( error.value() );
+    }
+
+   // destructor
+
+    ~expected()
+    {
+        if ( ! has_value ) contained.destruct_error();
+    }
+
+    // assignment
+
+//    nsel_REQUIRES(
+//        std::is_copy_constructible<E>::value &&
+//        std::is_copy_assignable<E>::value )
+
+    expected & operator=(expected const & rhs )
+    {
+        if      (   bool(*this) && ! bool(rhs) ) { contained.construct_error( error().value() ); }
+        else if ( ! bool(*this) && ! bool(rhs) ) { contained.error() = *rhs; }
+        else if ( ! bool(*this) &&   bool(rhs) ) { contained.destruct_error(); }
+        has_value = rhs.has_value;
+
+        return *this;
+    }
+
+//    nsel_REQUIRES(
+//        std::is_move_constructible<E>::value &&
+//        std::is_move_assignable<E>::value ) 
+
+    expected & operator=( expected && rhs ) noexcept
+    (
+        std::is_nothrow_move_assignable<E>::value &&
+        std::is_nothrow_move_constructible<E>::value )
+    {
+        if      (   bool(*this) && ! bool(rhs) ) { contained.construct_error( std::move( error().value() ) ); }
+        else if ( ! bool(*this) && ! bool(rhs) ) { contained.error() = std::move( *rhs ); }
+        else if ( ! bool(*this) &&   bool(rhs) ) { contained.destruct_error(); }
+        has_value = rhs.has_value;
+
+        return *this;
+    }
+
+    void emplace() 
+    {}
+
+    // swap
+
+//    nsel_REQUIRES(
+//        std::is_move_constructible<E>::value )
+
+    void swap( expected & rhs ) noexcept
+    (
+        std::is_nothrow_move_constructible<E>::value && noexcept( swap( std::declval<E&>(), std::declval<E&>() ) )
+    )
+    {
+        using std::swap;
+
+        if      ( ! bool(*this) && ! bool(rhs) ) { swap( contained.error(), rhs.contained.error() ); }
+        else if (   bool(*this) && ! bool(rhs) ) { contained.construct_error( std::move( rhs.error() ) );
+                                                   swap( has_value, rhs.has_value ); }
+        else if ( ! bool(*this) &&   bool(rhs) ) { rhs.swap( *this ); }
+    }
+
+    // observers
+
+    constexpr explicit operator bool() const noexcept;
+
+    void value() const
+    {}
+
+    constexpr error_type const & error() const &
+    {
+        return assert( ! has_value ), contained.error();
+    }
+
+    error_type & error() &
+    {
+        return assert( ! has_value ), contained.error();
+    }
+
+    constexpr error_type && error() const &&
+    {
+        return assert( ! has_value ), std::move( contained.error() );
+    }
+
+    constexpr unexpected_type<error_type> get_unexpected() const
+    {
+        return make_unexpected( contained.error() );
+    }
+
+    template <typename Ex>
+    bool has_exception() const
+    {
+        return ! has_value && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
+    }
+
+//  template constexpr ’see below’ unwrap() const&;
+//
+//  template ’see below’ unwrap() &&;
+
+    // factories
+
+//  template <typename Ex, typename F>
+//  expected<void,E> catch_exception(F&& f);
+//
+//  template <typename F>
+//  expected<decltype(func()), E> map(F&& func) ;
+//
+//  template <typename F>
+//  ’see below’ bind(F&& func) ;
+//
+//  template <typename F>
+//  expected<void,E> catch_error(F&& f);
+//
+//  template <typename F>
+//  ’see below’ then(F&& func);
+    
+private:
+    bool has_value;
+    expected_detail::storage_t<void,E> contained;
+};
+
 // expected: relational operators
 
 template <typename T, typename E>
@@ -971,10 +1209,10 @@ constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type
 
 // expected<void> specialization:
 
-//auto make_expected() -> expected<void>
-//{
-//    return expected<void>( in_place );
-//}
+auto make_expected() -> expected<void>
+{
+    return expected<void>( in_place );
+}
 
 template< typename T>
 constexpr auto make_expected_from_current_exception() -> expected<T>
@@ -1010,22 +1248,22 @@ auto make_expected_from_call( F f,
     }
 }
 
-//template< typename F >
-///*nsel_constexpr14*/ 
-//auto make_expected_from_call( F f, 
-//    nsel_REQUIRES( std::is_same<typename std::result_of<F()>::type, void>::value ) 
-//) -> expected< typename std::result_of<F()>::type >
-//{
-//    try
-//    {
-//        f();
-//        return make_expected();
-//    }
-//    catch (...)
-//    {
-//        return make_unexpected_from_current_exception();
-//    }
-//}
+template< typename F >
+/*nsel_constexpr14*/ 
+auto make_expected_from_call( F f, 
+    nsel_REQUIRES( std::is_same<typename std::result_of<F()>::type, void>::value ) 
+) -> expected<void>
+{
+    try
+    {
+        f();
+        return make_expected();
+    }
+    catch (...)
+    {
+        return make_unexpected_from_current_exception();
+    }
+}
 
 } // namespace nonstd
 
