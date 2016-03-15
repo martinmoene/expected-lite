@@ -950,7 +950,10 @@ public:
 
     // observers
 
-    constexpr explicit operator bool() const noexcept;
+    constexpr explicit operator bool() const noexcept
+    {
+        return has_value;
+    }
 
     void value() const
     {}
