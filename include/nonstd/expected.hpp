@@ -572,7 +572,7 @@ public:
 
     expected & operator=( U && v )
     {
-        if ( bool(*this) )
+        if ( has_value )
         {
             contained.value() = std::forward<U>( v );
         }
@@ -590,7 +590,7 @@ public:
 
     expected & operator=( unexpected_type<E> const & u )
     {
-        if ( ! *this )
+        if ( ! has_value )
         {
             contained.error() = u.value();
         }
@@ -608,7 +608,7 @@ public:
 
     expected & operator=( unexpected_type<E> && u )
     {
-        if ( ! *this )
+        if ( ! has_value )
         {
             contained.error() = std::forward<E>( u.value() );
         }
@@ -625,7 +625,7 @@ public:
 
     void emplace( Args &&... args )
     {
-        if ( bool(*this) )
+        if ( has_value )
         {
             contained.value() = value_type( std::forward<Args>( args )... );
         }
@@ -642,7 +642,7 @@ public:
 
     void emplace( std::initializer_list<U> il, Args &&... args )
     {
-        if ( bool(*this) )
+        if ( has_value )
         {
             contained.value() = value_type( il, std::forward<Args>( args )... );
         }
