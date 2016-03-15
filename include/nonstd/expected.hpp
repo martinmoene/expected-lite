@@ -119,7 +119,7 @@ private:
 
     void emplace( value_type && v )
     {
-        m_value( std::forward( v ) );
+        m_value( std::forward<T>( v ) );
     }
 
     value_type * value_ptr() const
@@ -527,12 +527,12 @@ public:
     {
         if ( bool(*this) )
         {
-            contained.value() = std::forward( v );
+            contained.value() = std::forward<U>( v );
         }
         else
         {
             contained.destruct_error();
-            contained.construct_value( std::forward( v ) );
+            contained.construct_value( std::forward<U>( v ) );
             has_value = true;
         }
     }
@@ -563,12 +563,12 @@ public:
     {
         if ( ! *this )
         {
-            contained.error() = std::forward( u.value() );
+            contained.error() = std::forward<E>( u.value() );
         }
         else
         {
             contained.destruct_value();
-            contained.construct_error( std::forward( u.value() ) );
+            contained.construct_error( std::forward<E>( u.value() ) );
             has_value = false;
         }
     }
@@ -967,7 +967,7 @@ void swap( expected<T,E> & x, expected<T,E> & y ) noexcept( noexcept( x.swap(y) 
 template< typename T>
 constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type >
 {
-    return expected< typename std::decay<T>::type >( std::forward( v ) );
+    return expected< typename std::decay<T>::type >( std::forward<T>( v ) );
 }
 
 // expected<void,E> specialization:
