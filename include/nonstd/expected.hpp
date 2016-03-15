@@ -37,8 +37,6 @@
 #define nsel_REQUIRES(...) \
     typename std::enable_if<__VA_ARGS__, void*>::type = 0
 
-//    typename std::enable_if<__VA_ARGS__>::type
-
 #define nsel_REQUIRES_0(...) \
     template< bool B = (__VA_ARGS__), typename std::enable_if<B, int>::type = 0 >
 
@@ -1274,11 +1272,11 @@ namespace std {
 
 // expected: hash support
 
-template <typename T>
-struct hash< nonstd::expected<T> >
+template< typename T, typename E >
+struct hash< nonstd::expected<T,E> >
 {
     typedef typename hash<T>::result_type result_type;
-    typedef nonstd::expected<T> argument_type;
+    typedef nonstd::expected<T,E> argument_type;
 
     constexpr result_type operator()(argument_type const & arg) const
     {
@@ -1286,16 +1284,27 @@ struct hash< nonstd::expected<T> >
     }
 };
 
-template <typename T>
-struct hash< nonstd::expected<T&> >
+// TBD - remove? see spec.
+template< typename T, typename E >
+struct hash< nonstd::expected<T&,E> >
 {
     typedef typename hash<T>::result_type result_type;
-    typedef nonstd::expected<T&> argument_type;
+    typedef nonstd::expected<T&,E> argument_type;
 
     constexpr result_type operator()(argument_type const & arg) const
     {
         return arg ? std::hash<T>{}(*arg) : result_type{};
     }
+};
+
+// TBD - implement
+// bool(e), hash<expected<void,E>>()(e) shall evaluate to the hashing true; 
+// otherwise it evaluates to an unspecified value if E is exception_ptr or 
+// a combination of hashing false and hash<E>()(e.error()).
+
+template< typename E >
+struct hash< nonstd::expected<void,E> >
+{
 };
 
 } // namespace std
