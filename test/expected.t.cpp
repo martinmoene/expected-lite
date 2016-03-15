@@ -99,7 +99,7 @@ std::exception_ptr make_ep()
     return nullptr;
 }
 
-CASE( "A C++11 union can contain non-POD types" )
+CASE( "A C++11 union can contain non-POD types" "[.]" )
 {
     struct nonpod { nonpod(){} };
 
@@ -113,7 +113,7 @@ CASE( "A C++11 union can contain non-POD types" )
 // -----------------------------------------------------------------------
 // storage_t
 
-CASE( "[storage_t]" )
+CASE( "[storage_t]" "[.]" )
 {
 }
 
@@ -291,6 +291,39 @@ CASE( "Unexpected trait is_unexpected<X> is false for non-unexpected_type (int)"
 // unexpected: factory
 
 // -----------------------------------------------------------------------
+// bad_expected_access
+
+CASE( "Bad_expected_access disallows default construction" )
+{
+#if nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS
+    bad_expected_access<int> bad;
+#endif
+}
+
+CASE( "Bad_expected_access allows construction from error_type" )
+{
+    bad_expected_access<int> bea( 123 );
+}
+
+CASE( "Bad_expected_access allows to observe its error" )
+{
+    const int error = 7;
+    bad_expected_access<int> bea( error );
+    EXPECT( bea.error() == error );
+}
+
+CASE( "Bad_expected_access allows to change its error" )
+{
+    const int old_error = 0;
+    const int new_error = 7;
+    bad_expected_access<int> bea( old_error );
+    
+    bea.error() = new_error;  
+    
+    EXPECT( bea.error() == new_error  );
+}
+
+// -----------------------------------------------------------------------
 // expected
 
 // expected<> constructors
@@ -375,6 +408,34 @@ CASE( "Expected supports relational operators" )
     }
 }
 
+// Other
+
+#include <memory>
+
+void vfoo() {}
+
+expected<int> foo()
+{
+    return make_expected( 7 );
+}
+
+expected<std::unique_ptr<int>> bar()
+{
+    return make_expected( std::unique_ptr<int>( new int(7) ) );
+}
+
+CASE( "call_fn" )
+{
+    using namespace nonstd;
+    
+    expected<int> ei = foo();
+    expected<std::unique_ptr<int>> eup = bar();
+
+    auto ev   = make_expected_from_call( vfoo );
+    auto e2   = make_expected_from_call( foo );
+    auto eup2 = make_expected_from_call( bar );
+}
+
 // -----------------------------------------------------------------------
 //  using as optional
 
@@ -407,6 +468,7 @@ cl -nologo -Wall -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expect
 
 g++ -Wall -Wextra -std=c++03 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
 g++ -Wall -Wextra -std=c++11 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
+g++ -Wall -Wextra -std=c++14 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
 g++ -Wall -Wextra -std=c++1y -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
 
 #endif // 0
