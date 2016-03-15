@@ -454,7 +454,8 @@ public:
     nsel_constexpr14 expected( value_type && rhs ) noexcept
     (
         std::is_nothrow_move_constructible<T>::value &&
-        std::is_nothrow_move_constructible<E>::value )
+        std::is_nothrow_move_constructible<E>::value 
+    )
     : has_value( true )
     {
         contained.construct_value( std::move( rhs ) );
@@ -547,8 +548,7 @@ public:
 //        std::is_move_constructible<E>::value &&
 //        std::is_move_assignable<E>::value ) 
 
-    expected & operator=( expected && rhs ) 
-    noexcept
+    expected & operator=( expected && rhs ) noexcept
     (
         std::is_nothrow_move_assignable<T>::value &&
         std::is_nothrow_move_constructible<T>::value&&
@@ -842,7 +842,7 @@ public:
     nsel_REQUIRES_0(
         std::is_copy_constructible<E>::value )
 
-    expected( expected const & rhs )
+    nsel_constexpr14 expected( expected const & rhs )
     : has_value( rhs.has_value )
     { 
         if ( ! has_value ) contained.construct_error( rhs.contained.error() );
@@ -851,11 +851,11 @@ public:
     nsel_REQUIRES_0(
         std::is_move_constructible<E>::value )
 
-    expected( expected && rhs ) noexcept
+    nsel_constexpr14 expected( expected && rhs ) noexcept
     (
-true
+        true    // TBD - see also non-void specialization
     )
-    : has_value( false )
+    : has_value( rhs.has_value )
     { 
         if ( ! has_value ) contained.construct_error( std::move( rhs.contained.error() ) );
     }
