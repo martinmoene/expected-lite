@@ -34,11 +34,10 @@
 
 // Method enabling
 
-#define boost_REQUIRES(...)  \
+#define nsel_REQUIRES(...) \
     typename std::enable_if<__VA_ARGS__, void*>::type = 0
 
-#define nsel_REQUIRES(...) \
-    typename std::enable_if<__VA_ARGS__>::type
+//    typename std::enable_if<__VA_ARGS__>::type
 
 #define nsel_REQUIRES_0(...) \
     template< bool B = (__VA_ARGS__), typename std::enable_if<B, int>::type = 0 >
@@ -970,11 +969,11 @@ constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type
     return expected< typename std::decay<T>::type >( std::forward<T>( v ) );
 }
 
-// expected<void,E> specialization:
-//template< typename E >
-//auto make_expected() -> expected<void, E>
+// expected<void> specialization:
+
+//auto make_expected() -> expected<void>
 //{
-//    return expected<void,E>( in_place );
+//    return expected<void>( in_place );
 //}
 
 template< typename T>
@@ -996,7 +995,10 @@ constexpr auto make_expected_from_error( E e ) -> expected<T, typename std::deca
 }
 
 template< typename F >
-/*nsel_constexpr14*/ auto make_expected_from_call( F f ) -> expected< typename std::result_of<F>::type >
+/*nsel_constexpr14*/ 
+auto make_expected_from_call( F f,
+    nsel_REQUIRES( ! std::is_same<typename std::result_of<F()>::type, void>::value ) 
+) -> expected< typename std::result_of<F()>::type >
 {
     try
     {
@@ -1007,6 +1009,23 @@ template< typename F >
         return make_unexpected_from_current_exception();
     }
 }
+
+//template< typename F >
+///*nsel_constexpr14*/ 
+//auto make_expected_from_call( F f, 
+//    nsel_REQUIRES( std::is_same<typename std::result_of<F()>::type, void>::value ) 
+//) -> expected< typename std::result_of<F()>::type >
+//{
+//    try
+//    {
+//        f();
+//        return make_expected();
+//    }
+//    catch (...)
+//    {
+//        return make_unexpected_from_current_exception();
+//    }
+//}
 
 } // namespace nonstd
 
