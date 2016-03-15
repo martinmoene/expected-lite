@@ -34,6 +34,9 @@
 
 // Method enabling
 
+#define boost_REQUIRES(...)  \
+    typename std::enable_if<__VA_ARGS__, void*>::type = 0
+
 #define nsel_REQUIRES(...) \
     typename std::enable_if<__VA_ARGS__>::type
 
@@ -156,9 +159,15 @@ public:
 
     unexpected_type() = delete;
 
+    nsel_REQUIRES_0(
+        std::is_copy_constructible<error_type>::value )
+
     constexpr explicit unexpected_type( error_type const & error )
     : m_error( error )
     {}
+
+    nsel_REQUIRES_0(
+        std::is_move_constructible<error_type>::value )
 
     constexpr explicit unexpected_type( error_type && error )
     : m_error( std::move( error ) )
@@ -465,13 +474,14 @@ public:
 
     // assignment
 
-    nsel_REQUIRES(
-        std::is_copy_constructible<T>::value &&
-        std::is_copy_assignable<T>::value &&
-        std::is_copy_constructible<E>::value &&
-        std::is_copy_assignable<E>::value,
-
-    expected & ) operator=( expected const & rhs )
+//    nsel_REQUIRES(
+//        std::is_copy_constructible<T>::value &&
+//        std::is_copy_assignable<T>::value &&
+//        std::is_copy_constructible<E>::value &&
+//        std::is_copy_assignable<E>::value,
+//
+//    expected & ) 
+    expected operator=( expected const & rhs )
     {
         if      (   bool(*this) &&   bool(rhs) ) { contained.value() = *rhs; }
         else if (   bool(*this) && ! bool(rhs) ) { contained.destruct_value();
@@ -484,13 +494,14 @@ public:
         return *this;
     }
 
-    nsel_REQUIRES(
-        std::is_move_constructible<T>::value &&
-        std::is_move_assignable<T>::value &&
-        std::is_move_constructible<E>::value &&
-        std::is_move_assignable<E>::value,
+//    nsel_REQUIRES(
+//        std::is_move_constructible<T>::value &&
+//        std::is_move_assignable<T>::value &&
+//        std::is_move_constructible<E>::value &&
+//        std::is_move_assignable<E>::value ) 
 
-    expected & ) operator=( expected && rhs ) noexcept
+    expected & operator=( expected && rhs ) 
+    noexcept
     (
         std::is_nothrow_move_assignable<T>::value &&
         std::is_nothrow_move_constructible<T>::value&&
@@ -508,12 +519,11 @@ public:
         return *this;
     }
 
-    template< typename U >
-    nsel_REQUIRES(
+    template< typename U, nsel_REQUIRES_T(
         std::is_constructible<T,U>::value &&
-        std::is_assignable<T&, U>::value,
+        std::is_assignable<T&, U>::value ) >
 
-    expected & ) operator=( U && v )
+    expected & operator=( U && v )
     {
         if ( bool(*this) )
         {
@@ -527,11 +537,11 @@ public:
         }
     }
 
-    nsel_REQUIRES(
-        std::is_copy_constructible<E>::value &&
-        std::is_assignable<E&, E>::value,
+//    nsel_REQUIRES(
+//        std::is_copy_constructible<E>::value &&
+//        std::is_assignable<E&, E>::value )
 
-    expected & ) operator=( unexpected_type<E> const & u )
+    expected & operator=( unexpected_type<E> const & u )
     {
         if ( ! *this )
         {
@@ -545,11 +555,11 @@ public:
         }
     }
 
-    nsel_REQUIRES(
-        std::is_copy_constructible<E>::value &&
-        std::is_assignable<E&, E>::value,
+//    nsel_REQUIRES(
+//        std::is_copy_constructible<E>::value &&
+//        std::is_assignable<E&, E>::value )
 
-    expected & ) operator=( unexpected_type<E> && u )
+    expected & operator=( unexpected_type<E> && u )
     {
         if ( ! *this )
         {
@@ -563,11 +573,10 @@ public:
         }
     }
 
-    template< typename... Args >
-    nsel_REQUIRES(
-        std::is_constructible<T, Args&&...>::value,
+    template< typename... Args, nsel_REQUIRES_T(
+        std::is_constructible<T, Args&&...>::value ) >
 
-    void ) emplace( Args &&... args )
+    void emplace( Args &&... args )
     {
         if ( bool(*this) )
         {
@@ -581,11 +590,10 @@ public:
         }
     }
 
-    template< typename U, typename... Args >
-    nsel_REQUIRES(
-        std::is_constructible<T, std::initializer_list<U>&, Args&&...>::value,
+    template< typename U, typename... Args, nsel_REQUIRES_T(
+        std::is_constructible<T, std::initializer_list<U>&, Args&&...>::value ) >
 
-    void ) emplace( std::initializer_list<U> il, Args &&... args )
+    void emplace( std::initializer_list<U> il, Args &&... args )
     {
         if ( bool(*this) )
         {
@@ -599,11 +607,11 @@ public:
         }
     }
 
-    nsel_REQUIRES(
-        std::is_move_constructible<T>::value &&
-        std::is_move_constructible<E>::value,
+//    nsel_REQUIRES(
+//        std::is_move_constructible<T>::value &&
+//        std::is_move_constructible<E>::value )
 
-    void ) swap( expected & rhs ) noexcept
+    void swap( expected & rhs ) noexcept
     (
         std::is_nothrow_move_constructible<T>::value && noexcept( swap( std::declval<T&>(), std::declval<T&>() ) ) &&
         std::is_nothrow_move_constructible<E>::value && noexcept( swap( std::declval<E&>(), std::declval<E&>() ) ) )
@@ -704,24 +712,22 @@ public:
         return ! has_value && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
     }
 
-    template< typename U >
-    nsel_REQUIRES(
+    template< typename U, nsel_REQUIRES_T(
         std::is_copy_constructible<T>::value &&
-        std::is_convertible<U&&, T>::value,
+        std::is_convertible<U&&, T>::value ) >
 
-    value_type ) value_or( U && v ) const &
+    value_type value_or( U && v ) const &
     {
         return has_value 
             ? contained.value() 
             : static_cast<T>( std::forward<U>( v ) );
     }
 
-    template< typename U >
-    nsel_REQUIRES(
+    template< typename U, nsel_REQUIRES_T(
         std::is_move_constructible<T>::value &&
-        std::is_convertible<U&&, T>::value,
-
-    value_type ) value_or( U && v ) const &&
+        std::is_convertible<U&&, T>::value ) >
+        
+    value_type value_or( U && v ) const &&
     {
         return has_value 
             ? std::move( contained.value() ) 
