@@ -76,7 +76,7 @@ private:
 
     void construct_value( value_type && v )
     {
-        new( &m_value ) value_type( std::move( v ) );
+        new( &m_value ) value_type( std::forward<T>( v ) );
     }
 
     void destruct_value()
@@ -112,11 +112,6 @@ private:
     constexpr value_type && value() &&
     {
         return std::move( m_value );
-    }
-
-    void emplace( value_type && v )
-    {
-        m_value( std::forward<T>( v ) );
     }
 
     value_type * value_ptr() const
