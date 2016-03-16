@@ -101,7 +101,7 @@ unexpected_type<>: Allows to observe its value
 unexpected_type<>: Allows to observe its value, std::exception_ptr specialization
 unexpected_type<>: Allows to modify its value
 unexpected_type<>: Allows to modify its value, std::exception_ptr specialization
-unexpected_type<>: Supports relational operators
+unexpected_type<>: Provides relational operators
 unexpected_type<>: Supports relational operators, std::exception_ptr specialization
 is_unexpected<X>: Is true for unexpected_type
 is_unexpected<X>: Is false for non-unexpected_type (int)
@@ -112,6 +112,38 @@ bad_expected_access<>: Disallows default construction
 bad_expected_access<>: Allows construction from error_type
 bad_expected_access<>: Allows to observe its error
 bad_expected_access<>: Allows to change its error
-expected<>: Supports relational operators
+expected<>: Allows default construction
+expected<>: Allows to copy-construct from value_type
+expected<>: Allows to move-construct from value_type
+expected<>: Allows to copy-construct from expected<>
+expected<>: Allows to move-construct from expected<>
+expected<>: Allows to in-place-construct value_type
+expected<>: Allows to copy-construct from unexpected_type<>
+expected<>: Allows to move-construct from unexpected_type<>
+expected<>: Allows to in-place-construct unexpected_type<>
+expected<>: Allows to copy-assign from expected<>
+expected<>: Allows to move-assign from expected<>
+expected<>: Allows to copy-assign from unexpected_type<>
+expected<>: Allows to move-assign from unexpected_type<>
+expected<>: Allows to copy-assign from type convertible to value_type
+expected<>: Allows to move-assign from type convertible to value_type
+expected<>: Allows to emplace a value_type
+expected<>: Allows to be swapped
+expected<>: Allows to observe its value via a pointer
+expected<>: Allows to modify its value via a pointer
+expected<>: Allows to observe its value via a reference
+expected<>: Allows to observe its value via a r-value reference
+expected<>: Allows to modify its value via a reference
+expected<>: Allows to observe if it contains a value (or error)
+expected<>: Allows to observe its value
+expected<>: Allows to modify its value
+expected<>: Allows to move its value
+expected<>: Allows to observe its error
+expected<>: Allows to modify its error
+expected<>: Allows to move its error
+expected<>: Allows to observe its error as unexpected<>
+expected<>: Allows to observe its value if avialable, or obtain a specified value otherwise
+expected<>: Allows to move its value if avialable, or obtain a specified value otherwise
+expected<>: Provides relational operators
 ...
 ```
