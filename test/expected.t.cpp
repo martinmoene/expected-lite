@@ -699,7 +699,7 @@ CASE( "expected<>: Allows to query if it contains an exception of a specific bas
     EXPECT( e.has_exception< std::out_of_range >() );
 }
 
-CASE( "expected<>: Allows to observe its value if avialable, or obtain a specified value otherwise" )
+CASE( "expected<>: Allows to observe its value if available, or obtain a specified value otherwise" )
 {
     auto const e_value = 3;
     auto const u_value = 7;
@@ -710,7 +710,7 @@ CASE( "expected<>: Allows to observe its value if avialable, or obtain a specifi
     EXPECT( u.value_or( u_value ) == u_value );
 }
 
-CASE( "expected<>: Allows to move its value if avialable, or obtain a specified value otherwise" )
+CASE( "expected<>: Allows to move its value if available, or obtain a specified value otherwise" )
 {
     auto ov = Oracle{ 3 };
     auto uv = Oracle{ 7 };

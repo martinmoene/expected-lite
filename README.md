@@ -106,8 +106,7 @@ unexpected_type<>: Supports relational operators, std::exception_ptr specializat
 is_unexpected<X>: Is true for unexpected_type
 is_unexpected<X>: Is false for non-unexpected_type (int)
 make_unexpected(): Allows to create an unexpected_type<E> from an E
-make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current excep
-tion
+make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current exception
 bad_expected_access<>: Disallows default construction
 bad_expected_access<>: Allows construction from error_type
 bad_expected_access<>: Allows to observe its error
@@ -142,8 +141,8 @@ expected<>: Allows to observe its error
 expected<>: Allows to modify its error
 expected<>: Allows to move its error
 expected<>: Allows to observe its error as unexpected<>
-expected<>: Allows to observe its value if avialable, or obtain a specified value otherwise
-expected<>: Allows to move its value if avialable, or obtain a specified value otherwise
+expected<>: Allows to observe its value if available, or obtain a specified value otherwise
+expected<>: Allows to move its value if available, or obtain a specified value otherwise
 expected<>: Provides relational operators
 ...
 ```
