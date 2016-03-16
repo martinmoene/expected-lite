@@ -259,7 +259,7 @@ CASE( "unexpected_type<>: Provides relational operators" )
     }
 }
 
-CASE( "unexpected_type<>: Supports relational operators, std::exception_ptr specialization" )
+CASE( "unexpected_type<>: Provides relational operators, std::exception_ptr specialization" )
 {
     SETUP( "" ) {
         unexpected_type<> u( make_ep() );
@@ -356,7 +356,7 @@ CASE( "bad_expected_access<>: Allows to change its error" )
 }
 
 // -----------------------------------------------------------------------
-// expected<>
+// expected<>, expected<void> specialization
 
 // expected<> constructors
 
@@ -529,7 +529,7 @@ CASE( "expected<>: Allows to emplace a value_type" )
 {
 }
 
-CASE( "expected<>: Allows to emplace a value_type, with initializaer_list" "[.implement]" )
+CASE( "expected<>: Allows to emplace a value_type, with initializer_list" "[.implement]" )
 {
     EXPECT( !"implement" );
 }
@@ -798,6 +798,10 @@ CASE( "expected<>: Provides relational operators" )
     }
 }
 
+// -----------------------------------------------------------------------
+// expected: specialized algorithms
+
+// -----------------------------------------------------------------------
 // Other
 
 #include <memory>
