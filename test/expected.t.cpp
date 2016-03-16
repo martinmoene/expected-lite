@@ -855,8 +855,8 @@ int main( int argc, char * argv[] )
 }
 
 #if 0
-cl -nologo -W3   -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expected.t.cpp && expected.t --pass
-cl -nologo -Wall -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expected.t.cpp && expected.t --pass
+cl -nologo -W3   -wd4814 -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expected.t.cpp && expected.t --pass
+cl -nologo -Wall -wd4814 -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expected.t.cpp && expected.t --pass
 
 g++ -Wall -Wextra -std=c++03 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
 g++ -Wall -Wextra -std=c++11 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
