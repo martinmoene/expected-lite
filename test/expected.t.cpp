@@ -493,12 +493,14 @@ CASE( "expected<>: Allows to move-assign from expected<>" )
     EXPECT( ec.value().val.i == value );
 }
 
-CASE( "expected<>: Allows to copy-assign from unexpected_type<>" )
+CASE( "expected<>: Allows to copy-assign from unexpected_type<>" "[.implement]" )
 {
+    EXPECT( !"implement" );
 }
 
-CASE( "expected<>: Allows to move-assign from unexpected_type<>" )
+CASE( "expected<>: Allows to move-assign from unexpected_type<>" "[.implement]" )
 {
+    EXPECT( !"implement" );)
 }
 
 CASE( "expected<>: Allows to copy-assign from type convertible to value_type" )
@@ -525,8 +527,9 @@ CASE( "expected<>: Allows to move-assign from type convertible to value_type" )
     EXPECT( em.value().val.i == value );
 }
 
-CASE( "expected<>: Allows to emplace a value_type" )
+CASE( "expected<>: Allows to emplace a value_type" "[.implement]" )
 {
+    EXPECT( !"implement" );
 }
 
 CASE( "expected<>: Allows to emplace a value_type, with initializer_list" "[.implement]" )
