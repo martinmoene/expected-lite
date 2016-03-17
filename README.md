@@ -120,9 +120,9 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename E ><br>constexpr bool operator *op*(<br>&emsp;unexpected_type&lt;E> const & x,<br>&emsp;unexpected_type&lt;E> const & y ) |
 | ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | constexpr bool operator *op*(<br>&emsp;unexpected_type&lt;std::exception_ptr> const & x,<br>&emsp;unexpected_type&lt;std::exception_ptr> const & y ) |
 | Specialized algorithms | &nbsp;   | 
-| Make expected from     | &nbsp;   | 
+| Make unexpected from   | &nbsp;   | 
 | &emsp;Current exception| [constexpr] auto make_unexpected_from_current_exception() -><br>&emsp;unexpected_type< std::exception_ptr >| 
-| &emsp;Error            | template< typename E><br>nsel_constexpr14 auto make_unexpected( E && v) -><br>&emsp;unexpected_type< typename std::decay&lt;E>::type >| 
+| &emsp;Error            | template< typename E><br>[constexpr] auto make_unexpected( E && v) -><br>&emsp;unexpected_type< typename std::decay&lt;E>::type >| 
 
 
 <a id="comparison"></a>
