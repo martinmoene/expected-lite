@@ -38,7 +38,6 @@ struct OracleVal
     State s;
     int i;
     OracleVal(int i = 0) : s(sValueConstructed), i(i) {}
-//    OracleVal(int && i ) : s(sValueMoveConstructed), i( std::move(i) ) {}
 
     bool operator==( OracleVal const & other ) const { return s==other.s && i==other.i; }
 };
@@ -271,6 +270,8 @@ CASE( "unexpected_type<>: Provides relational operators, std::exception_ptr spec
     SECTION( "!=" ) { EXPECT    ( u != u2); }
     SECTION( "< " ) { EXPECT_NOT( u <  u ); }
     SECTION( "> " ) { EXPECT_NOT( u >  u ); }
+    SECTION( "< " ) { EXPECT_NOT( u <  u2); }
+    SECTION( "> " ) { EXPECT_NOT( u >  u2); }
     SECTION( "<=" ) { EXPECT    ( u <= u ); }
     SECTION( ">=" ) { EXPECT    ( u >= u ); }
     }
@@ -500,7 +501,7 @@ CASE( "expected<>: Allows to copy-assign from unexpected_type<>" "[.implement]" 
 
 CASE( "expected<>: Allows to move-assign from unexpected_type<>" "[.implement]" )
 {
-    EXPECT( !"implement" );)
+    EXPECT( !"implement" );
 }
 
 CASE( "expected<>: Allows to copy-assign from type convertible to value_type" )
