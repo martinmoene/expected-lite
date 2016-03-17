@@ -62,15 +62,28 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 
 ### Types in namespace nonstd
 
+| Purpose         | Type | Object |
+|-----------------|------|--------|
+| To be, or not   | template< typename T, typename E = std::exception_ptr ><br>class expected; |&nbsp;|
+| Error type      | template< typename E ><br>class unexpected_type; | &nbsp; |
+| Traits          | template< typename E ><br>struct is_unexpected;    | &nbsp; |
+| In-place value construction | struct in_place_t;     | in_place_t in_place{}; |
+| In-place error construction | struct unexpect_t;     | unexpect_t unexpect{}; |
+| Error reporting             | class bad_expected_access; |&nbsp; |
+
 ### Interface of *expected lite*
 
 ### Algorithms for *expected lite*
 
 
 <a id="comparison"></a>
-Comparison of std:&#58;experimental:&#58;expected, expected lite and ...
--------------------------------------------------------------
+Comparison with std:&#58;experimental:&#58;expected, std:&#58;optional and std::pair
+----------------------------------------------------------------------
 
+|Feature               | std::pair | std::optional | std::expected | nonstd::expected |
+|----------------------|-----------|---------------|---------------|------------------|
+|More information      | see [x]   | see [x]       | see [x]       | this work        | 
+|                      |           |               |               |                  |               
 
 Reported to work with
 ---------------------
