@@ -52,8 +52,10 @@ Synopsis
 **Contents**  
 - [Configuration macros](#configuration-macros)
 - [Types in namespace nonstd](#types-in-namespace-nonstd)  
-- [Interface of *expected lite*](#interface-of-expected-lite)  
-- [Algorithms for *expected lite*](#algorithms-for-expected-lite)  
+- [Interface of expected](#interface-of-expected)  
+- [Algorithms for expected](#algorithms-for-expected)  
+- [Interface of unexpected_type](#interface-of-unexpected_type)  
+- [Algorithms for unexpected_type](#algorithms-for-unexpected_type)  
 
 ### Configuration macros
 
@@ -71,19 +73,58 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | In-place error construction | struct unexpect_t;     | unexpect_t unexpect{}; |
 | Error reporting             | class bad_expected_access; |&nbsp; |
 
-### Interface of *expected lite*
+### Interface of expected
 
-### Algorithms for *expected lite*
+| Kind         | Method                                       | Result |
+|--------------|----------------------------------------------|--------|
+| Construction | expected()                                   | an object with default value |
+
+### Algorithms for expected
+
+| Kind                   | Function |
+|------------------------|----------|
+| Relational operators   | &nbsp;   | 
+| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>bool operator *op*( expected&lt;T,E> const & x, expected&lt;T,E> const & y ) |
+| Comparison with unexpected_type | &nbsp; | 
+| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>bool operator *op*( expected&lt;T,E> const & x, unexpected_type&lt;E> const & u ) | 
+| &nbsp;                                   | template< typename T, typename E ><br>bool operator *op*( unexpected_type&lt;E> const & u, expected&lt;T,E> const & x ) | 
+| Comparison with T                        | &nbsp;   | 
+| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>bool operator *op*( expected&lt;T,E> const & x, T const & v ) | 
+| &nbsp;                                   | template< typename T, typename E ><br>bool operator *op*( T const & v, expected&lt;T,E> const & x ) | 
+| Specialized algorithms | &nbsp;   | 
+| Swap                   | template< typename T, typename E ><br>void swap( expected&lt;T,E> & x, expected&lt;T,E> & y ) noexcept( noexcept( x.swap(y) ) ) | 
+| Make expected from     | &nbsp;   | 
+| &emsp;Value            | template< typename T><br>constexpr auto make_expected( T && v ) -><br>&emsp;expected< typename std::decay&lt;T>::type > | 
+| &emsp;Nothing          | auto make_expected() -> expected&lt;void> | 
+| &emsp;Current exception| template< typename T><br>constexpr auto make_expected_from_current_exception() -> expected&lt;T> | 
+| &emsp;Exception        | template< typename T><br>auto make_expected_from_exception( std::exception_ptr v ) -> expected&lt;T>| 
+| &emsp;Error            | template< typename T, typename E ><br>constexpr auto make_expected_from_error( E e ) -><br>&emsp;expected&lt;T, typename std::decay&lt;E>::type> | 
+| &emsp;Call             | template< typename F ><br>auto make_expected_from_call( F f ) -><br>&emsp;expected< typename std::result_of&lt;F()>::type >| 
+| &emsp;Call, void specialization | template< typename F ><br>auto make_expected_from_call( F f ) -> expected&lt;void> | 
+
+### Interface of unexpected_type
+
+| Kind         | Method                                       | Result |
+|--------------|----------------------------------------------|--------|
+| Construction | unexpected_type() = delete;                  | no default construction |
+| &nbsp;       | constexpr explicit unexpected_type( E const & error ) | copy-constructed from an E |
+| &nbsp;       | constexpr explicit unexpected_type( E && error )      | move-constructed from an E |
+| Observers    | constexpr error_type const & value() const   | can observe contained error |
+| &nbsp;       | error_type & value()                         | can modify contained error |
+
+### Algorithms for unexpected_type
 
 
 <a id="comparison"></a>
-Comparison with std:&#58;experimental:&#58;expected, std:&#58;optional and std::pair
-----------------------------------------------------------------------
+Comparison with std:&#58;expected, std:&#58;optional and std::pair
+------------------------------------------------------------------
 
 |Feature               | std::pair | std::optional | std::expected | nonstd::expected |
 |----------------------|-----------|---------------|---------------|------------------|
 |More information      | see [x]   | see [x]       | see [x]       | this work        | 
 |                      |           |               |               |                  |               
+
+std:&#58;*experimental*:&#58;expected
 
 Reported to work with
 ---------------------
