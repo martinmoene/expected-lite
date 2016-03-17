@@ -84,15 +84,15 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | Kind                   | Function |
 |------------------------|----------|
 | Relational operators   | &nbsp;   | 
-| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>bool operator *op*( expected&lt;T,E> const & x, expected&lt;T,E> const & y ) |
+| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>constexpr bool operator *op*(<br>&emsp;expected&lt;T,E> const & x,<br>&emsp;expected&lt;T,E> const & y ) |
 | Comparison with unexpected_type | &nbsp; | 
-| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>bool operator *op*( expected&lt;T,E> const & x, unexpected_type&lt;E> const & u ) | 
-| &nbsp;                                   | template< typename T, typename E ><br>bool operator *op*( unexpected_type&lt;E> const & u, expected&lt;T,E> const & x ) | 
+| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>constexpr bool operator *op*(<br>&emsp;expected&lt;T,E> const & x,<br>&emsp;unexpected_type&lt;E> const & u ) | 
+| &nbsp;                                   | template< typename T, typename E ><br>constexpr bool operator *op*(<br>&emsp;unexpected_type&lt;E> const & u,<br>&emsp;expected&lt;T,E> const & x ) | 
 | Comparison with T                        | &nbsp;   | 
-| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>bool operator *op*( expected&lt;T,E> const & x, T const & v ) | 
-| &nbsp;                                   | template< typename T, typename E ><br>bool operator *op*( T const & v, expected&lt;T,E> const & x ) | 
+| ==&ensp;!=&ensp;<&ensp;>&ensp;<=&ensp;>= | template< typename T, typename E ><br>constexpr bool operator *op*(<br>&emsp;expected&lt;T,E> const & x,<br>&emsp;T const & v ) | 
+| &nbsp;                                   | template< typename T, typename E ><br>constexpr bool operator *op*(<br>&emsp;T const & v,<br>&emsp;expected&lt;T,E> const & x ) | 
 | Specialized algorithms | &nbsp;   | 
-| Swap                   | template< typename T, typename E ><br>void swap( expected&lt;T,E> & x, expected&lt;T,E> & y ) noexcept( noexcept( x.swap(y) ) ) | 
+| Swap                   | template< typename T, typename E ><br>void swap(<br>&emsp;expected&lt;T,E> & x,<br>&emsp;expected&lt;T,E> & y )&emsp;noexcept( noexcept( x.swap(y) ) ) | 
 | Make expected from     | &nbsp;   | 
 | &emsp;Value            | template< typename T><br>constexpr auto make_expected( T && v ) -><br>&emsp;expected< typename std::decay&lt;T>::type > | 
 | &emsp;Nothing          | auto make_expected() -> expected&lt;void> | 
@@ -104,15 +104,16 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 
 ### Interface of unexpected_type
 
-| Kind         | Method                                       | Result |
-|--------------|----------------------------------------------|--------|
-| Construction | unexpected_type() = delete;                  | no default construction |
+| Kind         | Method                                                | Result |
+|--------------|-------------------------------------------------------|--------|
+| Construction | unexpected_type() = delete;                           | no default construction |
 | &nbsp;       | constexpr explicit unexpected_type( E const & error ) | copy-constructed from an E |
 | &nbsp;       | constexpr explicit unexpected_type( E && error )      | move-constructed from an E |
-| Observers    | constexpr error_type const & value() const   | can observe contained error |
-| &nbsp;       | error_type & value()                         | can modify contained error |
+| Observers    | constexpr error_type const & value() const            | can observe contained error |
+| &nbsp;       | error_type & value()                                  | can modify contained error |
 
 ### Algorithms for unexpected_type
+
 
 
 <a id="comparison"></a>
