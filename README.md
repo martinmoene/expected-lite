@@ -69,15 +69,17 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | To be, or not   | template< typename T, typename E = std::exception_ptr ><br>class expected; |&nbsp;|
 | Error type      | template< typename E ><br>class unexpected_type; | &nbsp; |
 | Traits          | template< typename E ><br>struct is_unexpected;    | &nbsp; |
-| In-place value construction | struct in_place_t;     | in_place_t in_place{}; |
-| In-place error construction | struct unexpect_t;     | unexpect_t unexpect{}; |
-| Error reporting             | class bad_expected_access; |&nbsp; |
+| In-place value construction | struct in_place_t;            | in_place_t in_place{}; |
+| In-place error construction | struct in_place_unexpected_t; | in_place_unexpected_t unexpect{}; |
+| In-place error construction | struct in_place_unexpected_t; | in_place_unexpected_t in_place_unexpected{}; |
+| Error reporting             | class bad_expected_access;    |&nbsp; |
 
 ### Interface of expected
 
 | Kind         | Method                                       | Result |
 |--------------|----------------------------------------------|--------|
 | Construction | expected()                                   | an object with default value |
+| &nbsp;       | expected( ... )                              | ... |
 
 ### Algorithms for expected
 
@@ -147,7 +149,8 @@ Implementation notes
 Notes and references
 --------------------
 
-[1] Vicente J. Botet Escriba. [Dxxxxr0 - A proposal to add a utility class to represent expected monad (Revision 2)](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) (PDF).
+[1] Vicente J. Botet Escriba. [Dxxxxr0 - A proposal to add a utility class to represent expected monad (Revision 2)](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) (PDF).  
+[2] Vicente J. Botet Escriba. [Expected - An exception-friendly Error Monad](https://www.youtube.com/watch?v=Zdlt1rgYdMQ). C++Now 2014. 24 September 2014.  
 
 Appendix
 --------

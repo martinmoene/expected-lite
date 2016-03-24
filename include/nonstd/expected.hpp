@@ -349,11 +349,12 @@ struct in_place_t{};
 
 constexpr in_place_t in_place{};
 
-/// unexpect tag: construct an error
+/// unexpect tag, in_place_unexpected tag: construct an error
 
-struct unexpect_t{};
+struct in_place_unexpected_t{};
 
-constexpr unexpect_t unexpect{};
+constexpr in_place_unexpected_t unexpect{};
+constexpr in_place_unexpected_t in_place_unexpected{};
 
 /// expected access error
 
@@ -488,7 +489,7 @@ public:
     template< typename... Args, nsel_REQUIRES_T(
         std::is_constructible<E, Args&&...>::value ) >
 
-    nsel_constexpr14 explicit expected( unexpect_t, Args&&... args )
+    nsel_constexpr14 explicit expected( in_place_unexpected_t, Args&&... args )
     : has_value( false )
     {
         contained.construct_error( std::forward<Args>( args )... );
@@ -497,7 +498,7 @@ public:
     template< typename U, typename... Args, nsel_REQUIRES_T(
         std::is_constructible<T, std::initializer_list<U>, Args&&...>::value ) >
 
-    nsel_constexpr14 explicit expected( unexpect_t, std::initializer_list<U> il, Args&&... args )
+    nsel_constexpr14 explicit expected( in_place_unexpected_t, std::initializer_list<U> il, Args&&... args )
     : has_value( false )
     {
         contained.construct_error( il, std::forward<Args>( args )... );
