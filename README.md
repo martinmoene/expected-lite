@@ -10,7 +10,7 @@ expected lite - expected objects for C++11 and later&ensp;[![Build Status](https
 - [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Synopsis](#synopsis)
-- [Comparison of std:&#58;experimental:&#58;expected, expected lite and ...](#comparison)
+- [Comparison with like types](#comparison)
 - [Reported to work with](#reported-to-work-with)
 - [Implementation notes](#implementation-notes)
 - [Notes and references](#notes-and-references)
@@ -164,15 +164,33 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 
 
 <a id="comparison"></a>
-Comparison with std:&#58;expected, std:&#58;optional and std::pair
-------------------------------------------------------------------
+Comparison with like types
+--------------------------
 
-|Feature               | std::pair | std::optional | std::expected | nonstd::expected |
-|----------------------|-----------|---------------|---------------|------------------|
-|More information      | see [x]   | see [x]       | see [x]       | this work        | 
-|                      |           |               |               |                  |               
+|Feature               |<br>std::pair|std:: optional |std:: expected |nonstd:: expected |Boost. Expected|Nonco expected |Andrei Expected |<br>required |
+|----------------------|-------------|---------------|---------------|------------------|---------------|---------------|----------------|-------------|
+|More information      | see [13]    | see [4]       | see [1]       | this work        | see [3]       | see [6]       | see [7]        | see [12]    |
+|                      |             |               |               |                  |               |               |                |             |
+| C++03                | yes         | no            | no            | no/not yet       | no (union)    | no            | no             | yes         |
+| C++11                | yes         | no            | no            | yes              | yes           | yes           | yes            | yes         |
+| C++14                | yes         | no            | no            | yes              | yes           | yes           | yes            | yes         |
+| C++17                | yes         | yes           | no            | yes              | yes           | yes           | yes            | yes         |
+|                      |             |               |               |                  |               |               |                |             |
+|DefaultConstructible  | T param     | yes           | yes           | yes              | no            | no            | no             | no          |
+|In-place construction | no          | yes           | yes           | yes              | yes           | yes           | no             | no          |
+|Literal type          | yes         | yes           | yes           | yes              | yes           | no            | no             | no          |
+|                      |             |               |               |                  |               |               |                |             |
+|Disengaged information| possible    | no            | yes           | yes              | yes           | yes           | yes            | no          |
+|Vary disengaged type  | yes         | no            | yes           | yes              | yes           | no            | no             | no          |
+|Engaged nonuse throws | no          | no            | no            | no               | no            | no            | no             | yes         |
+|Disengaged use throws | no          | yes, value()  | yes, value()  | yes, value()     | yes,<br>get() | yes,<br>get() | yes,<br>get()  | n/a         |
+|                      |             |               |               |                  |               |               |                |             |
+|Proxy (rel.ops)       | no          | yes           | yes           | yes              | no            | no            | no             | no          |
+|References            | no          | yes           | no/not yet    | no/not yet       | no            | yes           | no             | no          |
+|Chained visitor(s)    | no          | no            | yes           | maybe            | maybe         | no            | no             | no          |
 
 std:&#58;*experimental*:&#58;expected
+
 
 Reported to work with
 ---------------------
@@ -185,8 +203,32 @@ Implementation notes
 Notes and references
 --------------------
 
-[1] Vicente J. Botet Escriba. [Dxxxxr0 - A proposal to add a utility class to represent expected monad (Revision 2)](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) (PDF).  
+[1] Vicente J. Botet Escriba. [Dxxxxr0 - A proposal to add a utility class to represent expected monad (Revision 2)](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) (PDF). 12 March 2016.
+
 [2] Vicente J. Botet Escriba. [Expected - An exception-friendly Error Monad](https://www.youtube.com/watch?v=Zdlt1rgYdMQ). C++Now 2014. 24 September 2014.  
+
+[3] Pierre Talbot. [Boost.Expected. Unofficial Boost candidate](http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/trademark/25002). 5 May 2013. [GitHub](https://github.com/TrademarkPewPew/Boost.Expected), [GSoC 2013 Proposal](http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/trademark/25002), [boost@lists.boost.org](http://permalink.gmane.org/gmane.comp.lib.boost.devel/240056 ).  
+
+[4] Fernando Cacciola and Andrzej Krzemieński. [A proposal to add a utility class to represent optional objects (Revision 4)](http://isocpp.org/files/papers/N3672.html). ISO/IEC JTC1 SC22 WG21 N3672 2013-04-19.  
+
+[5] Andrzej Krzemieński, [Optional library implementation in C++11](https://github.com/akrzemi1/Optional/).  
+
+[6] Anto Nonco. [Extending expected<T> to deal with references](http://anto-nonco.blogspot.nl/2013/03/extending-expected-to-deal-with.html). 27 May 2013.  
+
+[7] Andrei Alexandrescu. Systematic Error Handling in C++. Prepared for The C++and Beyond Seminar 2012. [Video](http://channel9.msdn.com/Shows/Going+Deep/C-and-Beyond-2012-Andrei-Alexandrescu-Systematic-Error-Handling-in-C). [Slides](http://sdrv.ms/RXjNPR).  
+
+[8] Andrei Alexandrescu. [Choose your Poison: Exceptions or Error Codes? (PDF)](http://accu.org/content/conf2007/Alexandrescu-Choose_Your_Poison.pdf). ACCU Conference 2007.  
+
+[9] Andrei Alexandrescu. [The Power of None (PPT)](http://nwcpp.org/static/talks/2006/The_Power_of_None.ppt). Northwest C++ Users' Group. [May 17th, 2006](http://nwcpp.org/may-2006.html).  
+
+[10] Jon Jagger. [A Return Type That Doesn't Like Being Ignored](http://accu.org/var/uploads/journals/overload53-FINAL.pdf#page=18). Overload issue 53, February 2003.  
+
+[11] Andrei Alexandrescu. [Error Handling in C++: Are we inching towards a total solution?](http://accu.org/index.php/conferences/2002/speakers2002). ACCU Conference 2002.  
+
+[12] Ken Hagan et al. [Exploding return codes](https://groups.google.com/d/msg/comp.lang.c++.moderated/BkZqPfoq3ys/H_PMR8Sat4oJ). comp.lang.c++.moderated. 11 February 2000.  
+
+[13] [std::pair](http://en.cppreference.com/w/cpp/utility/pair). cppreference.com
+
 
 Appendix
 --------
