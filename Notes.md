@@ -1,8 +1,8 @@
 Plan
 ----
 
-- [ ] Check code against current Dxxxxr0 and adapt
-- [ ] Expand README.md
-- [ ] Expand test/expected.t.cpp
+- [x] Check code against current Dxxxxr0 and adapt
+- [x] Expand README.md
+- [x] Expand test/expected.t.cpp
 - [ ] Write CMake files
-- [ ] Improve use of travis matrix
+- [x] Improve use of travis matrix
