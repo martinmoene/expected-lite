@@ -30,6 +30,7 @@
 		<Unit filename="../../LICENSE" />
 		<Unit filename="../../Notes.md" />
 		<Unit filename="../../README.md" />
+		<Unit filename="../../example/01-basic.cpp" />
 		<Unit filename="../../include/nonstd/expected.hpp" />
 		<Unit filename="../../include/nonstd/expected_cpp03.hpp" />
 		<Unit filename="../../test/CMakeLists.txt" />
