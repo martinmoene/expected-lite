@@ -76,44 +76,46 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 
 ### Interface of expected
 
-| Kind         | Method                                          | Result |
-|--------------|-------------------------------------------------|--------|
-| Construction | expected() noexcept(...)                        | an object with default value |
-| &nbsp;       | expected( expected const & other )              | initialize to contents of other |
-| &nbsp;       | expected( expected && other )                   | move contents from other |
-| &nbsp;       | expected( value_type const & value )            | initialize to value |
-| &nbsp;       | expected( value_type && value ) noexcept(...)   | move from value |
-| &nbsp;       | explicit expected( in_place_t, Args&&... args ) | construct value in-place from args |
-| &nbsp;       | explicit expected( in_place_t, std::initializer_list&lt;U> il, Args&&... args ) | construct value in-place from args |
-| &nbsp;       | expected( unexpected_type<E> const & error )            | initialize to error |
-| &nbsp;       | expected( unexpected_type<E> && error )                 | move from error |
-| &nbsp;       | explicit expected( in_place_unexpected_t, Args&&... args ) | construct error in-place from args |
-| &nbsp;       | explicit expected( in_place_unexpected_t, std::initializer_list&lt;U> il, Args&&... args )| construct error in-place from args |
-| Destruction  | ~expected()                                             | destruct current content |
-| Assignment   | expected operator=( expected const & other )            | assign contents of other; destruct current content, if any |
-| &nbsp;       | expected & operator=( expected && other ) noexcept(...) | move contents of other; |
-| &nbsp;       | expected & operator=( U && v )                          | move value from v |
-| &nbsp;       | expected & operator=( unexpected_type<E> const & u )    | initialize to unexpected |
-| &nbsp;       | expected & operator=( unexpected_type<E> && u )         | move from unexpected |
-| &nbsp;       | template< typename... Args ><br>void emplace( Args &&... args )  | emplace from args |
+| Kind         | Method                                                              | Result |
+|--------------|---------------------------------------------------------------------|--------|
+| Construction | [constexpr] expected() noexcept(...)                                | an object with default value |
+| &nbsp;       | [constexpr] expected( expected const & other )                      | initialize to contents of other |
+| &nbsp;       | [constexpr] expected( expected && other )                           | move contents from other |
+| &nbsp;       | [constexpr] expected( value_type const & value )                    | initialize to value |
+| &nbsp;       | [constexpr] expected( value_type && value ) noexcept(...)           | move from value |
+| &nbsp;       | [constexpr] explicit expected( in_place_t, Args&&... args )         | construct value in-place from args |
+| &nbsp;       | [constexpr] explicit expected( in_place_t,<br>&emsp;std::initializer_list&lt;U> il, Args&&... args ) | construct value in-place from args |
+| &nbsp;       | [constexpr] expected( unexpected_type<E> const & error )            | initialize to error |
+| &nbsp;       | [constexpr] expected( unexpected_type<E> && error )                 | move from error |
+| &nbsp;       | [constexpr] explicit expected( in_place_unexpected_t,<br>&emsp;Args&&... args ) | construct error in-place from args |
+| &nbsp;       | [constexpr] explicit expected( in_place_unexpected_t,<br>&emsp;std::initializer_list&lt;U> il, Args&&... args )| construct error in-place from args |
+| Destruction  | ~expected()                                                         | destruct current content |
+| Assignment   | expected operator=( expected const & other )                        | assign contents of other;<br>destruct current content, if any |
+| &nbsp;       | expected & operator=( expected && other ) noexcept(...)             | move contents of other |
+| &nbsp;       | expected & operator=( U && v )                                      | move value from v |
+| &nbsp;       | expected & operator=( unexpected_type<E> const & u )                | initialize to unexpected |
+| &nbsp;       | expected & operator=( unexpected_type<E> && u )                     | move from unexpected |
+| &nbsp;       | template< typename... Args ><br>void emplace( Args &&... args )     | emplace from args |
 | &nbsp;       | template< typename U, typename... Args ><br>void emplace( std::initializer_list&lt;U> il, Args &&... args )  | emplace from args |
-| Swap         | void swap( expected & other ) noexcept                  | swap with other  |
-| Observers    | constexpr value_type const * operator ->() const        | pointer to current content (const); must contain value |
-| &nbsp;       | value_type * operator ->()                              | pointer to current content (non-const); must contain value |
-| &nbsp;       | constexpr value_type const & operator *() const &       | the current content (const ref); must contain value |
-| &nbsp;       | constexpr value_type && operator *() &&                 | the current content (non-const ref); must contain value |
-| &nbsp;       | constexpr explicit operator bool() const noexcept       | true if contains value |
-| &nbsp;       | constexpr value_type const & value() const &            | current content (const ref); if no content, for std::exception_ptr rethrows error(), otherwise throws bad_expected_access(error()) |
-| &nbsp;       | value_type & value() &                                  | current content (non-const ref); if no content, for std::exception_ptr rethrows error(), otherwise throws bad_expected_access(error()) ||
-| &nbsp;       | constexpr value_type && value() &&                      | move from current content; if no content, for std::exception_ptr rethrows error(), otherwise throws bad_expected_access(error()) || |
-| &nbsp;       | constexpr error_type const & error() const &            | current error (const ref); must contain error |
-| &nbsp;       | error_type & error() &                                  | current error (non-const ref); must contain error |
-| &nbsp;       | constexpr error_type && error() &&                      | move from current error; must contain error |
-| &nbsp;       | constexpr unexpected_type<E> get_unexpected() const     | the error as unexpected&lt;>; must contain error |
-| &nbsp;       | template< typename Ex ><br>bool has_exception() const   | true of contains exception (as base) |
-| &nbsp;       | value_type value_or( U && v ) const &                   | value or move from v |
-| &nbsp;       | value_type value_or( U && v ) &&                        | move from value or move from v |
+| Swap         | void swap( expected & other ) noexcept                              | swap with other  |
+| Observers    | constexpr value_type const * operator ->() const                    | pointer to current content (const);<br>must contain value |
+| &nbsp;       | value_type * operator ->()                                          | pointer to current content (non-const);<br>must contain value |
+| &nbsp;       | constexpr value_type const & operator *() const &                   | the current content (const ref);<br>must contain value |
+| &nbsp;       | constexpr value_type && operator *() &&                             | the current content (non-const ref);<br>must contain value |
+| &nbsp;       | constexpr explicit operator bool() const noexcept                   | true if contains value |
+| &nbsp;       | constexpr value_type const & value() const &                        | current content (const ref);<br>see [note 1](#note1) |
+| &nbsp;       | value_type & value() &                                              | current content (non-const ref);<br>see [note 1](#note1) |
+| &nbsp;       | constexpr value_type && value() &&                                  | move from current content;<br>see [note 1](#note1) |
+| &nbsp;       | constexpr error_type const & error() const &                        | current error (const ref);<br>must contain error |
+| &nbsp;       | error_type & error() &                                              | current error (non-const ref);<br>must contain error |
+| &nbsp;       | constexpr error_type && error() &&                                  | move from current error;<br>must contain error |
+| &nbsp;       | constexpr unexpected_type<E> get_unexpected() const                 | the error as unexpected&lt;>;<br>must contain error |
+| &nbsp;       | template< typename Ex ><br>bool has_exception() const               | true of contains exception (as base) |
+| &nbsp;       | value_type value_or( U && v ) const &                               | value or move from v |
+| &nbsp;       | value_type value_or( U && v ) &&                                    | move from value or move from v |
 | &nbsp;       | ... | &nbsp; |
+
+<a id="note1"></a>Note 1: if no content, for std::exception_ptr rethrows error(), otherwise throws bad_expected_access(error()).
 
 ### Algorithms for expected
 
