@@ -1,7 +1,7 @@
 expected lite - expected objects for C++11 and later&ensp;[![Build Status](https://travis-ci.org/martinmoene/expected-lite.png?branch=master)](https://travis-ci.org/martinmoene/expected-lite)
 ============================================
 
-*expected lite* is a single-file header-only library for objects that either present a valid value or an error that you can pass by value. It is intended for use with C++11 and later. The library is based on the [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) proposal [1] .
+*expected lite* is a single-file header-only library for objects that either represent a valid value or an error that you can pass by value. It is intended for use with C++11 and later. The library is based on the [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) proposal [1] .
 
 **Contents**  
 - [Example usage](#example-usage)
@@ -52,7 +52,7 @@ prompt> g++ -std=c++14 -Wall -I../include/nonstd -o 01-basic.exe 01-basic.cpp &&
 
 In a nutshell
 -------------
-**expected lite** is a single-file header-only library to represent value objects that either present a valid value or an error. The library is a partly implementation of the  proposal for [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) [1,2] for use with C++11 and later.
+**expected lite** is a single-file header-only library to represent value objects that either contain a valid value or an error. The library is a partly implementation of the  proposal for [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) [1,2] for use with C++11 and later.
 
 **Some Features and properties of expected lite** are ease of installation (single header), default and explicit construction of an expected, construction and assignment from a value that is convertible to the underlying type, copy- and move-construction and copy- and move-assignment from another expected of the same type, testing for the presence of a value, operators for unchecked access to the value or the error (pointer or reference), value() and value_or() for checked access to the value, relational operators, swap() and various factory functions.  
 
