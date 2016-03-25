@@ -202,27 +202,27 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 Comparison with like types
 --------------------------
 
-|Feature               |<br>std::pair|std:: optional |std:: expected |nonstd:: expected |Boost. Expected|Nonco expected |Andrei Expected |Hagan required |
-|----------------------|-------------|---------------|---------------|------------------|---------------|---------------|----------------|---------------|
-|More information      | see [13]    | see [4]       | see [1]       | this work        | see [3]       | see [6]       | see [7]        | see [12]      |
-|                      |             |               |               |                  |               |               |                |               |
-| C++03                | yes         | no            | no            | no/not yet       | no (union)    | no            | no             | yes           |
-| C++11                | yes         | no            | no            | yes              | yes           | yes           | yes            | yes           |
-| C++14                | yes         | no            | no            | yes              | yes           | yes           | yes            | yes           |
-| C++17                | yes         | yes           | no            | yes              | yes           | yes           | yes            | yes           |
-|                      |             |               |               |                  |               |               |                |               |
-|DefaultConstructible  | T param     | yes           | yes           | yes              | no            | no            | no             | no            |
-|In-place construction | no          | yes           | yes           | yes              | yes           | yes           | no             | no            |
-|Literal type          | yes         | yes           | yes           | yes              | yes           | no            | no             | no            |
-|                      |             |               |               |                  |               |               |                |               |
-|Disengaged information| possible    | no            | yes           | yes              | yes           | yes           | yes            | no            |
-|Vary disengaged type  | yes         | no            | yes           | yes              | yes           | no            | no             | no            |
-|Engaged nonuse throws | no          | no            | no            | no               | no            | no            | no             | yes           |
-|Disengaged use throws | no          | yes, value()  | yes, value()  | yes, value()     | yes,<br>get() | yes,<br>get() | yes,<br>get()  | n/a           |
-|                      |             |               |               |                  |               |               |                |               |
-|Proxy (rel.ops)       | no          | yes           | yes           | yes              | no            | no            | no             | no            |
-|References            | no          | yes           | no/not yet    | no/not yet       | no            | yes           | no             | no            |
-|Chained visitor(s)    | no          | no            | yes           | maybe            | maybe         | no            | no             | no            |
+|Feature               |<br>std::pair|std:: optional |std:: expected |nonstd:: expected |Boost. Expected |Nonco expected |Andrei Expected |Hagan required |
+|----------------------|-------------|---------------|---------------|------------------|----------------|---------------|----------------|---------------|
+|More information      | see [13]    | see [4]       | see [1]       | this work        | see [3]        | see [6]       | see [7]        | see [12]      |
+|                      |             |               |               |                  |                |               |                |               |
+| C++03                | yes         | no            | no            | no/not yet       | no (union)     | no            | no             | yes           |
+| C++11                | yes         | no            | no            | yes              | yes            | yes           | yes            | yes           |
+| C++14                | yes         | no            | no            | yes              | yes            | yes           | yes            | yes           |
+| C++17                | yes         | yes           | no            | yes              | yes            | yes           | yes            | yes           |
+|                      |             |               |               |                  |                |               |                |               |
+|DefaultConstructible  | T param     | yes           | yes           | yes              | yes            | no            | no             | no            |
+|In-place construction | no          | yes           | yes           | yes              | yes            | yes           | no             | no            |
+|Literal type          | yes         | yes           | yes           | yes              | yes            | no            | no             | no            |
+|                      |             |               |               |                  |                |               |                |               |
+|Disengaged information| possible    | no            | yes           | yes              | yes            | yes           | yes            | no            |
+|Vary disengaged type  | yes         | no            | yes           | yes              | yes            | no            | no             | no            |
+|Engaged nonuse throws | no          | no            | no            | no               | error_traits   | no            | no             | yes           |
+|Disengaged use throws | no          | yes, value()  | yes, value()  | yes, value()     | yes,<br>value()| yes,<br>get() | yes,<br>get()  | n/a           |
+|                      |             |               |               |                  |                |               |                |               |
+|Proxy (rel.ops)       | no          | yes           | yes           | yes              | yes            | no            | no             | no            |
+|References            | no          | yes           | no/not yet    | no/not yet       | no/not yet     | yes           | no             | no            |
+|Chained visitor(s)    | no          | no            | yes           | maybe            | yes            | no            | no             | no            |
 
 Note 1: std:&#58;*experimental*:&#58;expected
 
