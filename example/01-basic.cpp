@@ -1,3 +1,5 @@
+// Convert text to number and yield expected with number or error text.
+
 #include "expected.hpp"
 
 #include <cstdlib>
