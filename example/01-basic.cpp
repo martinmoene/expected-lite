@@ -10,7 +10,7 @@ using namespace std::literals;
 auto to_int( char const * const text ) -> expected<int, std::string> 
 {
     char * pos = NULL;
-    auto const value = strtol( text, &pos, 0 );
+    auto value = strtol( text, &pos, 0 );
 
     if ( pos != text ) return value;
     else               return make_unexpected( "'"s + text + "' isn't a number" );
@@ -18,7 +18,7 @@ auto to_int( char const * const text ) -> expected<int, std::string>
 
 int main( int argc, char * argv[] )
 {
-    auto const text = argc > 1 ? argv[1] : "42";
+    auto text = argc > 1 ? argv[1] : "42";
 
     auto ei = to_int( text );
 
