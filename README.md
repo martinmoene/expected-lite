@@ -101,8 +101,8 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | Error type      | template< typename E ><br>class unexpected_type; | &nbsp; |
 | Traits          | template< typename E ><br>struct is_unexpected;    | &nbsp; |
 | In-place value construction | struct in_place_t;            | in_place_t in_place{}; |
-| In-place error construction | struct in_place_unexpected_t; | in_place_unexpected_t unexpect{}; |
-| In-place error construction | struct in_place_unexpected_t; | in_place_unexpected_t in_place_unexpected{}; |
+| In-place error construction | struct in_place_unexpected_t; | in_place_unexpected_t<br>unexpect{}; |
+| In-place error construction | struct in_place_unexpected_t; | in_place_unexpected_t<br>in_place_unexpected{}; |
 | Error reporting             | class bad_expected_access;    |&nbsp; |
 
 ### Interface of expected
