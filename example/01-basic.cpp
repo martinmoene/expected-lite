@@ -9,7 +9,7 @@ using namespace std::literals;
 
 auto to_int( char const * const text ) -> expected<int, std::string> 
 {
-    char * pos = NULL;
+    char * pos = nullptr;
     auto value = strtol( text, &pos, 0 );
 
     if ( pos != text ) return value;
