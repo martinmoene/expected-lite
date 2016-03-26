@@ -9,6 +9,6 @@ project( expected_lite )
 enable_testing()
 
 add_subdirectory( test )
-#add_subdirectory( example )
+add_subdirectory( example )
 
 # end of file

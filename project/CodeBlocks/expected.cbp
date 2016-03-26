@@ -32,6 +32,7 @@
 		<Unit filename="../../README.md" />
 		<Unit filename="../../example/01-basic.cpp" />
 		<Unit filename="../../example/02-required.cpp" />
+		<Unit filename="../../example/CMakeLists.txt" />
 		<Unit filename="../../include/nonstd/expected.hpp" />
 		<Unit filename="../../include/nonstd/expected_cpp03.hpp" />
 		<Unit filename="../../test/CMakeLists.txt" />
