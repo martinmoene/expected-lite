@@ -8,8 +8,6 @@ include_directories  ( "${PROJECT_SOURCE_DIR}/../include/nonstd" )
 
 set( SOURCES expected.t.cpp )
 
-add_executable ( expected-lite.t ${SOURCES} )
-
 add_definitions( -Dnsel_CONFIG_CONFIRMS_COMPILATION_ERRORS=0 )
 add_definitions( -Dlest_FEATURE_AUTO_REGISTER=1 )
 
@@ -26,6 +24,8 @@ if( ${CMAKE_CXX_COMPILER_ID} MATCHES MSVC )
     if( MSVC_VERSION VERSION_LESS 1900 )
         message( FATAL_ERROR "MSVC 14 (1900) or newer required" )
     endif()
+
+    add_executable ( expected-lite.t ${SOURCES} )
 
     target_compile_options( expected-lite.t PUBLIC -W3 -EHsc -wd4814 )
 
