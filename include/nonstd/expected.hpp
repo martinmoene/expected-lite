@@ -776,8 +776,8 @@ public:
     { 
     }
 
-    nsel_REQUIRES_0(
-        std::is_copy_constructible<E>::value )
+   // nsel_REQUIRES_0(
+   //     std::is_copy_constructible<E>::value )
 
     nsel_constexpr14 expected( expected const & rhs )
     : has_value( rhs.has_value )
@@ -797,8 +797,8 @@ public:
         if ( ! has_value ) contained.construct_error( std::move( rhs.contained.error() ) );
     }
 
-    nsel_REQUIRES_0(
-        std::is_default_constructible<E>::value )
+    //nsel_REQUIRES_0(
+    //    std::is_default_constructible<E>::value )
 
     constexpr explicit expected( in_place_t ) 
     : has_value( true )
