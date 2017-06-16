@@ -300,12 +300,12 @@ constexpr bool operator>=( unexpected_type<E> const & x, unexpected_type<E> cons
     return ! ( x < y );
 }
 
-inline constexpr bool operator<( unexpected_type<std::exception_ptr> const & x, unexpected_type<std::exception_ptr> const & y )
+inline constexpr bool operator<( unexpected_type<std::exception_ptr> const & /*x*/, unexpected_type<std::exception_ptr> const & /*y*/ )
 {
     return false;
 }
 
-inline constexpr bool operator>( unexpected_type<std::exception_ptr> const & x, unexpected_type<std::exception_ptr> const & y )
+inline constexpr bool operator>( unexpected_type<std::exception_ptr> const & /*x*/, unexpected_type<std::exception_ptr> const & /*y*/ )
 {
     return false;
 }
