@@ -643,7 +643,7 @@ public:
         return has_value();
     }
 
-    constexpr has_value() const noexcept
+    constexpr bool has_value() const noexcept
     {
         return has_value_;
     }
@@ -889,7 +889,7 @@ public:
         return has_value();
     }
 
-    constexpr has_value() const noexcept
+    constexpr bool has_value() const noexcept
     {
         return has_value_;
     }
