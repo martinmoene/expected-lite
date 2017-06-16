@@ -139,6 +139,7 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | &nbsp;       | constexpr value_type const & operator *() const &                   | the current content (const ref);<br>must contain value |
 | &nbsp;       | constexpr value_type && operator *() &&                             | the current content (non-const ref);<br>must contain value |
 | &nbsp;       | constexpr explicit operator bool() const noexcept                   | true if contains value |
+| &nbsp;       | constexpr has_value() const noexcept                                | true if contains value |
 | &nbsp;       | constexpr value_type const & value() const &                        | current content (const ref);<br>see [note 1](#note1) |
 | &nbsp;       | value_type & value() &                                              | current content (non-const ref);<br>see [note 1](#note1) |
 | &nbsp;       | constexpr value_type && value() &&                                  | move from current content;<br>see [note 1](#note1) |
