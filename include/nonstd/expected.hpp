@@ -866,7 +866,7 @@ public:
 
     void swap( expected & rhs ) noexcept
     (
-        std::is_nothrow_move_constructible<E>::value && noexcept( swap( std::declval<E&>(), std::declval<E&>() ) )
+        std::is_nothrow_move_constructible<E>::value && noexcept( std::swap( std::declval<E&>(), std::declval<E&>() ) )
     )
     {
         using std::swap;
