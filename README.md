@@ -268,6 +268,7 @@ Notes and references
 
 [13] [std::pair](http://en.cppreference.com/w/cpp/utility/pair). cppreference.com
 
+[14] Niall Douglas. [Outcome](https://ned14.github.io/outcome/). Very lightweight outcome&lt;T> and result&lt;T> (non-Boost edition). 
 
 Appendix
 --------
