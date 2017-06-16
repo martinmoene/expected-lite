@@ -241,7 +241,7 @@ Implementation notes
 Notes and references
 --------------------
 
-[1] Vicente J. Botet Escriba. [Dxxxxr0 - A proposal to add a utility class to represent expected monad (Revision 2)](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) (PDF). 12 March 2016.
+[1] Vicente J. Botet Escriba. [p0323 - A proposal to add a utility class to represent expected object (Revision 3)](http://wg21.link/p0323r1) (PDF). 12 October 2016. ([latest](http://wg21.link/p0323), [r3](http://wg21.link/p0323r1), [r2](http://wg21.link/p0323r0), [r1](http://wg21.link/n4109), [r0](http://wg21.link/n4015), [draft](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf)).
 
 [2] Vicente J. Botet Escriba. [Expected - An exception-friendly Error Monad](https://www.youtube.com/watch?v=Zdlt1rgYdMQ). C++Now 2014. 24 September 2014.  
 
