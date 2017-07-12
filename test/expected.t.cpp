@@ -589,6 +589,14 @@ CASE( "expected<>: Allows to observe its value via a pointer" )
     EXPECT( ei->member == value );
 }
 
+CASE( "expected<>: Allows to observe its value via a pointer to constant" )
+{
+    auto const value = 7;
+    const expected<Composite> ei{ Composite{value} };
+
+    EXPECT( ei->member == value );
+}
+
 CASE( "expected<>: Allows to modify its value via a pointer" )
 {
     auto const old_value = 3;

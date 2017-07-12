@@ -114,7 +114,7 @@ private:
         return std::move( m_value );
     }
 
-    value_type * value_ptr() const
+    value_type const * value_ptr() const
     {
         return &m_value;
     }
