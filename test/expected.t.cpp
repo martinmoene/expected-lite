@@ -579,16 +579,33 @@ CASE( "expected<>: Allows to be swapped" )
 
 // expected<> observers
 
+struct Composite { int member; };
+
 CASE( "expected<>: Allows to observe its value via a pointer" )
 {
     auto const value = 7;
-    expected<int> ei{ value };
-    
-//    EXPECT( *( ei-> ) == value );
+    expected<Composite> ei{ Composite{value} };
+
+    EXPECT( ei->member == value );
+}
+
+CASE( "expected<>: Allows to observe its value via a pointer to constant" )
+{
+    auto const value = 7;
+    const expected<Composite> ei{ Composite{value} };
+
+    EXPECT( ei->member == value );
 }
 
 CASE( "expected<>: Allows to modify its value via a pointer" )
 {
+    auto const old_value = 3;
+    auto const new_value = 7;
+    expected<Composite> ei{ Composite{old_value} };
+
+    ei->member = new_value;
+
+    EXPECT( ei->member == new_value );
 }
 
 CASE( "expected<>: Allows to observe its value via a reference" )

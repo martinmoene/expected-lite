@@ -287,7 +287,7 @@ unexpected_type<>: Allows to observe its value, std::exception_ptr specializatio
 unexpected_type<>: Allows to modify its value
 unexpected_type<>: Allows to modify its value, std::exception_ptr specialization
 unexpected_type<>: Provides relational operators
-unexpected_type<>: Supports relational operators, std::exception_ptr specialization
+unexpected_type<>: Provides relational operators, std::exception_ptr specialization
 is_unexpected<X>: Is true for unexpected_type
 is_unexpected<X>: Is false for non-unexpected_type (int)
 make_unexpected(): Allows to create an unexpected_type<E> from an E
@@ -307,13 +307,11 @@ expected<>: Allows to move-construct from unexpected_type<>
 expected<>: Allows to in-place-construct unexpected_type<>
 expected<>: Allows to copy-assign from expected<>
 expected<>: Allows to move-assign from expected<>
-expected<>: Allows to copy-assign from unexpected_type<>
-expected<>: Allows to move-assign from unexpected_type<>
 expected<>: Allows to copy-assign from type convertible to value_type
 expected<>: Allows to move-assign from type convertible to value_type
-expected<>: Allows to emplace a value_type
 expected<>: Allows to be swapped
 expected<>: Allows to observe its value via a pointer
+expected<>: Allows to observe its value via a pointer to constant
 expected<>: Allows to modify its value via a pointer
 expected<>: Allows to observe its value via a reference
 expected<>: Allows to observe its value via a r-value reference
