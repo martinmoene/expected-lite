@@ -13,6 +13,7 @@
 
 #include <cassert>
 #include <exception>
+#include <functional>
 #include <initializer_list>
 #include <new>
 #include <stdexcept>
