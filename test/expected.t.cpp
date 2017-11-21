@@ -850,6 +850,17 @@ CASE( "make_expected_from_call(): ..." "[.implement]" )
 }
 
 // -----------------------------------------------------------------------
+// expected: issues
+
+// issue #15, https://github.com/martinmoene/expected-lite/issues/15
+
+CASE( "issue #15" )
+{
+    nonstd::expected< int, std::error_code > e = 12;
+    (void)e.value();
+}
+
+// -----------------------------------------------------------------------
 //  using as optional
 
 #if 1
