@@ -1,6 +1,6 @@
 expected lite - expected objects for C++11 and later
 ====================================================
-[![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)  [![Standard](https://img.shields.io/badge/c%2B%2B-11-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/martinmoene/expected-lite.svg?branch=master)](https://travis-ci.org/martinmoene/expected-lite) [![Version](https://badge.fury.io/gh/martinmoene%2Fexpected-lite.svg)](https://github.com/martinmoene/expected-lite/releases) [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/martinmoene/expected-lite/master/include/nonstd/expected.hpp) [![Try it online](https://img.shields.io/badge/try%20it-online-blue.svg)](https://wandbox.org/permlink/SjO3IaTWkeIkUHij)
+[![Language](https://img.shields.io/badge/language-C++-blue.svg)](https://isocpp.org/)  [![Standard](https://img.shields.io/badge/c%2B%2B-11-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/martinmoene/expected-lite.svg?branch=master)](https://travis-ci.org/martinmoene/expected-lite) [![Version](https://badge.fury.io/gh/martinmoene%2Fexpected-lite.svg)](https://github.com/martinmoene/expected-lite/releases) [![download](https://img.shields.io/badge/latest%20version%20%20-download-blue.svg)](https://raw.githubusercontent.com/martinmoene/expected-lite/master/include/nonstd/expected.hpp) [![Try it online](https://img.shields.io/badge/try%20it-online-blue.svg)](https://wandbox.org/permlink/SmmMCyl9R95dUGUe)
 
 *expected lite* is a single-file header-only library for objects that either represent a valid value or an error that you can pass by value. It is intended for use with C++11 and later. The library is based on the [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) proposal [1] .
 
@@ -57,7 +57,7 @@ prompt> g++ -std=c++14 -Wall -I../include/nonstd -o 01-basic.exe 01-basic.cpp &&
 
 In a nutshell
 -------------
-**expected lite** is a single-file header-only library to represent value objects that either contain a valid value or an error. The library is a partly implementation of the  proposal for [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) [1,2] for use with C++11 and later.
+**expected lite** is a single-file header-only library to represent value objects that either contain a valid value or an error. The library is a partly implementation of the  proposal for [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) [1,2,3] for use with C++11 and later.
 
 **Some Features and properties of expected lite** are ease of installation (single header), default and explicit construction of an expected, construction and assignment from a value that is convertible to the underlying type, copy- and move-construction and copy- and move-assignment from another expected of the same type, testing for the presence of a value, operators for unchecked access to the value or the error (pointer or reference), value() and value_or() for checked access to the value, relational operators, swap() and various factory functions.  
 
@@ -206,7 +206,7 @@ Comparison with like types
 
 |Feature               |<br>std::pair|std:: optional |std:: expected |nonstd:: expected |Boost. Expected |Nonco expected |Andrei Expected |Hagan required |
 |----------------------|-------------|---------------|---------------|------------------|----------------|---------------|----------------|---------------|
-|More information      | see [13]    | see [4]       | see [1]       | this work        | see [3]        | see [6]       | see [7]        | see [12]      |
+|More information      | see [14]    | see [5]       | see [1]       | this work        | see [4]        | see [7]       | see [8]        | see [13]      |
 |                      |             |               |               |                  |                |               |                |               |
 | C++03                | yes         | no            | no            | no/not yet       | no (union)     | no            | no             | yes           |
 | C++11                | yes         | no            | no            | yes              | yes            | yes           | yes            | yes           |
@@ -244,31 +244,33 @@ Notes and references
 
 [1] Vicente J. Botet Escriba. [p0323 - A proposal to add a utility class to represent expected object (Revision 3)](http://wg21.link/p0323r1) (PDF). 12 October 2016. ([latest](http://wg21.link/p0323), [r3](http://wg21.link/p0323r1), [r2](http://wg21.link/p0323r0), [r1](http://wg21.link/n4109), [r0](http://wg21.link/n4015), [draft](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf)).
 
-[2] Vicente J. Botet Escriba. [Expected - An exception-friendly Error Monad](https://www.youtube.com/watch?v=Zdlt1rgYdMQ). C++Now 2014. 24 September 2014.  
+[2] Vicente J. Botet Escriba. [JASEL: Just a simple experimental library for C++](https://github.com/viboes/std-make). Reference implementation of [expected](https://github.com/viboes/std-make/tree/master/include/experimental/fundamental/v3/expected).
 
-[3] Pierre Talbot. [Boost.Expected. Unofficial Boost candidate](http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/trademark/25002). 5 May 2013. [GitHub](https://github.com/TrademarkPewPew/Boost.Expected), [GSoC 2013 Proposal](http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/trademark/25002), [boost@lists.boost.org](http://permalink.gmane.org/gmane.comp.lib.boost.devel/240056 ).  
+[3] Vicente J. Botet Escriba. [Expected - An exception-friendly Error Monad](https://www.youtube.com/watch?v=Zdlt1rgYdMQ). C++Now 2014. 24 September 2014.  
 
-[4] Fernando Cacciola and Andrzej Krzemieński. [A proposal to add a utility class to represent optional objects (Revision 4)](http://isocpp.org/files/papers/N3672.html). ISO/IEC JTC1 SC22 WG21 N3672 2013-04-19.  
+[4] Pierre Talbot. [Boost.Expected. Unofficial Boost candidate](http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/trademark/25002). 5 May 2013. [GitHub](https://github.com/TrademarkPewPew/Boost.Expected), [GSoC 2013 Proposal](http://www.google-melange.com/gsoc/proposal/review/google/gsoc2013/trademark/25002), [boost@lists.boost.org](http://permalink.gmane.org/gmane.comp.lib.boost.devel/240056 ).  
 
-[5] Andrzej Krzemieński, [Optional library implementation in C++11](https://github.com/akrzemi1/Optional/).  
+[5] Fernando Cacciola and Andrzej Krzemieński. [A proposal to add a utility class to represent optional objects (Revision 4)](http://isocpp.org/files/papers/N3672.html). ISO/IEC JTC1 SC22 WG21 N3672 2013-04-19.  
 
-[6] Anto Nonco. [Extending expected<T> to deal with references](http://anto-nonco.blogspot.nl/2013/03/extending-expected-to-deal-with.html). 27 May 2013.  
+[6] Andrzej Krzemieński, [Optional library implementation in C++11](https://github.com/akrzemi1/Optional/).  
 
-[7] Andrei Alexandrescu. Systematic Error Handling in C++. Prepared for The C++and Beyond Seminar 2012. [Video](http://channel9.msdn.com/Shows/Going+Deep/C-and-Beyond-2012-Andrei-Alexandrescu-Systematic-Error-Handling-in-C). [Slides](http://sdrv.ms/RXjNPR).  
+[7] Anto Nonco. [Extending expected<T> to deal with references](http://anto-nonco.blogspot.nl/2013/03/extending-expected-to-deal-with.html). 27 May 2013.  
 
-[8] Andrei Alexandrescu. [Choose your Poison: Exceptions or Error Codes? (PDF)](http://accu.org/content/conf2007/Alexandrescu-Choose_Your_Poison.pdf). ACCU Conference 2007.  
+[8] Andrei Alexandrescu. Systematic Error Handling in C++. Prepared for The C++and Beyond Seminar 2012. [Video](http://channel9.msdn.com/Shows/Going+Deep/C-and-Beyond-2012-Andrei-Alexandrescu-Systematic-Error-Handling-in-C). [Slides](http://sdrv.ms/RXjNPR).  
 
-[9] Andrei Alexandrescu. [The Power of None (PPT)](http://nwcpp.org/static/talks/2006/The_Power_of_None.ppt). Northwest C++ Users' Group. [May 17th, 2006](http://nwcpp.org/may-2006.html).  
+[9] Andrei Alexandrescu. [Choose your Poison: Exceptions or Error Codes? (PDF)](http://accu.org/content/conf2007/Alexandrescu-Choose_Your_Poison.pdf). ACCU Conference 2007.  
 
-[10] Jon Jagger. [A Return Type That Doesn't Like Being Ignored](http://accu.org/var/uploads/journals/overload53-FINAL.pdf#page=18). Overload issue 53, February 2003.  
+[10] Andrei Alexandrescu. [The Power of None (PPT)](http://nwcpp.org/static/talks/2006/The_Power_of_None.ppt). Northwest C++ Users' Group. [May 17th, 2006](http://nwcpp.org/may-2006.html).  
 
-[11] Andrei Alexandrescu. [Error Handling in C++: Are we inching towards a total solution?](http://accu.org/index.php/conferences/2002/speakers2002). ACCU Conference 2002.  
+[11] Jon Jagger. [A Return Type That Doesn't Like Being Ignored](http://accu.org/var/uploads/journals/overload53-FINAL.pdf#page=18). Overload issue 53, February 2003.  
 
-[12] Ken Hagan et al. [Exploding return codes](https://groups.google.com/d/msg/comp.lang.c++.moderated/BkZqPfoq3ys/H_PMR8Sat4oJ). comp.lang.c++.moderated. 11 February 2000.  
+[12] Andrei Alexandrescu. [Error Handling in C++: Are we inching towards a total solution?](http://accu.org/index.php/conferences/2002/speakers2002). ACCU Conference 2002.  
 
-[13] [std::pair](http://en.cppreference.com/w/cpp/utility/pair). cppreference.com
+[13] Ken Hagan et al. [Exploding return codes](https://groups.google.com/d/msg/comp.lang.c++.moderated/BkZqPfoq3ys/H_PMR8Sat4oJ). comp.lang.c++.moderated. 11 February 2000.  
 
-[14] Niall Douglas. [Outcome](https://ned14.github.io/outcome/). Very lightweight outcome&lt;T> and result&lt;T> (non-Boost edition). 
+[14] [std::pair](http://en.cppreference.com/w/cpp/utility/pair). cppreference.com
+
+[15] Niall Douglas. [Outcome](https://ned14.github.io/outcome/). Very lightweight outcome&lt;T> and result&lt;T> (non-Boost edition). 
 
 Appendix
 --------
