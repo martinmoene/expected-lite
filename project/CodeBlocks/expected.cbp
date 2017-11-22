@@ -30,6 +30,7 @@
 		<Unit filename="../../LICENSE" />
 		<Unit filename="../../Notes.md" />
 		<Unit filename="../../README.md" />
+		<Unit filename="../../appveyor.yml" />
 		<Unit filename="../../example/01-basic.cpp" />
 		<Unit filename="../../example/02-required.cpp" />
 		<Unit filename="../../example/CMakeLists.txt" />
@@ -39,6 +40,7 @@
 		<Unit filename="../../test/expected.t.cpp" />
 		<Unit filename="../../test/expected_cpp03.t.cpp" />
 		<Unit filename="../../test/lest.hpp" />
+		<Unit filename="../../test/t.bat" />
 		<Unit filename="../../test/tg-ct.bat" />
 		<Unit filename="../../test/tg.bat" />
 		<Extensions>
