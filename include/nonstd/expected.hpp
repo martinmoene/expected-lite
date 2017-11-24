@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-#define  expected_lite_VERSION "0.0.1"
+#define  expected_lite_VERSION "0.0.2"
 
 // Compiler detection:
 
@@ -634,9 +634,9 @@ public:
         if      (   bool(*this) &&   bool(rhs) ) { swap( contained.value(), rhs.contained.value() ); }
         else if ( ! bool(*this) && ! bool(rhs) ) { swap( contained.error(), rhs.contained.error() ); }
         else if (   bool(*this) && ! bool(rhs) ) { error_type t( std::move( rhs.error() ) );
-                                      // TBD - ??  rhs.contained.destruct_error();
+                                                   rhs.contained.destruct_error();
                                                    rhs.contained.construct_value( std::move( contained.value() ) );
-                                      // TBD - ??  contained.destruct_value();
+                                                   contained.destruct_value();
                                                    contained.construct_error( std::move( t ) );
                                                    swap( has_value_, rhs.has_value_ ); }
         else if ( ! bool(*this) &&   bool(rhs) ) { rhs.swap( *this ); }
