@@ -2,11 +2,13 @@
 #
 # This code is licensed under the MIT License (MIT).
 
+cmake_minimum_required( VERSION 2.8.12 )
+
 project( test )
 
 include_directories  ( "${PROJECT_SOURCE_DIR}/../include/nonstd" )
 
-set( SOURCES expected.t.cpp )
+set( SOURCES expected-lite.t.cpp expected.t.cpp )
 
 add_definitions( -Dnsel_CONFIG_CONFIRMS_COMPILATION_ERRORS=0 )
 add_definitions( -Dlest_FEATURE_AUTO_REGISTER=1 )
@@ -36,8 +38,8 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES GNU OR
 
     add_compile_options( -Wall -Wno-missing-braces )
 
-    target_compile_options( expected-lite-cpp11.t PUBLIC -std=c++11 )
-    target_compile_options( expected-lite-cpp14.t PUBLIC -std=c++14 )
+    set_property(TARGET expected-lite-cpp11.t PROPERTY CXX_STANDARD 11)
+    set_property(TARGET expected-lite-cpp14.t PROPERTY CXX_STANDARD 14)
 
     set( SINGLE_TEST_PROGRAM FALSE )
 

@@ -37,6 +37,8 @@
 		<Unit filename="../../include/nonstd/expected.hpp" />
 		<Unit filename="../../include/nonstd/expected_cpp03.hpp" />
 		<Unit filename="../../test/CMakeLists.txt" />
+		<Unit filename="../../test/expected-lite.t.cpp" />
+		<Unit filename="../../test/expected-lite.t.h" />
 		<Unit filename="../../test/expected.t.cpp" />
 		<Unit filename="../../test/expected_cpp03.t.cpp" />
 		<Unit filename="../../test/lest.hpp" />
