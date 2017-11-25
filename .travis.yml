@@ -48,4 +48,4 @@ before_install:
 script:
   - $CXX --version
   - cd test
-  - $CXX -Wall -Wextra -std=c++11 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t expected.t.cpp && ./expected.t && ./expected.t --list-tests
+  - $CXX -Wall -Wextra -std=c++11 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected-lite.t expected-lite.t.cpp expected.t.cpp && ./expected-lite.t && ./expected-lite.t --list-tests
