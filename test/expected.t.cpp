@@ -8,13 +8,7 @@
 //   A proposal to add a utility class to represent expected monad - Revision 2
 //   by Vicente J. Botet Escriba and Pierre Talbot.
 
-#include "expected.hpp"
-
-#include "lest.hpp"
-
-#define CASE( name ) lest_CASE( specification, name )
-
-static lest::tests specification;
+#include "expected-lite.t.h"
 
 using namespace nonstd;
 
@@ -91,7 +85,7 @@ std::exception_ptr make_ep()
     try
     {
         // this generates an std::out_of_range:
-        std::string().at(1); 
+        std::string().at(1);
     }
     catch(...)
     {
@@ -175,7 +169,7 @@ CASE( "unexpected_type<>: Allows to copy-construct from an exception, std::excep
     std::string text = "hello, world";
 
     unexpected_type<std::exception_ptr> u{ std::logic_error( text.c_str() ) };
-    
+
     try
     {
          std::rethrow_exception( u.value() );
@@ -198,7 +192,7 @@ CASE( "unexpected_type<>: Allows to observe its value, std::exception_ptr specia
 {
     auto const ep = make_ep();
     unexpected_type<std::exception_ptr> u{ ep };
-    
+
     EXPECT( u.value() == ep );
 }
 
@@ -206,7 +200,7 @@ CASE( "unexpected_type<>: Allows to modify its value" )
 {
     auto const error_value = 9;
     unexpected_type<int> u{ 7 };
-    
+
     u.value() = error_value;
 
     EXPECT( u.value() == error_value );
@@ -217,7 +211,7 @@ CASE( "unexpected_type<>: Allows to modify its value, std::exception_ptr special
     auto const ep1 = make_ep();
     auto const ep2 = make_ep();
     unexpected_type<std::exception_ptr> u{ ep1 };
-    
+
     u.value() = ep2;
 
     EXPECT( u.value() == ep2 );
@@ -226,14 +220,14 @@ CASE( "unexpected_type<>: Allows to modify its value, std::exception_ptr special
 //CASE( "unexpected_type<>: Allows reset via = {}" )
 //{
 //    unexpected_type<int> u( 3 );
-//    
+//
 //    u = {};
 //}
 
 //CASE( "unexpected_type<>: Allows reset via = {}, std::exception_ptr specialization" )
 //{
 //    unexpected_type<int> u( 3 );
-//    
+//
 //    u = {};
 //}
 
@@ -295,7 +289,7 @@ CASE( "make_unexpected(): Allows to create an unexpected_type<E> from an E" )
 {
     auto const error = 7;
     auto u = make_unexpected( error );
-    
+
     EXPECT( u.value() == error );
 }
 
@@ -310,7 +304,7 @@ CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_
     catch( std::exception const & )
     {
         auto u = make_unexpected_from_current_exception() ;
-        
+
         try
         {
             std::rethrow_exception( u.value() );
@@ -341,7 +335,7 @@ CASE( "bad_expected_access<>: Allows to observe its error" )
 {
     const int error = 7;
     bad_expected_access<int> bea( error );
-    
+
     EXPECT( bea.error() == error );
 }
 
@@ -350,9 +344,9 @@ CASE( "bad_expected_access<>: Allows to change its error" )
     const int old_error = 0;
     const int new_error = 7;
     bad_expected_access<int> bea( old_error );
-    
-    bea.error() = new_error;  
-    
+
+    bea.error() = new_error;
+
     EXPECT( bea.error() == new_error  );
 }
 
@@ -387,7 +381,7 @@ CASE( "expected<>: Allows to copy-construct from expected<>" )
     auto const value = 7;
     OracleVal v{ value };
     expected<Oracle> eo{ v };
-    
+
     expected<expected<Oracle>> eeo{ eo };
 
     EXPECT( eeo.value().value().s     == sCopyConstructed );
@@ -398,7 +392,7 @@ CASE( "expected<>: Allows to copy-construct from expected<>" )
 CASE( "expected<>: Allows to move-construct from expected<>" )
 {
     auto const value = 7;
-    
+
     expected<expected<Oracle>> eeo{ expected<Oracle>{ OracleVal{ value } } };
 
     EXPECT( eeo.value().value().s == sMoveConstructed );
@@ -408,7 +402,7 @@ CASE( "expected<>: Allows to move-construct from expected<>" )
 CASE( "expected<>: Allows to in-place-construct value_type" )
 {
     auto const value = 7;
-    
+
     expected<OracleVal> eo{ in_place, value };
 
     EXPECT( eo.value().s == sValueConstructed );
@@ -434,7 +428,7 @@ CASE( "expected<>: Allows to copy-construct from unexpected_type<>" )
 CASE( "expected<>: Allows to move-construct from unexpected_type<>" )
 {
     auto const value = 7;
-    
+
     expected<int, Oracle> e{ unexpected_type<Oracle>{ OracleVal{ value } } };
 
     EXPECT( e.error().s == sMoveConstructed );
@@ -450,9 +444,9 @@ CASE( "expected<>: Allows to in-place-construct unexpected_type<>" )
     EXPECT( em.error().s == sMoveConstructed );
     EXPECT( em.error().val.i == value );
 
-    // Note: ov is moved-from: 
+    // Note: ov is moved-from:
     OracleVal const ov{ value };
-    
+
     expected<int, Oracle> ec{ unexpect, ov };
 
     EXPECT( ec.error().s == sMoveConstructed );
@@ -558,9 +552,9 @@ CASE( "expected<>: Allows to be swapped" )
 
     EXPECT( el.value().val == vl );
     EXPECT( er.value().val == vr );
-            
+
     }{
-        
+
     expected<int, Oracle> el{ unexpect, vl };
     expected<int, Oracle> er{ unexpect, vr };
 
@@ -573,7 +567,7 @@ CASE( "expected<>: Allows to be swapped" )
     swap( el, er );
 
     EXPECT( el.error().val == vl );
-    EXPECT( er.error().val == vr );       
+    EXPECT( er.error().val == vr );
     }
 }
 
@@ -612,14 +606,14 @@ CASE( "expected<>: Allows to observe its value via a reference" )
 {
     auto const value = 7;
     expected<int> const ei{ value };
-    
+
     EXPECT( *ei == value );
 }
 
 CASE( "expected<>: Allows to observe its value via a r-value reference" )
 {
     auto const value = 7;
-    
+
     EXPECT( expected<int>{ value } == value );
 }
 
@@ -628,20 +622,20 @@ CASE( "expected<>: Allows to modify its value via a reference" )
     auto const old_value = 3;
     auto const new_value = 7;
     expected<int> ei{ old_value };
-    
+
     *ei = new_value;
-    
+
     EXPECT( *ei == new_value );
 }
 
 CASE( "expected<>: Allows to observe if it contains a value (or error)" )
 {
     expected<int> ei;
-    
+
     EXPECT( ei );
 
     expected<int, int> ee{ unexpect, 3 };
-    
+
     EXPECT( !ee );
 }
 
@@ -649,7 +643,7 @@ CASE( "expected<>: Allows to observe its value" )
 {
     auto const value = 7;
     expected<int> const ei{ value };
-    
+
     EXPECT( ei.value() == value );
 }
 
@@ -658,9 +652,9 @@ CASE( "expected<>: Allows to modify its value" )
     auto const old_value = 3;
     auto const new_value = 7;
     expected<int> ei{ old_value };
-    
+
     ei.value() = new_value;
-    
+
     EXPECT( ei.value() == new_value );
 }
 
@@ -668,9 +662,9 @@ CASE( "expected<>: Allows to move its value" )
 {
     auto const value = 7;
     expected<Oracle> m{ OracleVal{ value } };
-    
+
     expected<Oracle> e{ std::move( m.value() ) };
-    
+
     EXPECT( m.value().s == sMovedFrom );
     EXPECT( e.value().val.i == value );
 }
@@ -679,7 +673,7 @@ CASE( "expected<>: Allows to observe its error" )
 {
     auto const value = 7;
     expected<int, int> const ee{ unexpect, value };
-    
+
     EXPECT( ee.error() == value );
 }
 
@@ -688,9 +682,9 @@ CASE( "expected<>: Allows to modify its error" )
     auto const old_value = 3;
     auto const new_value = 7;
     expected<int, int> ee{ unexpect, old_value };
-    
+
     ee.error() = new_value;
-    
+
     EXPECT( ee.error() == new_value );
 }
 
@@ -698,9 +692,9 @@ CASE( "expected<>: Allows to move its error" )
 {
     auto const value = 7;
     expected<int, Oracle> m{ unexpect, OracleVal{ value } };
-    
+
     expected<int, Oracle> e{ unexpect, std::move( m.error() ) };
-    
+
     EXPECT( m.error().s == sMovedFrom );
     EXPECT( e.error().val.i == value );
 }
@@ -709,14 +703,14 @@ CASE( "expected<>: Allows to observe its error as unexpected<>" )
 {
     auto const value = 7;
     expected<int, int> e{ unexpect, value };
-    
+
     EXPECT( e.get_unexpected().value() == value );
 }
 
 CASE( "expected<>: Allows to query if it contains an exception of a specific base type" "[.failing]" )
 {
     expected<int> e{ unexpect, make_ep() };
-    
+
     EXPECT( e.has_exception< std::out_of_range >() );
 }
 
@@ -726,7 +720,7 @@ CASE( "expected<>: Allows to observe its value if available, or obtain a specifi
     auto const u_value = 7;
     expected<int, int> e{ e_value };
     expected<int, int> u{ unexpect, 0 };
-    
+
     EXPECT( e.value_or( u_value ) == e_value );
     EXPECT( u.value_or( u_value ) == u_value );
 }
@@ -739,7 +733,7 @@ CASE( "expected<>: Allows to move its value if available, or obtain a specified 
     EXPECT( m.value().s == sCopyConstructed );
 
     expected<Oracle> e{ std::move( m ).value_or( std::forward<Oracle>( uv ) ) };
-    
+
     EXPECT( e.value().val == ov.val );
     EXPECT( m.value().s == sMovedFrom );
     EXPECT( e.value().s == sMoveConstructed );
@@ -877,22 +871,3 @@ template< typename T >
 using optional = expected<T, nullopt_t>;
 
 #endif
-
-// -----------------------------------------------------------------------
-// test driver:
-
-int main( int argc, char * argv[] )
-{
-    return lest::run( specification, argc, argv );
-}
-
-#if 0
-cl -nologo -W3   -wd4814 -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expected.t.cpp && expected.t --pass
-cl -nologo -Wall -wd4814 -EHsc -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd expected.t.cpp && expected.t --pass
-
-g++ -Wall -Wextra -std=c++03 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
-g++ -Wall -Wextra -std=c++11 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
-g++ -Wall -Wextra -std=c++14 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
-g++ -Wall -Wextra -std=c++1y -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected.t.exe expected.t.cpp && expected.t --pass
-
-#endif // 0
