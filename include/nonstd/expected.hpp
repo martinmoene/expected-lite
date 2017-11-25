@@ -27,6 +27,7 @@
 
 #define nsel_CPP11_OR_GREATER  ( __cplusplus >= 201103L )
 #define nsel_CPP14_OR_GREATER  ( __cplusplus >= 201402L )
+#define nsel_CPP17_OR_GREATER  ( __cplusplus >= 201703L )
 
 #if nsel_CPP14_OR_GREATER
 # define nsel_constexpr14 constexpr
@@ -301,6 +302,8 @@ constexpr bool operator>=( unexpected_type<E> const & x, unexpected_type<E> cons
 {
     return ! ( x < y );
 }
+
+// unexpected: relational operators for std::exception_ptr:
 
 inline constexpr bool operator<( unexpected_type<std::exception_ptr> const & /*x*/, unexpected_type<std::exception_ptr> const & /*y*/ )
 {
