@@ -1278,6 +1278,188 @@ struct hash< nonstd::expected<void,E> >
 
 } // namespace std
 
+///
+/// D0786: ValuedOrError and ValueOrNone types
+///
+
+#if nsel_CONFIG_EXPERIMENTAL_D0786_VALUE_OR_ERROR
+
+namespace nonstd {
+namespace value_or_error {
+
+template< typename T, typename E >
+bool succeeded( expected<T,E> && x ) noexcept
+{
+    return x.has_value();
+}
+
+template< typename T, typename E >
+bool failed( expected<T,E> && x ) noexcept
+{
+    using X = expected<T,E>;
+    return !succeeded( std::forward<X>( x ) );
+}
+
+template< typename T, typename E >
+bool has_value( expected<T,E> && x ) noexcept
+{
+    using X = expected<T,E>;
+    return succeeded( std::forward<X>( x ) );
+}
+
+template< typename T, typename E >
+bool has_error( expected<T,E> && x ) noexcept
+{
+    using X = expected<T,E>;
+    return failed( std::forward<X>( x ) );
+}
+
+template< typename T, typename E >
+auto success_value( expected<T,E> && x ) -> T
+{
+    return *x;
+}
+
+template< typename T, typename E >
+auto failure_value( expected<T,E> && x ) -> unexpected_type< typename expected<T,E>::error_type >
+{
+    return x.get_unexpected();
+}
+
+template< typename T, typename E >
+auto deref( expected<T,E> && x ) -> T
+{
+    return *x;
+}
+
+template< typename T, typename E >
+auto error( expected<T,E> && x ) -> E
+{
+    return x.error();
+}
+
+// to be shared among types (C++11):
+
+#if   ! nonstd_lite_HAVE_VALUE_OR_ERROR_TYPES
+#define nonstd_lite_HAVE_VALUE_OR_ERROR_TYPES  1
+
+template< typename T > struct success_type  { using type = typename std::remove_reference< decltype( value_or_error::success_value( std::declval<T>() ) )>::type; };
+template< typename T > struct failure_type  { using type = typename std::remove_reference< decltype( value_or_error::failure_value( std::declval<T>() ) )>::type; };
+
+template< typename T > struct value_type    { using type = typename std::remove_reference< decltype( value_or_error::deref( std::declval<T>() ) )>::type; };
+template< typename T > struct error_type    { using type = typename std::remove_reference< decltype( value_or_error::error( std::declval<T>() ) )>::type; };
+
+template< typename T > using success_type_t = typename success_type<T>::type;
+template< typename T > using failure_type_t = typename failure_type<T>::type;
+
+template< typename T > using value_type_t   = typename value_type<T>::type;
+template< typename T > using error_type_t   = typename error_type<T>::type;
+
+#endif // nonstd_lite_HAVE_VALUE_OR_ERROR_TYPES
+
+#if 0
+// when type constructible, is a functor
+template< typename T, typename E, typename F >
+constexpr auto transform( expected<T,E> x, F f ) -> std::result_of< F(T) >::type;
+
+// when type constructible, is an applicative
+template< typename F, typename T, typename E >
+constexpr auto ap( F f, expected<T,E> x );
+
+// when type constructible, is a monad
+template< typename T, typename E, typename F >
+constexpr auto bind( expected<T,E> x, F f ) -> std::result_of< F(T) >::type;
+
+// when type constructible, is a monad_error
+template< typename T, typename E, typename F >
+constexpr auto catch_error( expected<T,E> x, F f );
+
+template< typename T, typename ...Xs  >
+constexpr auto make_error( Xs&&...xs );
+
+// sum_type::visit
+template< typename T, typename E, typename F >
+constexpr auto visit( expected<T,E> x, F f );
+#endif // 0
+
+// helper functions:
+
+template< typename T, typename E, typename U >
+T value_or( expected<T,E> x, U v )
+{
+    using X = expected<T,E>;
+    using namespace value_or_error;
+
+    if ( has_value( std::forward<X>( x ) ) )
+    {
+        return success_value( std::move( x ) );
+    }
+    return v;
+}
+
+template< typename T, typename E, typename R >
+R error_or( expected<T,E> x, R err)
+{
+    using X = expected<T,E>;
+    using namespace value_or_error;
+
+    if ( has_error( std::forward<X>( x ) ) )
+    {
+        return error( std::move( x ) );
+    }
+    return std::forward<R>( err );
+}
+
+template< typename T, typename E, typename R >
+bool check_error( expected<T,E> x, R err )
+{
+    using X = expected<T,E>;
+    using namespace value_or_error;
+
+    if ( has_value( std::forward<X>( x ) ) )
+    {
+        return false;
+    }
+    return error( std::forward<X>( x ) ) == std::forward<R>( err );
+}
+
+template< typename Exception, typename T, typename E >
+T value_or_throw( expected<T,E> x )
+{
+    using X = expected<T,E>;
+    using namespace value_or_error;
+
+    if ( succeeded( std::forward<X>( x ) ) )
+    {
+        return success_value( std::move( x ) );
+    }
+
+    throw Exception{ error( std::forward<X>( x ) ) };
+}
+
+#if nsel_CPP17_OR_GREATER
+
+template< typename T, typename E, typename F >
+T resolve( expected<T,E> x, F f )
+{
+    using X = expected<T,E>;
+    using namespace value_or_error;
+
+    if ( succeeded( std::forward<X>( x ) ) )
+    {
+        return success_value( std::move( x ) );
+    }
+
+    return std::invoke( std::forward<F>( f ), failure_value( std::move( x ) ) );
+}
+
+#endif // nsel_CPP17_OR_GREATER
+
+} // namespace value_or_error
+} // namespace nonstd
+
+#endif // nsel_CONFIG_EXPERIMENTAL_D0786_VALUE_OR_ERROR
+
 #undef nsel_REQUIRES
 #undef nsel_REQUIRES_0
 #undef nsel_REQUIRES_T

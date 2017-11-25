@@ -871,3 +871,75 @@ template< typename T >
 using optional = expected<T, nullopt_t>;
 
 #endif
+
+// -----------------------------------------------------------------------
+// D0786: ValuedOrError and ValueOrNone types
+
+#if nsel_CONFIG_EXPERIMENTAL_D0786_VALUE_OR_ERROR
+
+using namespace nonstd::value_or_error;
+
+CASE( "D0786: value_or(): Allows to observe an expected value if available and obtain a specified value otherwise" )
+{
+    auto const e_value = 3;
+    auto const u_value = 7;
+    expected<int, int> e{ e_value };
+    expected<int, int> u{ unexpect, 0 };
+
+    EXPECT( value_or( e, u_value ) == e_value );
+    EXPECT( value_or( u, u_value ) == u_value );
+}
+
+CASE( "D0786: error_or(): Allows to observe an expected error value if available and obtain a specified error value otherwise" )
+{
+    auto const e_value = 3;
+    auto const u_value = 5;
+    auto const v_value = 7;
+    expected<int, int> e{ e_value };
+    expected<int, int> u{ unexpect, u_value };
+    expected<int, int> v{ unexpect, v_value };
+
+    EXPECT( error_or( e, v_value ) == v_value );
+    EXPECT( error_or( u, v_value ) == u_value );
+}
+
+CASE( "D0786: check_error(): Allows to determine if expected contains a specific error value" )
+{
+    auto const e_value = 3;
+    auto const u_value = 7;
+    expected<int, int> e{ e_value };
+    expected<int, int> u{ unexpect, u_value };
+
+    EXPECT_NOT( check_error( e, u_value ) );
+    EXPECT(     check_error( u, u_value ) );
+}
+
+CASE( "D0786: value_or_throw(): to observe an expected value if available and throw an exception of specified type otherwise" )
+{
+    auto const e_value = "3";
+    expected<std::string, std::runtime_error> e{ e_value };
+    expected<std::string, std::runtime_error> u{ unexpect, std::runtime_error("error") };
+
+    EXPECT_NO_THROW(  value_or_throw<std::runtime_error>( e )            );
+    EXPECT(           value_or_throw<std::runtime_error>( e ) == e_value );
+
+    EXPECT_THROWS(    value_or_throw<std::runtime_error>( u )                     );
+    EXPECT_THROWS_AS( value_or_throw<std::runtime_error>( u ), std::runtime_error );
+}
+
+CASE( "D0786: resolve(): Allows to process the error value via a call-back (C++17)" )
+{
+#if nsel_CPP17_OR_GREATER
+    auto const e_value = 3;
+    auto const u_value = 7;
+    expected<int, int> e{ e_value };
+    expected<int, int> u{ unexpect, u_value };
+
+    EXPECT(  resolve( e, []( auto && failure ) { return 2 * u_value; } ) ==     e_value );
+    EXPECT(  resolve( u, []( auto && failure ) { return 2 * u_value; } ) == 2 * u_value );
+#else
+    EXPECT( !!"resolve() is not available (no C++17, std::invoke())" );
+#endif
+}
+
+#endif // nsel_CONFIG_EXPERIMENTAL_D0786_VALUE_OR_ERROR

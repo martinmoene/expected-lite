@@ -28,8 +28,6 @@ CASE( "expected-lite version" "[.version]" )
     expected_PRESENT( expected_lite_VERSION );
 }
 
-#if 0
-
 CASE( "compiler version" "[.compiler]" )
 {
 #if expected_COMPILER_GNUC_VERSION
@@ -182,8 +180,6 @@ CASE( "presence of C++ library features" "[.stdlibrary]" )
     expected_ABSENT(  _HAS_CPP0X );
 #endif
 }
-
-#endif // 0
 
 int main( int argc, char * argv[] )
 {
