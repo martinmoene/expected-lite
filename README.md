@@ -14,6 +14,7 @@ expected lite - expected objects for C++11 and later
 - [Comparison with like types](#comparison)
 - [Reported to work with](#reported-to-work-with)
 - [Implementation notes](#implementation-notes)
+- [Other implementations of expected](#other-implementations-of-expected)
 - [Notes and references](#notes-and-references)
 - [Appendix](#appendix)
 
@@ -237,6 +238,12 @@ Reported to work with
 
 Implementation notes
 --------------------
+
+
+Other implementations of expected
+---------------------------------
+- Isabella Muerte. [MNMLSTC Core](https://github.com/mnmlstc/core) (C++11).
+- Simon Brand. [C++11/14/17 std::expected with functional-style extensions](https://github.com/TartanLlama/expected).
 
 
 Notes and references
