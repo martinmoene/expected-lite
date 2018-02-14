@@ -79,7 +79,7 @@ private:
 
     void construct_value( value_type && v )
     {
-        new( &m_value ) value_type( std::forward<T>( v ) );
+        new( &m_value ) value_type( std::move( v ) );
     }
 
     void destruct_value()
