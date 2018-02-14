@@ -1,10 +1,10 @@
-// Copyright 2013, 2014, 2015, 2016 by Martin Moene
+// Copyright 2013-2018 by Martin Moene
 //
 // lest is based on ideas by Kevlin Henney, see video at
 // http://skillsmatter.com/podcast/agile-testing/kevlin-henney-rethinking-unit-testing-in-c-plus-plus
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+// file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef LEST_LEST_HPP_INCLUDED
 #define LEST_LEST_HPP_INCLUDED
@@ -40,26 +40,40 @@
 # pragma GCC   diagnostic ignored "-Wunused-value"
 #endif
 
-#define  lest_VERSION "1.26.0"
+#define  lest_VERSION "1.32.0"
 
 #ifndef  lest_FEATURE_AUTO_REGISTER
 # define lest_FEATURE_AUTO_REGISTER  0
 #endif
 
 #ifndef  lest_FEATURE_COLOURISE
-# define lest_FEATURE_COLOURISE 0
+# define lest_FEATURE_COLOURISE  0
 #endif
 
 #ifndef  lest_FEATURE_LITERAL_SUFFIX
-# define lest_FEATURE_LITERAL_SUFFIX 0
+# define lest_FEATURE_LITERAL_SUFFIX  0
 #endif
 
 #ifndef  lest_FEATURE_REGEX_SEARCH
-# define lest_FEATURE_REGEX_SEARCH 0
+# define lest_FEATURE_REGEX_SEARCH  0
 #endif
 
 #ifndef lest_FEATURE_TIME_PRECISION
 #define lest_FEATURE_TIME_PRECISION  0
+#endif
+
+#ifndef lest_FEATURE_WSTRING
+#define lest_FEATURE_WSTRING  1
+#endif
+
+#ifdef lest_FEATURE_RTTI
+# define lest__cpp_rtti  lest_FEATURE_RTTI
+#elif defined(__cpp_rtti)
+# define lest__cpp_rtti  __cpp_rtti
+#elif defined(__GXX_RTTI) || defined (_CPPRTTI)
+# define lest__cpp_rtti  1
+#else
+# define lest__cpp_rtti  0
 #endif
 
 #if lest_FEATURE_REGEX_SEARCH
@@ -71,7 +85,7 @@
 
 # if ! lest_FEATURE_AUTO_REGISTER
 #  define CASE             lest_CASE
-#  define TEST             lest_TEST
+#  define SCENARIO         lest_SCENARIO
 # endif
 
 # define SETUP             lest_SETUP
@@ -83,7 +97,6 @@
 # define EXPECT_THROWS     lest_EXPECT_THROWS
 # define EXPECT_THROWS_AS  lest_EXPECT_THROWS_AS
 
-# define SCENARIO          lest_SCENARIO
 # define GIVEN             lest_GIVEN
 # define WHEN              lest_WHEN
 # define THEN              lest_THEN
@@ -91,22 +104,23 @@
 # define AND_THEN          lest_AND_THEN
 #endif
 
+#if lest_FEATURE_AUTO_REGISTER
+#define lest_SCENARIO( specification, sketch )  lest_CASE( specification, lest::text("Scenario: ") + sketch  )
+#else
 #define lest_SCENARIO( sketch  )  lest_CASE(    lest::text("Scenario: ") + sketch  )
+#endif
 #define lest_GIVEN(    context )  lest_SETUP(   lest::text(   "Given: ") + context )
 #define lest_WHEN(     story   )  lest_SECTION( lest::text(   " When: ") + story   )
 #define lest_THEN(     story   )  lest_SECTION( lest::text(   " Then: ") + story   )
 #define lest_AND_WHEN( story   )  lest_SECTION( lest::text(   "  And: ") + story   )
 #define lest_AND_THEN( story   )  lest_SECTION( lest::text(   "  And: ") + story   )
 
-#define lest_TEST \
-    lest_CASE
-
 #if lest_FEATURE_AUTO_REGISTER
 
 # define lest_CASE( specification, proposition ) \
-    void lest_FUNCTION( lest::env & ); \
+    static void lest_FUNCTION( lest::env & ); \
     namespace { lest::add_test lest_REGISTRAR( specification, lest::test( proposition, lest_FUNCTION ) ); } \
-    void lest_FUNCTION( lest::env & lest_env )
+    static void lest_FUNCTION( lest::env & lest_env )
 
 #else // lest_FEATURE_AUTO_REGISTER
 
@@ -267,6 +281,10 @@ struct result
 {
     const bool passed;
     const text decomposition;
+    
+    template< typename T >
+    result( T const & passed, text decomposition )
+    : passed( !!passed ), decomposition( decomposition ) {}
 
     explicit operator bool() { return ! passed; }
 };
@@ -396,6 +414,11 @@ public:
     friend bool operator != ( double lhs, approx const & rhs ) { return !operator==( lhs, rhs ); }
     friend bool operator != ( approx const & lhs, double rhs ) { return !operator==( rhs, lhs ); }
 
+    friend bool operator <= ( double lhs, approx const & rhs ) { return lhs < rhs.magnitude_ || lhs == rhs; }
+    friend bool operator <= ( approx const & lhs, double rhs ) { return lhs.magnitude_ < rhs || lhs == rhs; }
+    friend bool operator >= ( double lhs, approx const & rhs ) { return lhs > rhs.magnitude_ || lhs == rhs; }
+    friend bool operator >= ( approx const & lhs, double rhs ) { return lhs.magnitude_ > rhs || lhs == rhs; }
+
 private:
     double epsilon_;
     double scale_;
@@ -456,12 +479,16 @@ inline char const * sfx( char const  *      ) { return ""; }
 
 inline std::string to_string( std::nullptr_t               ) { return "nullptr"; }
 inline std::string to_string( std::string     const & text ) { return "\"" + text + "\"" ; }
+#if lest_FEATURE_WSTRING
 inline std::string to_string( std::wstring    const & text ) ;
+#endif
 
 inline std::string to_string( char    const * const   text ) { return text ? to_string( std::string ( text ) ) : "{null string}"; }
 inline std::string to_string( char          * const   text ) { return text ? to_string( std::string ( text ) ) : "{null string}"; }
+#if lest_FEATURE_WSTRING
 inline std::string to_string( wchar_t const * const   text ) { return text ? to_string( std::wstring( text ) ) : "{null string}"; }
 inline std::string to_string( wchar_t       * const   text ) { return text ? to_string( std::wstring( text ) ) : "{null string}"; }
+#endif
 
 inline std::string to_string(          char           text ) { return "\'" + std::string( 1, text ) + "\'" ; }
 inline std::string to_string(   signed char           text ) { return "\'" + std::string( 1, text ) + "\'" ; }
@@ -533,7 +560,11 @@ using ForNonContainer = typename std::enable_if< ! is_container<T>::value, R>::t
 template<typename T>
 auto make_enum_string( T const & ) -> ForNonEnum<T, std::string>
 {
+#if lest__cpp_rtti
     return text("[type: ") + typeid(T).name() + "]";
+#else
+    return text("[type: (no RTTI)]");
+#endif
 }
 
 template<typename T>
@@ -618,6 +649,7 @@ auto to_string( C const & cont ) -> ForContainer<C, std::string>
     return os.str();
 }
 
+#if lest_FEATURE_WSTRING
 inline
 auto to_string( std::wstring const & text ) -> std::string
 {
@@ -629,6 +661,7 @@ auto to_string( std::wstring const & text ) -> std::string
     }
     return to_string( result );
 }
+#endif
 
 template<typename T>
 auto make_value_string( T const & value ) -> std::string
@@ -890,8 +923,10 @@ struct action
 {
     std::ostream & os;
 
-    action( action const &    ) = delete;
     action( std::ostream & os ) : os( os ) {}
+
+    action( action const & ) = delete;
+    void operator=( action const & ) = delete;
 
     operator      int() { return 0; }
     bool        abort() { return false; }
@@ -1087,7 +1122,7 @@ inline void shuffle( tests & specification, options option )
 
 inline int stoi( text num )
 {
-    return std::strtol( num.c_str(), NULL, 10 );
+    return static_cast<int>( std::strtol( num.c_str(), nullptr, 10 ) );
 }
 
 inline bool is_number( text arg )
@@ -1098,7 +1133,7 @@ inline bool is_number( text arg )
 inline seed_t seed( text opt, text arg )
 {
     if ( is_number( arg ) )
-        return lest::stoi( arg );
+        return static_cast<seed_t>( lest::stoi( arg ) );
 
     if ( arg == "time" )
         return static_cast<seed_t>( std::chrono::high_resolution_clock::now().time_since_epoch().count() );
