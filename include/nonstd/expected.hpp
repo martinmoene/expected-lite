@@ -21,7 +21,7 @@
 #include <type_traits>
 #include <utility>
 
-#define  expected_lite_VERSION "0.0.2"
+#define  expected_lite_VERSION "0.0.3"
 
 // Compiler detection:
 
@@ -112,7 +112,7 @@ private:
         return m_value;
     }
 
-    constexpr value_type && value() &&
+    constexpr value_type && value() const &&
     {
         return std::move( m_value );
     }
@@ -667,7 +667,7 @@ public:
         return assert( has_value() ), contained.value();
     }
 
-    constexpr value_type && operator *() &&
+    constexpr value_type && operator *() const &&
     {
         return assert( has_value() ), std::move( contained.value() );
     }
@@ -696,7 +696,7 @@ public:
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
 
-    constexpr value_type && value() &&
+    constexpr value_type && value() const &&
     {
         return has_value()
             ? ( contained.value() )
@@ -713,7 +713,7 @@ public:
         return assert( ! has_value() ), contained.error();
     }
 
-    constexpr error_type && error() &&
+    constexpr error_type && error() const &&
     {
         return assert( ! has_value() ), std::move( contained.error() );
     }
@@ -935,7 +935,7 @@ public:
         return assert( ! has_value() ), contained.error();
     }
 
-    constexpr error_type && error() &&
+    constexpr error_type && error() const &&
     {
         return assert( ! has_value() ), std::move( contained.error() );
     }
