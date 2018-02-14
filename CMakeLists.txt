@@ -1,8 +1,8 @@
-# Copyright (C) 2016 Martin Moene.
+# Copyright 2016-2018 by Martin Moene
 #
 # This code is licensed under the MIT License (MIT).
 
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.0 )
 
 project( expected_lite )
 

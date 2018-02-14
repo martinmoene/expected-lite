@@ -1,51 +1,106 @@
+dist: trusty
 sudo: false
-dist: precise
-language: cpp
+group: travis_latest
+language: c++
+cache: ccache
+
+env:
+  global:
+  - COMPILER=g++
+
+addons:
+  apt:
+    sources: &apt_sources
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.5
+      - llvm-toolchain-precise-3.6
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise-3.8
+      - llvm-toolchain-trusty-3.9
+      - llvm-toolchain-trusty-4.0
+      - llvm-toolchain-trusty-5.0
+
+compiler: clang
+os: linux
 
 matrix:
+  fast_finish: true
   include:
-    - compiler: gcc
-      addons:
+    - env: COMPILER=g++-5
+      compiler: gcc
+      addons: &gcc5
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-      env: COMPILER=g++-4.9
+          packages: ["g++-5", "python3-pip", "lcov"]
+          sources: *apt_sources
 
-    - compiler: gcc
-      addons:
+    - env: COMPILER=g++-6
+      compiler: gcc
+      addons: &gcc6
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-      env: COMPILER=g++-5
+          packages: ["g++-6", "python3-pip", "lcov"]
+          sources: *apt_sources
 
-    - compiler: clang
-      addons:
+    - env: COMPILER=g++-7
+      compiler: gcc
+      addons: &gcc7
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - clang-3.6
-      env: COMPILER=clang++-3.6
+          packages: ["g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
 
-    - compiler: clang
-      addons:
+    - env: COMPILER=clang++-3.5
+      compiler: clang
+      addons: &clang35
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.7
-      env: COMPILER=clang++-3.7
+          packages: ["clang-3.5", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
 
-before_install:
-  - export CXX=${COMPILER}
+    - env: COMPILER=clang++-3.6
+      compiler: clang
+      addons: &clang36
+        apt:
+          packages: ["clang-3.6", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
+
+    - env: COMPILER=clang++-3.7
+      compiler: clang
+      addons: &clang37
+        apt:
+          packages: ["clang-3.7", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
+
+    - env: COMPILER=clang++-3.8
+      compiler: clang
+      addons: &clang38
+        apt:
+          packages: ["clang-3.8", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
+
+    - env: COMPILER=clang++-3.9
+      compiler: clang
+      addons: &clang39
+        apt:
+          packages: ["clang-3.9", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
+
+    - env: COMPILER=clang++-4.0
+      compiler: clang
+      addons: &clang40
+        apt:
+          packages: ["clang-4.0", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
+
+    - env: COMPILER=clang++-5.0
+      compiler: clang
+      addons: &clang50
+        apt:
+          packages: ["clang-5.0", "g++-7", "python3-pip", "lcov"]
+          sources: *apt_sources
+
+#  allow_failures:
+#    - env: COMPILER=clang++-3.5
+#      compiler: clang
 
 script:
-  - $CXX --version
-  - cd test
-  - $CXX -Wall -Wextra -std=c++11 -Wno-unused-parameter -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd -o expected-lite.t expected-lite.t.cpp expected.t.cpp && ./expected-lite.t && ./expected-lite.t --list-tests
+  - export CXX=$COMPILER
+  - mkdir build && cd build
+  - cmake -G "Unix Makefiles" .. && cmake --build . && ctest
