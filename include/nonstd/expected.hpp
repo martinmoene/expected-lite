@@ -23,6 +23,10 @@
 
 #define  expected_lite_VERSION "0.0.3"
 
+#ifndef  nsel_P0323R
+# define nsel_P0323R  5
+#endif
+
 // Compiler detection (C++20 is speculative):
 // Note: MSVC supports C++14 since it supports C++17.
 
@@ -233,38 +237,73 @@ private:
 
 } // namespace expected_detail
 
-/// class unexpected_type
+/// class unexpected_type; C++17 and later can also use aliased type unexpected.
 
+#if nsel_P0323R <= 2
 template< typename E = std::exception_ptr >
 class unexpected_type
+#else
+template< typename E >
+class unexpected_type
+#endif // nsel_P0323R
 {
 public:
     typedef E error_type;
 
     unexpected_type() = delete;
+    constexpr unexpected_type( unexpected_type const &) = default;
+    constexpr unexpected_type( unexpected_type &&) = default;
+    nsel_constexpr14 unexpected_type& operator=( unexpected_type const &) = default;
+    nsel_constexpr14 unexpected_type& operator=( unexpected_type &&) = default;
 
-    nsel_REQUIRES_0(
-        std::is_copy_constructible<error_type>::value )
-
-    constexpr explicit unexpected_type( error_type const & error )
+    template< typename E2 >
+    constexpr explicit unexpected_type( E2 && error
+        , nsel_REQUIRES( std::is_constructible<E,E2&&>::value ) )
+    : m_error( std::forward<E2>( error ) )
+    {}
+    
+    template< typename E2 >
+    constexpr explicit unexpected_type( unexpected_type<E2> const & error
+        , nsel_REQUIRES( std::is_constructible<E,E2 const &>::value && !std::is_convertible<E2 const &, E>::value ) )
     : m_error( error )
     {}
 
-    nsel_REQUIRES_0(
-        std::is_move_constructible<error_type>::value )
-
-    constexpr explicit unexpected_type( error_type && error )
-    : m_error( std::move( error ) )
+    template< typename E2 >
+    constexpr /*non-explicit*/ unexpected_type( unexpected_type<E2> const & error
+        , nsel_REQUIRES( std::is_constructible<E,E2 const &>::value && std::is_convertible<E2 const &, E>::value ) )
+    : m_error( error )
     {}
 
-    constexpr error_type const & value() const
+    template< typename E2 >
+    constexpr explicit unexpected_type( unexpected_type<E2> && error
+        , nsel_REQUIRES( std::is_constructible<E,E2&&>::value && !std::is_convertible<E2&&, E>::value ) )
+    : m_error( error )
+    {}
+
+    template< typename E2 >
+    constexpr /*non-explicit*/ unexpected_type( unexpected_type<E2> && error
+        , nsel_REQUIRES( std::is_constructible<E,E2&&>::value && std::is_convertible<E2&&, E>::value ) )
+    : m_error( error )
+    {}
+
+    constexpr E const & value() const & noexcept
     {
         return m_error;
     }
 
-    error_type & value()
+    constexpr E & value() & noexcept
     {
         return m_error;
+    }
+
+    constexpr E const && value() const && noexcept
+    {
+        return std::move( m_error );
+    }
+
+    constexpr E && value() && noexcept
+    {
+        return std::move( m_error );
     }
 
 private:
@@ -272,6 +311,8 @@ private:
 };
 
 /// class unexpected_type, std::exception_ptr specialization
+
+#if nsel_P0323R <= 2
 
 template<>
 class unexpected_type< std::exception_ptr >
@@ -310,6 +351,8 @@ private:
     std::exception_ptr m_error;
 };
 
+#endif // nsel_P0323R
+
 // unexpected: relational operators
 
 template< typename E >
@@ -323,6 +366,8 @@ constexpr bool operator!=( unexpected_type<E> const & x, unexpected_type<E> cons
 {
     return ! ( x == y );
 }
+
+#if nsel_P0323R <= 2
 
 template< typename E >
 constexpr bool operator<( unexpected_type<E> const & x, unexpected_type<E> const & y )
@@ -369,6 +414,8 @@ inline constexpr bool operator>=( unexpected_type<std::exception_ptr> const & x,
 {
     return ( x == y );
 }
+
+#endif // nsel_P0323R
 
 // unexpected: traits
 
@@ -1092,6 +1139,8 @@ constexpr bool operator<( expected<T,E> const & x, unexpected_type<E> const & u 
     return (!x) ? ( x.get_unexpected() < u ) : false;
 }
 
+#if nsel_P0323R <= 2
+
 template <typename T, typename E>
 constexpr bool operator<( unexpected_type<E> const & u, expected<T,E> const & x )
 {
@@ -1133,6 +1182,8 @@ constexpr bool operator>=( unexpected_type<E> const & u, expected<T,E> const & x
 {
     return ! ( x > u );
 }
+
+#endif // nsel_P0323R
 
 // expected: comparison with T
 
@@ -1322,6 +1373,18 @@ struct hash< nonstd::expected<void,E> >
 };
 
 } // namespace std
+
+
+namespace nonstd {
+
+// void unexpected() is deprecated && removed in C++17
+
+#if nsel_CPP17_OR_GREATER && nsel_COMPILER_MSVC_VERSION > 141
+template< typename E >
+using unexpected = unexpected_type<E>;
+#endif
+
+} // namespace nonstd
 
 #undef nsel_REQUIRES
 #undef nsel_REQUIRES_0

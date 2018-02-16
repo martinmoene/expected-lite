@@ -168,7 +168,7 @@ CASE( "unexpected_type<>: Allows to copy-construct from an exception, std::excep
 {
     std::string text = "hello, world";
 
-    unexpected_type<std::exception_ptr> u{ std::logic_error( text.c_str() ) };
+    unexpected_type<std::exception_ptr> u{ std::make_exception_ptr( std::logic_error( text.c_str() ) ) };
 
     try
     {
@@ -243,31 +243,35 @@ CASE( "unexpected_type<>: Provides relational operators" )
 
     SECTION( "==" ) { EXPECT( u1 == u1 ); }
     SECTION( "!=" ) { EXPECT( u1 != u2 ); }
+#if nsel_P0323R <= 2
     SECTION( "< " ) { EXPECT( u1 <  u2 ); }
     SECTION( "> " ) { EXPECT( u2 >  u1 ); }
     SECTION( "<=" ) { EXPECT( u1 <= u1 ); }
     SECTION( "<=" ) { EXPECT( u1 <= u2 ); }
     SECTION( ">=" ) { EXPECT( u1 >= u1 ); }
     SECTION( ">=" ) { EXPECT( u2 >= u1 ); }
+#endif
     }
 }
 
 CASE( "unexpected_type<>: Provides relational operators, std::exception_ptr specialization" )
 {
     SETUP( "" ) {
-        unexpected_type<> u( make_ep() );
-        unexpected_type<> u2( make_ep() );
+        unexpected_type<std::exception_ptr>  u( make_ep() );
+        unexpected_type<std::exception_ptr> u2( make_ep() );
 
     // compare engaged expected with engaged expected
 
     SECTION( "==" ) { EXPECT    ( u == u ); }
     SECTION( "!=" ) { EXPECT    ( u != u2); }
+#if nsel_P0323R <= 2
     SECTION( "< " ) { EXPECT_NOT( u <  u ); }
     SECTION( "> " ) { EXPECT_NOT( u >  u ); }
     SECTION( "< " ) { EXPECT_NOT( u <  u2); }
     SECTION( "> " ) { EXPECT_NOT( u >  u2); }
     SECTION( "<=" ) { EXPECT    ( u <= u ); }
     SECTION( ">=" ) { EXPECT    ( u >= u ); }
+#endif
     }
 }
 
@@ -275,7 +279,7 @@ CASE( "unexpected_type<>: Provides relational operators, std::exception_ptr spec
 
 CASE( "is_unexpected<X>: Is true for unexpected_type" )
 {
-    EXPECT( is_unexpected<unexpected_type<>>::value );
+    EXPECT( is_unexpected<unexpected_type<std::exception_ptr>>::value );
 }
 
 CASE( "is_unexpected<X>: Is false for non-unexpected_type (int)" )
@@ -314,6 +318,15 @@ CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_
             EXPECT( e.what() == text );
         }
     }
+}
+
+CASE( "unexpected<>: C++17 and later provide unexpected_type as unexpected" )
+{
+#if nsel_CPP17_OR_GREATER && nsel_COMPILER_MSVC_VERSION > 141
+    unexpected<Oracle> u;
+#else
+    EXPECT( !!"unexpected<> is not available (no C++17)." );
+#endif
 }
 
 // -----------------------------------------------------------------------
@@ -758,12 +771,14 @@ CASE( "expected<>: Provides relational operators" )
 
     SECTION( "engaged    == engaged"    ) { EXPECT( e1 == e1 ); }
     SECTION( "engaged    != engaged"    ) { EXPECT( e1 != e2 ); }
+#if nsel_P0323R <= 2
     SECTION( "engaged    <  engaged"    ) { EXPECT( e1 <  e2 ); }
     SECTION( "engaged    >  engaged"    ) { EXPECT( e2 >  e1 ); }
     SECTION( "engaged    <= engaged"    ) { EXPECT( e1 <= e1 ); }
     SECTION( "engaged    <= engaged"    ) { EXPECT( e1 <= e2 ); }
     SECTION( "engaged    >= engaged"    ) { EXPECT( e1 >= e1 ); }
     SECTION( "engaged    >= engaged"    ) { EXPECT( e2 >= e1 ); }
+#endif
 
     // compare engaged expected with value
 
@@ -771,6 +786,7 @@ CASE( "expected<>: Provides relational operators" )
     SECTION( "value      == engaged"    ) { EXPECT(  6 == e1 ); }
     SECTION( "engaged    != value"      ) { EXPECT( e1 != 7  ); }
     SECTION( "value      != engaged"    ) { EXPECT(  6 != e2 ); }
+#if nsel_P0323R <= 2
     SECTION( "engaged    <  value"      ) { EXPECT( e1 <  7  ); }
     SECTION( "value      <  engaged"    ) { EXPECT(  6 <  e2 ); }
     SECTION( "engaged    >  value"      ) { EXPECT( e2 >  6  ); }
@@ -779,6 +795,7 @@ CASE( "expected<>: Provides relational operators" )
     SECTION( "value      <= engaged"    ) { EXPECT(  6 <= e2 ); }
     SECTION( "engaged    >= value"      ) { EXPECT( e2 >= 6  ); }
     SECTION( "value      >= engaged"    ) { EXPECT(  7 >= e1 ); }
+#endif
 
     // compare engaged expected with disengaged expected
 
@@ -786,6 +803,7 @@ CASE( "expected<>: Provides relational operators" )
     SECTION( "disengaged == engaged"    ) { EXPECT_NOT( d  == e1 ); }
     SECTION( "engaged    != disengaged" ) { EXPECT    ( e1 != d  ); }
     SECTION( "disengaged != engaged"    ) { EXPECT    ( d  != e2 ); }
+#if nsel_P0323R <= 2
     SECTION( "engaged    <  disengaged" ) { EXPECT_NOT( e1 <  d  ); }
     SECTION( "disengaged <  engaged"    ) { EXPECT    ( d  <  e2 ); }
     SECTION( "engaged    >  disengaged" ) { EXPECT    ( e2 >  d  ); }
@@ -794,6 +812,7 @@ CASE( "expected<>: Provides relational operators" )
     SECTION( "disengaged <= engaged"    ) { EXPECT    ( d  <= e2 ); }
     SECTION( "engaged    >= disengaged" ) { EXPECT    ( e2 >= d  ); }
     SECTION( "disengaged >= engaged"    ) { EXPECT_NOT( d  >= e1 ); }
+#endif
 
     // compare engaged expected with unexpected
 
@@ -801,6 +820,7 @@ CASE( "expected<>: Provides relational operators" )
     SECTION( "unexpected == disengaged" ) { EXPECT    ( u  == d  ); }
     SECTION( "engaged    != unexpected" ) { EXPECT    ( e1 != u  ); }
     SECTION( "unexpected != engaged"    ) { EXPECT    ( u  != e1 ); }
+#if nsel_P0323R <= 2
     SECTION( "disengaged <  unexpected" ) { EXPECT_NOT( d  <  u  ); }
     SECTION( "unexpected <  disengaged" ) { EXPECT_NOT( u  <  d  ); }
     SECTION( "disengaged <= unexpected" ) { EXPECT    ( d  <= u  ); }
@@ -809,6 +829,7 @@ CASE( "expected<>: Provides relational operators" )
     SECTION( "unexpected >  disengaged" ) { EXPECT_NOT( u  >  d  ); }
     SECTION( "disengaged >= unexpected" ) { EXPECT    ( d  >= u  ); }
     SECTION( "unexpected >= disengaged" ) { EXPECT    ( u  >= d  ); }
+#endif
 
     }
 }
