@@ -5,7 +5,7 @@
 // This code is licensed under the MIT License (MIT).
 //
 // expected lite is based on:
-//   A proposal to add a utility class to represent expected monad - Revision 2
+//   A proposal to add a utility class to represent expected monad
 //   by Vicente J. Botet Escriba and Pierre Talbot, http:://wg21.link/p0323
 
 #include "expected-lite.t.h"
@@ -297,8 +297,9 @@ CASE( "make_unexpected(): Allows to create an unexpected_type<E> from an E" )
     EXPECT( u.value() == error );
 }
 
-CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current exception" )
+CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current exception" "[.deprecated]" )
 {
+#if nsel_P0323R <= 2
     std::string text = "hello, world";
 
     try
@@ -318,6 +319,9 @@ CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_
             EXPECT( e.what() == text );
         }
     }
+#else
+    EXPECT( !!"make_unexpected_from_current_exception() is not available (nsel_P0323R > 2)" );
+#endif
 }
 
 CASE( "unexpected<>: C++17 and later provide unexpected_type as unexpected" )
@@ -854,14 +858,18 @@ expected<std::unique_ptr<int>> bar()
     return make_expected( std::unique_ptr<int>( new int(7) ) );
 }
 
-CASE( "make_expected_from_call(): ..." "[.implement]" )
+CASE( "make_expected_from_call(): ..." "[.deprecated]" )
 {
+#if nsel_P0323R <= 3
     expected<int> ei = foo();
     expected<std::unique_ptr<int>> eup = bar();
 
     auto ev   = make_expected_from_call( vfoo );
     auto e2   = make_expected_from_call( foo );
     auto eup2 = make_expected_from_call( bar );
+#else
+    EXPECT( !!"make_expected_from_call() is not available (nsel_P0323R > 3)" );
+#endif
 }
 
 // -----------------------------------------------------------------------

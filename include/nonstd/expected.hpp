@@ -5,7 +5,7 @@
 // This code is licensed under the MIT License (MIT).
 //
 // expected lite is based on:
-//   A proposal to add a utility class to represent expected monad - Revision 2
+//   A proposal to add a utility class to represent expected monad
 //   by Vicente J. Botet Escriba and Pierre Talbot. http:://wg21.link/p0323
 
 #ifndef NONSTD_EXPECTED_LITE_HPP
@@ -22,6 +22,21 @@
 #include <utility>
 
 #define  expected_lite_VERSION "0.0.3"
+
+// expected-lite configuration
+//
+// DXXXXR0: --
+// N4015  : -2 (2014-05-26)
+// N4109  : -1 (2014-06-29)
+// P0323R0:  0 (2016-05-28)
+// P0323R1:  1 (2016-10-12)
+// -------:
+// P0323R2:  2 (2017-06-15)
+// P0323R3:  3 (2017-10-15)
+// P0323R4:  4 (2017-11-26)
+// P0323R5:  5 (2018-02-08)
+//
+// expected-lite uses 2 and higher
 
 #ifndef  nsel_P0323R
 # define nsel_P0323R  5
@@ -310,7 +325,7 @@ private:
     error_type m_error;
 };
 
-/// class unexpected_type, std::exception_ptr specialization
+/// class unexpected_type, std::exception_ptr specialization (P0323R2)
 
 #if nsel_P0323R <= 2
 
@@ -427,6 +442,8 @@ struct is_unexpected< unexpected_type<E> > : std::true_type {};
 
 // unexpected: factory
 
+// keep make_unexpected() removed in p0323r2 for pre-C++17:
+
 template< typename E>
 nsel_constexpr14 auto
 make_unexpected( E && v) -> unexpected_type< typename std::decay<E>::type >
@@ -434,11 +451,15 @@ make_unexpected( E && v) -> unexpected_type< typename std::decay<E>::type >
     return unexpected_type< typename std::decay<E>::type >( v );
 }
 
+#if nsel_P0323R <= 3
+
 /*nsel_constexpr14*/ auto
 make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr >
 {
     return unexpected_type< std::exception_ptr >( std::current_exception() );
 }
+
+#endif // nsel_P0323R
 
 /// in-place tag: construct a value in-place (should come from std::experimental::optional)
 
@@ -448,10 +469,11 @@ constexpr in_place_t in_place{};
 
 /// unexpect tag, in_place_unexpected tag: construct an error
 
-struct in_place_unexpected_t{};
+struct unexpected_t{};
+using in_place_unexpected_t = unexpected_t;
 
-constexpr in_place_unexpected_t unexpect{};
-constexpr in_place_unexpected_t in_place_unexpected{};
+constexpr unexpected_t unexpect{};
+constexpr unexpected_t in_place_unexpected{};
 
 /// expected access error
 
@@ -615,7 +637,7 @@ public:
     template< typename... Args, nsel_REQUIRES_T(
         std::is_constructible<E, Args&&...>::value ) >
 
-    nsel_constexpr14 explicit expected( in_place_unexpected_t, Args&&... args )
+    nsel_constexpr14 explicit expected( unexpected_t, Args&&... args )
     : has_value_( false )
     {
         contained.construct_error( std::forward<Args>( args )... );
@@ -624,7 +646,7 @@ public:
     template< typename U, typename... Args, nsel_REQUIRES_T(
         std::is_constructible<T, std::initializer_list<U>, Args&&...>::value ) >
 
-    nsel_constexpr14 explicit expected( in_place_unexpected_t, std::initializer_list<U> il, Args&&... args )
+    nsel_constexpr14 explicit expected( unexpected_t, std::initializer_list<U> il, Args&&... args )
     : has_value_( false )
     {
         contained.construct_error( il, std::forward<Args>( args )... );
@@ -721,8 +743,14 @@ public:
 
     void swap( expected & rhs ) noexcept
     (
+#if nsel_CPP17_OR_GREATER
+        std::is_nothrow_move_constructible<T>::value && std::is_nothrow_swappable<T&>::value &&
+        std::is_nothrow_move_constructible<E>::value && std::is_nothrow_swappable<E&>::value
+#else
         std::is_nothrow_move_constructible<T>::value && noexcept( std::swap( std::declval<T&>(), std::declval<T&>() ) ) &&
-        std::is_nothrow_move_constructible<E>::value && noexcept( std::swap( std::declval<E&>(), std::declval<E&>() ) ) )
+        std::is_nothrow_move_constructible<E>::value && noexcept( std::swap( std::declval<E&>(), std::declval<E&>() ) ) 
+#endif
+    )
     {
         using std::swap;
 
@@ -991,7 +1019,11 @@ public:
 
     void swap( expected & rhs ) noexcept
     (
+#if nsel_CPP17_OR_GREATER
+        std::is_nothrow_move_constructible<E>::value && std::is_nothrow_swappable<E&>::value
+#else
         std::is_nothrow_move_constructible<E>::value && noexcept( std::swap( std::declval<E&>(), std::declval<E&>() ) )
+#endif
     )
     {
         using std::swap;
@@ -1298,6 +1330,8 @@ constexpr auto make_expected_from_error( E e ) -> expected<T, typename std::deca
     return expected<T, typename std::decay<E>::type>( make_unexpected( e ) );
 }
 
+#if nsel_P0323R <= 3
+
 template< typename F >
 /*nsel_constexpr14*/
 auto make_expected_from_call( F f,
@@ -1330,6 +1364,8 @@ auto make_expected_from_call( F f,
         return make_unexpected_from_current_exception();
     }
 }
+
+#endif // nsel_P0323R
 
 } // namespace nonstd
 
