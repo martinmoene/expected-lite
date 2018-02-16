@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Martin Moene.
+// Copyright (C) 2016-2018 Martin Moene.
 //
 // This version targets C++11 and later.
 //
@@ -6,7 +6,7 @@
 //
 // expected lite is based on:
 //   A proposal to add a utility class to represent expected monad - Revision 2
-//   by Vicente J. Botet Escriba and Pierre Talbot.
+//   by Vicente J. Botet Escriba and Pierre Talbot. http:://wg21.link/p0323
 
 #ifndef NONSTD_EXPECTED_LITE_HPP
 #define NONSTD_EXPECTED_LITE_HPP
@@ -23,11 +23,20 @@
 
 #define  expected_lite_VERSION "0.0.3"
 
-// Compiler detection:
+// Compiler detection (C++20 is speculative):
+// Note: MSVC supports C++14 since it supports C++17.
 
-#define nsel_CPP11_OR_GREATER  ( __cplusplus >= 201103L )
-#define nsel_CPP14_OR_GREATER  ( __cplusplus >= 201402L )
-#define nsel_CPP17_OR_GREATER  ( __cplusplus >= 201703L )
+#ifdef _MSVC_LANG
+# define type_MSVC_LANG  _MSVC_LANG
+#else
+# define type_MSVC_LANG  0
+#endif
+
+#define type_CPP11             (__cplusplus == 201103L )
+#define nsel_CPP11_OR_GREATER  (__cplusplus >= 201103L || type_MSVC_LANG >= 201103L )
+#define nsel_CPP14_OR_GREATER  (__cplusplus >= 201402L || type_MSVC_LANG >= 201703L )
+#define nsel_CPP17_OR_GREATER  (__cplusplus >= 201703L || type_MSVC_LANG >= 201703L )
+#define nsel_CPP20_OR_GREATER  (__cplusplus >= 202000L || type_MSVC_LANG >= 202000L )
 
 #if nsel_CPP14_OR_GREATER
 # define nsel_constexpr14 constexpr
@@ -45,6 +54,42 @@
 
 #define nsel_REQUIRES_T(...) \
     typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_detail::enabler >::type
+
+// Clang, GNUC, MSVC warning suppression macros:
+
+#if defined(_MSC_VER) && !defined(__clang__)
+# define nsel_COMPILER_MSVC_VERSION   (_MSC_VER / 10 - 10 * ( 5 + (_MSC_VER < 1900)) )
+#else
+# define nsel_COMPILER_MSVC_VERSION   0
+#endif
+
+#ifdef __clang__
+# pragma clang diagnostic push
+#elif defined  __GNUC__
+# pragma  GCC  diagnostic push
+#endif // __clang__
+
+#if nsel_COMPILER_MSVC_VERSION >= 140
+# pragma warning( push )
+# define nsel_DISABLE_MSVC_WARNINGS(codes)  __pragma( warning(disable: codes) )
+#else
+# define nsel_DISABLE_MSVC_WARNINGS(codes)
+#endif
+
+#ifdef __clang__
+# define nsel_RESTORE_WARNINGS()  _Pragma("clang diagnostic pop")
+#elif defined __GNUC__
+# define nsel_RESTORE_WARNINGS()  _Pragma("GCC diagnostic pop")
+#elif nsel_COMPILER_MSVC_VERSION >= 140
+# define nsel_RESTORE_WARNINGS()  __pragma( warning( pop ) )
+#else
+# define nsel_RESTORE_WARNINGS()
+#endif
+
+// Suppress the following MSVC (GSL) warnings:
+// - C26409: Avoid calling new and delete explicitly, use std::make_unique<T> instead (r.11)
+
+nsel_DISABLE_MSVC_WARNINGS( 26409 )
 
 namespace nonstd {
 
@@ -1281,5 +1326,7 @@ struct hash< nonstd::expected<void,E> >
 #undef nsel_REQUIRES
 #undef nsel_REQUIRES_0
 #undef nsel_REQUIRES_T
+
+nsel_RESTORE_WARNINGS()
 
 #endif // NONSTD_EXPECTED_LITE_HPP
