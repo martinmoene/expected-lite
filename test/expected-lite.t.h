@@ -9,7 +9,15 @@
 #ifndef TEST_EXPECTED_LITE_H_INCLUDED
 #define TEST_EXPECTED_LITE_H_INCLUDED
 
+// Limit C++ Core Guidelines checking to expected-lite:
+
 #include "expected.hpp"
+
+#if defined(_MSC_VER) && _MSC_VER >= 1910
+# include <CppCoreCheck/Warnings.h>
+# pragma warning(disable: ALL_CPPCORECHECK_WARNINGS)
+#endif
+
 #include "lest.hpp"
 
 using namespace nonstd;
