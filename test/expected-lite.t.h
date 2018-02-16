@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Martin Moene
+// Copyright (c) 2016-2018 Martin Moene
 //
 // https://github.com/martinmoene/expected-lite
 //

@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Martin Moene.
+// Copyright (c) 2016-2018 Martin Moene.
 //
 // This version targets C++11 and later.
 //
@@ -6,7 +6,7 @@
 //
 // expected lite is based on:
 //   A proposal to add a utility class to represent expected monad - Revision 2
-//   by Vicente J. Botet Escriba and Pierre Talbot.
+//   by Vicente J. Botet Escriba and Pierre Talbot, http:://wg21.link/p0323
 
 #include "expected-lite.t.h"
 
