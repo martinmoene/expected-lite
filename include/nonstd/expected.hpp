@@ -63,6 +63,12 @@
 # define nsel_constexpr14 /*constexpr*/
 #endif
 
+#if nsel_CPP17_OR_GREATER
+# define nsel_inline17 inline
+#else
+# define nsel_inline17 /*inline*/
+#endif
+
 // Method enabling
 
 #define nsel_REQUIRES(...) \
@@ -465,15 +471,15 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
 
 struct in_place_t{};
 
-constexpr in_place_t in_place{};
+nsel_inline17 constexpr in_place_t in_place{};
 
 /// unexpect tag, in_place_unexpected tag: construct an error
 
-struct unexpected_t{};
-using in_place_unexpected_t = unexpected_t;
+struct unexpect_t{};
+using in_place_unexpected_t = unexpect_t;
 
-constexpr unexpected_t unexpect{};
-constexpr unexpected_t in_place_unexpected{};
+nsel_inline17 constexpr unexpect_t unexpect{};
+nsel_inline17 constexpr unexpect_t in_place_unexpected{};
 
 /// expected access error
 
@@ -637,7 +643,7 @@ public:
     template< typename... Args, nsel_REQUIRES_T(
         std::is_constructible<E, Args&&...>::value ) >
 
-    nsel_constexpr14 explicit expected( unexpected_t, Args&&... args )
+    nsel_constexpr14 explicit expected( unexpect_t, Args&&... args )
     : has_value_( false )
     {
         contained.construct_error( std::forward<Args>( args )... );
@@ -646,7 +652,7 @@ public:
     template< typename U, typename... Args, nsel_REQUIRES_T(
         std::is_constructible<T, std::initializer_list<U>, Args&&...>::value ) >
 
-    nsel_constexpr14 explicit expected( unexpected_t, std::initializer_list<U> il, Args&&... args )
+    nsel_constexpr14 explicit expected( unexpect_t, std::initializer_list<U> il, Args&&... args )
     : has_value_( false )
     {
         contained.construct_error( il, std::forward<Args>( args )... );
