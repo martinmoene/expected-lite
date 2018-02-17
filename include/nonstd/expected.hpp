@@ -307,22 +307,22 @@ public:
     : m_error( error )
     {}
 
+    nsel_constexpr14 E & value() & noexcept
+    {
+        return m_error;
+    }
+
     constexpr E const & value() const & noexcept
     {
         return m_error;
     }
 
-    constexpr E & value() & noexcept
-    {
-        return m_error;
-    }
-
-    constexpr E const && value() const && noexcept
+    nsel_constexpr14 E && value() && noexcept
     {
         return std::move( m_error );
     }
 
-    constexpr E && value() && noexcept
+    constexpr E const && value() const && noexcept
     {
         return std::move( m_error );
     }
@@ -488,24 +488,50 @@ nsel_inline17 constexpr unexpect_t in_place_unexpected{};
 /// expected access error
 
 template< typename E >
-class bad_expected_access : public std::logic_error
+class bad_expected_access;
+
+template <>
+class bad_expected_access< void > : public std::exception
+{
+public:
+    explicit bad_expected_access() 
+    : std::exception()
+    {}
+};
+
+template< typename E >
+class bad_expected_access : public bad_expected_access< void >
 {
 public:
     typedef E error_type;
 
     explicit bad_expected_access( error_type error )
-    : logic_error( "bad_expected_access" )
-    , m_error( error )
+    : m_error( error )
     {}
 
-    constexpr error_type const & error() const
+    virtual char const * what() const noexcept override
+    { 
+        return "bad_expected_access"; 
+    }
+
+    nsel_constexpr14 error_type & error() &
     {
         return m_error;
     }
 
-    error_type & error()
+    constexpr error_type const & error() const &
     {
         return m_error;
+    }
+
+    nsel_constexpr14 error_type && error() &&
+    {
+        return std::move( m_error );
+    }
+
+    constexpr error_type const && error() const &&
+    {
+        return std::move( m_error );
     }
 
 private:
@@ -1322,16 +1348,20 @@ auto make_expected() -> expected<void>
     return expected<void>( in_place );
 }
 
+#if nsel_P0323R <= 3
+
 template< typename T>
 constexpr auto make_expected_from_current_exception() -> expected<T>
 {
     return expected<T>( make_unexpected_from_current_exception() );
 }
 
+#endif // nsel_P0323R
+
 template< typename T>
 auto make_expected_from_exception( std::exception_ptr v ) -> expected<T>
 {
-    return expected<T>( unexpected_type<>( std::forward<std::exception_ptr>( v ) ) );
+    return expected<T>( unexpected_type<std::exception_ptr>( std::forward<std::exception_ptr>( v ) ) );
 }
 
 template< typename T, typename E >
