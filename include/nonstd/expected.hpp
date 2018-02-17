@@ -440,11 +440,15 @@ inline constexpr bool operator>=( unexpected_type<std::exception_ptr> const & x,
 
 // unexpected: traits
 
+#if nsel_P0323R <= 3
+
 template <typename E>
 struct is_unexpected : std::false_type {};
 
 template <typename E>
 struct is_unexpected< unexpected_type<E> > : std::true_type {};
+
+#endif // nsel_P0323R
 
 // unexpected: factory
 

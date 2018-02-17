@@ -277,14 +277,22 @@ CASE( "unexpected_type<>: Provides relational operators, std::exception_ptr spec
 
 // unexpected: traits
 
-CASE( "is_unexpected<X>: Is true for unexpected_type" )
+CASE( "is_unexpected<X>: Is true for unexpected_type" "[.deprecated]" )
 {
+#if nsel_P0323R <= 3
     EXPECT( is_unexpected<unexpected_type<std::exception_ptr>>::value );
+#else
+    EXPECT( !!"is_unexpected<> is not available (nsel_P0323R > 3)" );
+#endif
 }
 
-CASE( "is_unexpected<X>: Is false for non-unexpected_type (int)" )
+CASE( "is_unexpected<X>: Is false for non-unexpected_type (int)" "[.deprecated]" )
 {
+#if nsel_P0323R <= 3
     EXPECT_NOT( is_unexpected<int>::value );
+#else
+    EXPECT( !!"is_unexpected<> is not available (nsel_P0323R > 3)" );
+#endif
 }
 
 // unexpected: factory
