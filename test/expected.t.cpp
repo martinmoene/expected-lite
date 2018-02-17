@@ -382,21 +382,21 @@ CASE( "bad_expected_access<>: Allows to change its error" )
 
 CASE( "expected<>: Allows default construction" )
 {
-    expected<int> e;
+    expected<int, char> e;
 }
 
 CASE( "expected<>: Allows to copy-construct from value_type" )
 {
     Oracle o;
 
-    expected<Oracle> e{ o };
+    expected<Oracle, char> e{ o };
 
     EXPECT( e.value().s == sCopyConstructed );
 }
 
 CASE( "expected<>: Allows to move-construct from value_type" )
 {
-    expected<Oracle> e{ Oracle{} };
+    expected<Oracle, char> e{ Oracle{} };
 
     EXPECT( e.value().s == sMoveConstructed );
 }
@@ -405,9 +405,9 @@ CASE( "expected<>: Allows to copy-construct from expected<>" )
 {
     auto const value = 7;
     OracleVal v{ value };
-    expected<Oracle> eo{ v };
+    expected<Oracle, char> eo{ v };
 
-    expected<expected<Oracle>> eeo{ eo };
+    expected<expected<Oracle, char>, char> eeo{ eo };
 
     EXPECT( eeo.value().value().s     == sCopyConstructed );
     EXPECT( eeo.value().value().val.s == sValueConstructed );
@@ -418,7 +418,7 @@ CASE( "expected<>: Allows to move-construct from expected<>" )
 {
     auto const value = 7;
 
-    expected<expected<Oracle>> eeo{ expected<Oracle>{ OracleVal{ value } } };
+    expected<expected<Oracle, char>, char> eeo{ expected<Oracle, char>{ OracleVal{ value } } };
 
     EXPECT( eeo.value().value().s == sMoveConstructed );
     EXPECT( eeo.value().value().val == value );
@@ -428,7 +428,7 @@ CASE( "expected<>: Allows to in-place-construct value_type" )
 {
     auto const value = 7;
 
-    expected<OracleVal> eo{ in_place, value };
+    expected<OracleVal, char> eo{ in_place, value };
 
     EXPECT( eo.value().s == sValueConstructed );
     EXPECT( eo.value().i == value );
@@ -488,9 +488,9 @@ CASE( "expected<>: Allows to in-place-construct from unexpected_type<>, with ini
 CASE( "expected<>: Allows to copy-assign from expected<>" )
 {
     auto const value = 7;
-    expected<Oracle> ev{ OracleVal{ value } };
+    expected<Oracle, char> ev{ OracleVal{ value } };
 
-    expected<Oracle> ec{ ev };
+    expected<Oracle, char> ec{ ev };
 
     EXPECT( ev.value().s == sMoveConstructed );
     EXPECT( ec.value().s == sCopyConstructed );
@@ -502,9 +502,9 @@ CASE( "expected<>: Allows to copy-assign from expected<>" )
 CASE( "expected<>: Allows to move-assign from expected<>" )
 {
     auto const value = 7;
-    expected<Oracle> ev{ OracleVal{ value } };
+    expected<Oracle, char> ev{ OracleVal{ value } };
 
-    expected<Oracle> ec{ std::move(ev) };
+    expected<Oracle, char> ec{ std::move(ev) };
 
     EXPECT( ev.value().s == sMovedFrom );
     EXPECT( ec.value().s == sMoveConstructed );
@@ -528,7 +528,7 @@ CASE( "expected<>: Allows to copy-assign from type convertible to value_type" )
     auto const value = 7;
     OracleVal ov{ value };
 
-    expected<Oracle> ec{ ov };
+    expected<Oracle, char> ec{ ov };
 
     EXPECT( ov.s == sValueConstructed );
     EXPECT( ec.value().s == sMoveConstructed );
@@ -540,7 +540,7 @@ CASE( "expected<>: Allows to move-assign from type convertible to value_type" )
     auto const value = 7;
     OracleVal om{ value };
 
-    expected<Oracle> em{ std::move(om) };
+    expected<Oracle, char> em{ std::move(om) };
 
     EXPECT( om.s == sMovedFrom );
     EXPECT( em.value().s == sMoveConstructed );
@@ -564,8 +564,8 @@ CASE( "expected<>: Allows to be swapped" )
     auto const vl = OracleVal{ 3 } ;
     auto const vr = OracleVal{ 7 } ;
     {
-    expected<Oracle> el{ vl };
-    expected<Oracle> er{ vr };
+    expected<Oracle, char> el{ vl };
+    expected<Oracle, char> er{ vr };
 
     el.swap( er );
 
@@ -603,7 +603,7 @@ struct Composite { int member; };
 CASE( "expected<>: Allows to observe its value via a pointer" )
 {
     auto const value = 7;
-    expected<Composite> ei{ Composite{value} };
+    expected<Composite, char> ei{ Composite{value} };
 
     EXPECT( ei->member == value );
 }
@@ -611,7 +611,7 @@ CASE( "expected<>: Allows to observe its value via a pointer" )
 CASE( "expected<>: Allows to observe its value via a pointer to constant" )
 {
     auto const value = 7;
-    const expected<Composite> ei{ Composite{value} };
+    const expected<Composite, char> ei{ Composite{value} };
 
     EXPECT( ei->member == value );
 }
@@ -620,7 +620,7 @@ CASE( "expected<>: Allows to modify its value via a pointer" )
 {
     auto const old_value = 3;
     auto const new_value = 7;
-    expected<Composite> ei{ Composite{old_value} };
+    expected<Composite, char> ei{ Composite{old_value} };
 
     ei->member = new_value;
 
@@ -630,7 +630,7 @@ CASE( "expected<>: Allows to modify its value via a pointer" )
 CASE( "expected<>: Allows to observe its value via a reference" )
 {
     auto const value = 7;
-    expected<int> const ei{ value };
+    expected<int, char> const ei{ value };
 
     EXPECT( *ei == value );
 }
@@ -639,14 +639,14 @@ CASE( "expected<>: Allows to observe its value via a r-value reference" )
 {
     auto const value = 7;
 
-    EXPECT( expected<int>{ value } == value );
+    EXPECT( (expected<int, char>{ value }) == value );
 }
 
 CASE( "expected<>: Allows to modify its value via a reference" )
 {
     auto const old_value = 3;
     auto const new_value = 7;
-    expected<int> ei{ old_value };
+    expected<int, char> ei{ old_value };
 
     *ei = new_value;
 
@@ -655,7 +655,7 @@ CASE( "expected<>: Allows to modify its value via a reference" )
 
 CASE( "expected<>: Allows to observe if it contains a value (or error)" )
 {
-    expected<int> ei;
+    expected<int, char> ei;
 
     EXPECT( ei );
 
@@ -667,7 +667,7 @@ CASE( "expected<>: Allows to observe if it contains a value (or error)" )
 CASE( "expected<>: Allows to observe its value" )
 {
     auto const value = 7;
-    expected<int> const ei{ value };
+    expected<int, char> const ei{ value };
 
     EXPECT( ei.value() == value );
 }
@@ -676,7 +676,7 @@ CASE( "expected<>: Allows to modify its value" )
 {
     auto const old_value = 3;
     auto const new_value = 7;
-    expected<int> ei{ old_value };
+    expected<int, char> ei{ old_value };
 
     ei.value() = new_value;
 
@@ -686,9 +686,9 @@ CASE( "expected<>: Allows to modify its value" )
 CASE( "expected<>: Allows to move its value" )
 {
     auto const value = 7;
-    expected<Oracle> m{ OracleVal{ value } };
+    expected<Oracle, char> m{ OracleVal{ value } };
 
-    expected<Oracle> e{ std::move( m.value() ) };
+    expected<Oracle, char> e{ std::move( m.value() ) };
 
     EXPECT( m.value().s == sMovedFrom );
     EXPECT( e.value().val.i == value );
@@ -734,7 +734,7 @@ CASE( "expected<>: Allows to observe its error as unexpected<>" )
 
 CASE( "expected<>: Allows to query if it contains an exception of a specific base type" "[.failing]" )
 {
-    expected<int> e{ unexpect, make_ep() };
+    expected<int, std::exception_ptr> e{ unexpect, make_ep() };
 
     EXPECT( e.has_exception< std::out_of_range >() );
 }
@@ -754,10 +754,10 @@ CASE( "expected<>: Allows to move its value if available, or obtain a specified 
 {
     auto ov = Oracle{ 3 };
     auto uv = Oracle{ 7 };
-    expected<Oracle> m{ ov };
+    expected<Oracle, char> m{ ov };
     EXPECT( m.value().s == sCopyConstructed );
 
-    expected<Oracle> e{ std::move( m ).value_or( std::forward<Oracle>( uv ) ) };
+    expected<Oracle, char> e{ std::move( m ).value_or( std::forward<Oracle>( uv ) ) };
 
     EXPECT( e.value().val == ov.val );
     EXPECT( m.value().s == sMovedFrom );
@@ -852,6 +852,8 @@ CASE( "expected<>: Provides relational operators" )
 // -----------------------------------------------------------------------
 // Other
 
+#if nsel_P0323R <= 3
+
 #include <memory>
 
 void vfoo() {}
@@ -865,6 +867,8 @@ expected<std::unique_ptr<int>> bar()
 {
     return make_expected( std::unique_ptr<int>( new int(7) ) );
 }
+
+#endif // nsel_P0323R
 
 CASE( "make_expected_from_call(): ..." "[.deprecated]" )
 {

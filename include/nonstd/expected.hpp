@@ -569,8 +569,13 @@ struct error_traits< std::error_code >
 
 /// class expected
 
+#if nsel_P0323R <= 2
 template< typename T, typename E = std::exception_ptr >
 class expected
+#else
+template< typename T, typename E >
+class expected
+#endif // nsel_P0323R
 {
 public:
     typedef T value_type;
@@ -1335,6 +1340,8 @@ void swap( expected<T,E> & x, expected<T,E> & y ) noexcept( noexcept( x.swap(y) 
     x.swap( y );
 }
 
+#if nsel_P0323R <= 3
+
 template< typename T>
 constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type >
 {
@@ -1348,15 +1355,11 @@ auto make_expected() -> expected<void>
     return expected<void>( in_place );
 }
 
-#if nsel_P0323R <= 3
-
 template< typename T>
 constexpr auto make_expected_from_current_exception() -> expected<T>
 {
     return expected<T>( make_unexpected_from_current_exception() );
 }
-
-#endif // nsel_P0323R
 
 template< typename T>
 auto make_expected_from_exception( std::exception_ptr v ) -> expected<T>
@@ -1369,8 +1372,6 @@ constexpr auto make_expected_from_error( E e ) -> expected<T, typename std::deca
 {
     return expected<T, typename std::decay<E>::type>( make_unexpected( e ) );
 }
-
-#if nsel_P0323R <= 3
 
 template< typename F >
 /*nsel_constexpr14*/
