@@ -26,6 +26,10 @@ set( HAS_CPP14_FLAG FALSE )
 set( HAS_CPP17_FLAG FALSE )
 set( HAS_CPP20_FLAG FALSE )
 
+if ( EXPEXTED_P0323R LESS "99" )
+    set( DEFCMN  ${DEFCMN} "-Dnsel_P0323R=${EXPEXTED_P0323R}" )
+endif()
+
 if( MSVC )
     set( HAS_STD_FLAGS TRUE )
 

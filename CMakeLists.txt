@@ -6,6 +6,8 @@ cmake_minimum_required( VERSION 3.0 )
 
 project( expected_lite )
 
+set( EXPEXTED_P0323R "99" STRING "Specify proposal revision compatibility (99: latest)" )
+
 enable_testing()
 
 add_subdirectory( test )
