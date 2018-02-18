@@ -40,7 +40,9 @@ auto make_required( T value ) -> required<T>
     return required<T>( value );
 }
 
-auto produce( int value ) -> expected< required<int> >
+using unused_type = char;
+
+auto produce( int value ) -> expected< required<int>, unused_type >
 {
     return make_required( value );
 }
