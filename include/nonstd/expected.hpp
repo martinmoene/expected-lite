@@ -580,6 +580,7 @@ class expected
 public:
     using value_type = T;
     using error_type = E;
+    using unexpected_type = nonstd::unexpected_type<E>;
 
     // constructors
 
@@ -660,7 +661,7 @@ public:
     nsel_REQUIRES_0(
         std::is_copy_constructible<E>::value )
 
-    nsel_constexpr14 expected( unexpected_type<E> const & error )
+    nsel_constexpr14 expected( unexpected_type const & error )
     : has_value_( false )
     {
         contained.construct_error( error.value() );
@@ -669,7 +670,7 @@ public:
     nsel_REQUIRES_0(
         std::is_move_constructible<E>::value )
 
-    nsel_constexpr14 expected( unexpected_type<E> && error )
+    nsel_constexpr14 expected( unexpected_type && error )
     : has_value_( false )
     {
         contained.construct_error( std::move( error.value() ) );
@@ -746,7 +747,7 @@ public:
 //        std::is_copy_constructible<E>::value &&
 //        std::is_assignable<E&, E>::value )
 
-    expected & operator=( unexpected_type<E> const & u )
+    expected & operator=( unexpected_type const & u )
     {
         expected( std::move( u ) ).swap( *this );
         return *this;
@@ -756,7 +757,7 @@ public:
 //        std::is_copy_constructible<E>::value &&
 //        std::is_assignable<E&, E>::value )
 
-    expected & operator=( unexpected_type<E> && u )
+    expected & operator=( unexpected_type && u )
     {
         expected( std::move( u ) ).swap( *this );
         return *this;
@@ -879,7 +880,7 @@ public:
         return assert( ! has_value() ), std::move( contained.error() );
     }
 
-    constexpr unexpected_type<E> get_unexpected() const
+    constexpr unexpected_type get_unexpected() const
     {
         return make_unexpected( contained.error() );
     }
@@ -956,6 +957,7 @@ class expected<void, E>
 public:
     using value_type = void;
     using error_type = E;
+    using unexpected_type = nonstd::unexpected_type<E>;
 
     template< typename U >
     struct rebind
@@ -1003,7 +1005,7 @@ public:
 //        std::is_copy_constructible<E>::value &&
 //        std::is_assignable<E&, E>::value )
 
-    nsel_constexpr14 expected( unexpected_type<E> const & error )
+    nsel_constexpr14 expected( unexpected_type const & error )
     : has_value_( false )
     {
         contained.construct_error( error.value() );
@@ -1012,7 +1014,7 @@ public:
     // ?? expected( unexpected_type<E> && error )
 
     template <class Err>
-    nsel_constexpr14 expected( unexpected_type<Err> const & error )
+    nsel_constexpr14 expected( nonstd::unexpected_type<Err> const & error )
     : has_value_( false )
     {
         contained.construct_error( error.value() );
@@ -1105,7 +1107,7 @@ public:
         return assert( ! has_value() ), std::move( contained.error() );
     }
 
-    constexpr unexpected_type<error_type> get_unexpected() const
+    constexpr unexpected_type get_unexpected() const
     {
         return make_unexpected( contained.error() );
     }
