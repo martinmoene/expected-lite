@@ -135,8 +135,8 @@ union storage_t
     friend class expected<T,E>;
 
 private:
-    typedef T value_type;
-    typedef E error_type;
+    using value_type = T;
+    using error_type = E;
 
     // no-op construction
     storage_t() {}
@@ -220,8 +220,8 @@ union storage_t<void, E>
     friend class expected<void,E>;
 
 private:
-    typedef void value_type;
-    typedef E error_type;
+    using value_type = void;
+    using error_type = E;
 
     // no-op construction
     storage_t() {}
@@ -269,7 +269,7 @@ class unexpected_type
 #endif // nsel_P0323R
 {
 public:
-    typedef E error_type;
+    using error_type = E;
 
     unexpected_type() = delete;
     constexpr unexpected_type( unexpected_type const &) = default;
@@ -339,7 +339,7 @@ template<>
 class unexpected_type< std::exception_ptr >
 {
 public:
-    typedef std::exception_ptr error_type;
+    using std::exception_ptr error_type;
 
     unexpected_type() = delete;
 
@@ -503,7 +503,7 @@ template< typename E >
 class bad_expected_access : public bad_expected_access< void >
 {
 public:
-    typedef E error_type;
+    using error_type = E;
 
     explicit bad_expected_access( error_type error )
     : m_error( error )
@@ -578,8 +578,8 @@ class expected
 #endif // nsel_P0323R
 {
 public:
-    typedef T value_type;
-    typedef E error_type;
+    using value_type = T;
+    using error_type = E;
 
     // constructors
 
@@ -954,13 +954,13 @@ template< typename E >
 class expected<void, E>
 {
 public:
-    typedef void value_type;
-    typedef E error_type;
+    using value_type = void;
+    using error_type = E;
 
     template< typename U >
     struct rebind
     {
-        typedef expected<U, error_type> type;
+        using type = expected<U, error_type>;
     };
 
     // constructors
@@ -1417,8 +1417,8 @@ namespace std {
 template< typename T, typename E >
 struct hash< nonstd::expected<T,E> >
 {
-    typedef typename hash<T>::result_type result_type;
-    typedef nonstd::expected<T,E> argument_type;
+    using result_type = typename hash<T>::result_type;
+    using argument_type = nonstd::expected<T,E>;
 
     constexpr result_type operator()(argument_type const & arg) const
     {
@@ -1430,8 +1430,8 @@ struct hash< nonstd::expected<T,E> >
 template< typename T, typename E >
 struct hash< nonstd::expected<T&,E> >
 {
-    typedef typename hash<T>::result_type result_type;
-    typedef nonstd::expected<T&,E> argument_type;
+    using result_type = typename hash<T>::result_type;
+    using argument_type = nonstd::expected<T&,E>;
 
     constexpr result_type operator()(argument_type const & arg) const
     {
