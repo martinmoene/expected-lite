@@ -272,7 +272,7 @@ private:
 
 } // namespace expected_detail
 
-/// x.x.3 Unexpected object type; unexpected_type; C++17 and later can also use aliased type unexpected.
+/// // x.x.3 Unexpected object type; unexpected_type; C++17 and later can also use aliased type unexpected.
 
 #if nsel_P0323R <= 2
 template< typename E = std::exception_ptr >
@@ -458,7 +458,7 @@ constexpr bool operator>=( unexpected_type<E> const & x, unexpected_type<E> cons
 /// x.x.5 Specialized algorithms
 
 template< typename E >
-void swap( unexpected<E> & x, unexpected<E> & y) noexcept (noexcept (x.swap(y)))
+void swap( unexpected<E> & x, unexpected<E> & y) noexcept ( noexcept ( x.swap(y) ) )
 {
     x.swap( y );
 }
@@ -651,7 +651,7 @@ public:
         contained.construct_value( value_type() );
     }
 
-    nsel_constexpr14 expected( expected<T,E> const & rhs
+    nsel_constexpr14 expected( expected const & rhs
 //    , nsel_REQUIRES(
 //        std::is_copy_constructible<T>::value 
 //        && std::is_copy_constructible<E>::value )
@@ -662,7 +662,7 @@ public:
         else               contained.construct_error( rhs.contained.error() );
     }
 
-    nsel_constexpr14 expected( expected<T,E> && rhs
+    nsel_constexpr14 expected( expected && rhs
 //    , nsel_REQUIRES(
 //        std::is_move_constructible<T>::value 
 //        && std::is_move_constructible<E>::value )
