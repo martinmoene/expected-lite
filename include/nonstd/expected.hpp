@@ -1010,7 +1010,12 @@ public:
         return assert( has_value() ), contained.value();
     }
 
-    constexpr value_type && operator *() const &&
+    constexpr value_type const && operator *() const &&
+    {
+        return assert( has_value() ), std::move( contained.value() );
+    }
+
+    nsel_constexpr14 value_type && operator *() &&
     {
         return assert( has_value() ), std::move( contained.value() );
     }
