@@ -380,7 +380,7 @@ template<>
 class unexpected_type< std::exception_ptr >
 {
 public:
-    using std::exception_ptr error_type;
+    using error_type = std::exception_ptr;
 
     unexpected_type() = delete;
 
@@ -458,7 +458,7 @@ constexpr bool operator>=( unexpected_type<E> const & x, unexpected_type<E> cons
 /// x.x.5 Specialized algorithms
 
 template< typename E >
-void swap( unexpected<E> & x, unexpected<E> & y) noexcept ( noexcept ( x.swap(y) ) )
+void swap( unexpected_type<E> & x, unexpected_type<E> & y) noexcept ( noexcept ( x.swap(y) ) )
 {
     x.swap( y );
 }
