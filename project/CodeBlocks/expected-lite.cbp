@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="expected lite - a C++11, C++03 expected" />
+		<Option title="Expected Lite" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
