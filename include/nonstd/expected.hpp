@@ -512,7 +512,7 @@ make_unexpected( E && v) -> unexpected_type< typename std::decay<E>::type >
 
 #if nsel_P0323R <= 3
 
-/*nsel_constexpr14*/ auto
+/*nsel_constexpr14*/ auto inline
 make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr >
 {
     return unexpected_type< std::exception_ptr >( std::current_exception() );
@@ -1532,7 +1532,7 @@ constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type
 
 // expected<void> specialization:
 
-auto make_expected() -> expected<void>
+auto inline make_expected() -> expected<void>
 {
     return expected<void>( in_place );
 }
