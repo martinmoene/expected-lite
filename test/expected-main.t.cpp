@@ -4,7 +4,7 @@
 //
 // This code is licensed under the MIT License (MIT).
 
-#include "expected-lite.t.h"
+#include "expected-main.t.hpp"
 
 #define expected_PRESENT( x ) \
     std::cout << #x << ": " << x << "\n"

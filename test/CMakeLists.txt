@@ -8,7 +8,7 @@ cmake_minimum_required( VERSION 3.0 )
 
 project( test )
 
-set( MAIN_BASE expected-lite )
+set( MAIN_BASE expected-main )
 set( HDRNAME   expected.hpp    )
 set( SOURCES   ${MAIN_BASE}.t.cpp expected.t.cpp )
 

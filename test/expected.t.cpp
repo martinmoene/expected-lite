@@ -8,7 +8,7 @@
 //   A proposal to add a utility class to represent expected monad
 //   by Vicente J. Botet Escriba and Pierre Talbot, http:://wg21.link/p0323
 
-#include "expected-lite.t.h"
+#include "expected-main.t.hpp"
 
 using namespace nonstd;
 

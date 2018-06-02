@@ -37,13 +37,14 @@
 		<Unit filename="../../include/nonstd/expected.hpp" />
 		<Unit filename="../../include/nonstd/expected_cpp03.hpp" />
 		<Unit filename="../../test/CMakeLists.txt" />
-		<Unit filename="../../test/expected-lite.t.cpp" />
-		<Unit filename="../../test/expected-lite.t.h" />
+		<Unit filename="../../test/expected-main.t.cpp" />
+		<Unit filename="../../test/expected-main.t.hpp" />
 		<Unit filename="../../test/expected.t.cpp" />
 		<Unit filename="../../test/expected_cpp03.t.cpp" />
 		<Unit filename="../../test/lest.hpp" />
 		<Unit filename="../../test/t.bat" />
-		<Unit filename="../../test/tg-ct.bat" />
+		<Unit filename="../../test/tc.bat" />
+		<Unit filename="../../test/tg-all.bat" />
 		<Unit filename="../../test/tg.bat" />
 		<Extensions>
 			<code_completion />
