@@ -31,16 +31,7 @@
 #include <cmath>
 #include <cstddef>
 
-#ifdef __clang__
-# pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-# pragma clang diagnostic ignored "-Woverloaded-shift-op-parentheses"
-# pragma clang diagnostic ignored "-Wunused-comparison"
-# pragma clang diagnostic ignored "-Wunused-value"
-#elif defined __GNUC__
-# pragma GCC   diagnostic ignored "-Wunused-value"
-#endif
-
-#define  lest_VERSION "1.32.0"
+#define  lest_VERSION "1.33.1"
 
 #ifndef  lest_FEATURE_AUTO_REGISTER
 # define lest_FEATURE_AUTO_REGISTER  0
@@ -80,11 +71,52 @@
 # include <regex>
 #endif
 
+// Compiler warning suppression:
+
+#ifdef __clang__
+# pragma clang diagnostic ignored "-Waggregate-return"
+# pragma clang diagnostic ignored "-Woverloaded-shift-op-parentheses"
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunused-comparison"
+#elif defined __GNUC__
+# pragma GCC   diagnostic ignored "-Waggregate-return"
+# pragma GCC   diagnostic push
+#endif
+
+// Suppress shadow and unused-value warning for sections:
+
+#if defined __clang__
+# define lest_SUPPRESS_WSHADOW    _Pragma( "clang diagnostic push" ) \
+                                  _Pragma( "clang diagnostic ignored \"-Wshadow\"" )
+# define lest_SUPPRESS_WUNUSED    _Pragma( "clang diagnostic push" ) \
+                                  _Pragma( "clang diagnostic ignored \"-Wunused-value\"" )
+# define lest_RESTORE_WARNINGS    _Pragma( "clang diagnostic pop"  )
+
+#elif defined __GNUC__
+# define lest_SUPPRESS_WSHADOW    _Pragma( "GCC diagnostic push" ) \
+                                  _Pragma( "GCC diagnostic ignored \"-Wshadow\"" )
+# define lest_SUPPRESS_WUNUSED    _Pragma( "GCC diagnostic push" ) \
+                                  _Pragma( "GCC diagnostic ignored \"-Wunused-value\"" )
+# define lest_RESTORE_WARNINGS    _Pragma( "GCC diagnostic pop"  )
+#else
+# define lest_SUPPRESS_WSHADOW    /*empty*/
+# define lest_SUPPRESS_WUNUSED    /*empty*/
+# define lest_RESTORE_WARNINGS    /*empty*/
+#endif
+
+#ifdef  _MSVC_LANG
+# define lest_CPP17_OR_GREATER_MS (  _MSVC_LANG >= 201703L )
+#else
+# define lest_CPP17_OR_GREATER_MS    0
+#endif
+# define lest_CPP17_OR_GREATER    ( __cplusplus >= 201703L ||  lest_CPP17_OR_GREATER_MS )
+
 #if ! defined( lest_NO_SHORT_MACRO_NAMES ) && ! defined( lest_NO_SHORT_ASSERTION_NAMES )
 # define MODULE            lest_MODULE
 
 # if ! lest_FEATURE_AUTO_REGISTER
 #  define CASE             lest_CASE
+#  define CASE_ON          lest_CASE_ON
 #  define SCENARIO         lest_SCENARIO
 # endif
 
@@ -109,11 +141,11 @@
 #else
 #define lest_SCENARIO( sketch  )  lest_CASE(    lest::text("Scenario: ") + sketch  )
 #endif
-#define lest_GIVEN(    context )  lest_SETUP(   lest::text(   "Given: ") + context )
-#define lest_WHEN(     story   )  lest_SECTION( lest::text(   " When: ") + story   )
-#define lest_THEN(     story   )  lest_SECTION( lest::text(   " Then: ") + story   )
-#define lest_AND_WHEN( story   )  lest_SECTION( lest::text(   "  And: ") + story   )
-#define lest_AND_THEN( story   )  lest_SECTION( lest::text(   "  And: ") + story   )
+#define lest_GIVEN(    context )  lest_SETUP(   lest::text("   Given: ") + context )
+#define lest_WHEN(     story   )  lest_SECTION( lest::text("    When: ") + story   )
+#define lest_THEN(     story   )  lest_SECTION( lest::text("    Then: ") + story   )
+#define lest_AND_WHEN( story   )  lest_SECTION( lest::text("And then: ") + story   )
+#define lest_AND_THEN( story   )  lest_SECTION( lest::text("And then: ") + story   )
 
 #if lest_FEATURE_AUTO_REGISTER
 
@@ -124,7 +156,10 @@
 
 #else // lest_FEATURE_AUTO_REGISTER
 
-# define lest_CASE( proposition, ... ) \
+# define lest_CASE( proposition ) \
+    proposition, []( lest::env & lest_env )
+
+# define lest_CASE_ON( proposition, ... ) \
     proposition, [__VA_ARGS__]( lest::env & lest_env )
 
 # define lest_MODULE( specification, module ) \
@@ -133,12 +168,16 @@
 #endif //lest_FEATURE_AUTO_REGISTER
 
 #define lest_SETUP( context ) \
-    for ( int lest__section = 0, lest__count = 1; lest__section < lest__count; lest__count -= 0==lest__section++ )
+    for ( int lest__section = 0, lest__count = 1; lest__section < lest__count; lest__count -= 0==lest__section++ ) \
+       for ( lest::ctx lest__ctx_setup( lest_env, context ); lest__ctx_setup; )
 
 #define lest_SECTION( proposition ) \
+    lest_SUPPRESS_WSHADOW \
     static int lest_UNIQUE( id ) = 0; \
     if ( lest::guard( lest_UNIQUE( id ), lest__section, lest__count ) ) \
-        for ( int lest__section = 0, lest__count = 1; lest__section < lest__count; lest__count -= 0==lest__section++ )
+        for ( int lest__section = 0, lest__count = 1; lest__section < lest__count; lest__count -= 0==lest__section++ ) \
+            for ( lest::ctx lest__ctx_section( lest_env, proposition ); lest__ctx_section; ) \
+    lest_RESTORE_WARNINGS
 
 #define lest_EXPECT( expr ) \
     do { \
@@ -146,8 +185,8 @@
         { \
             if ( lest::result score = lest_DECOMPOSE( expr ) ) \
                 throw lest::failure{ lest_LOCATION, #expr, score.decomposition }; \
-            else if ( lest_env.pass ) \
-                lest::report( lest_env.os, lest::passing{ lest_LOCATION, #expr, score.decomposition }, lest_env.testing ); \
+            else if ( lest_env.pass() ) \
+                lest::report( lest_env.os, lest::passing{ lest_LOCATION, #expr, score.decomposition }, lest_env.context() ); \
         } \
         catch(...) \
         { \
@@ -161,8 +200,8 @@
         { \
             if ( lest::result score = lest_DECOMPOSE( expr ) ) \
             { \
-                if ( lest_env.pass ) \
-                    lest::report( lest_env.os, lest::passing{ lest_LOCATION, lest::not_expr( #expr ), lest::not_expr( score.decomposition ) }, lest_env.testing ); \
+                if ( lest_env.pass() ) \
+                    lest::report( lest_env.os, lest::passing{ lest_LOCATION, lest::not_expr( #expr ), lest::not_expr( score.decomposition ) }, lest_env.context() ); \
             } \
             else \
                 throw lest::failure{ lest_LOCATION, lest::not_expr( #expr ), lest::not_expr( score.decomposition ) }; \
@@ -178,14 +217,16 @@
     { \
         try \
         { \
+            lest_SUPPRESS_WUNUSED \
             expr; \
+            lest_RESTORE_WARNINGS \
         } \
         catch (...) \
         { \
             lest::inform( lest_LOCATION, #expr ); \
         } \
-        if ( lest_env.pass ) \
-            lest::report( lest_env.os, lest::got_none( lest_LOCATION, #expr ), lest_env.testing ); \
+        if ( lest_env.pass() ) \
+            lest::report( lest_env.os, lest::got_none( lest_LOCATION, #expr ), lest_env.context() ); \
     } while ( lest::is_false() )
 
 #define lest_EXPECT_THROWS( expr ) \
@@ -193,12 +234,14 @@
     { \
         try \
         { \
+            lest_SUPPRESS_WUNUSED \
             expr; \
+            lest_RESTORE_WARNINGS \
         } \
         catch (...) \
         { \
-            if ( lest_env.pass ) \
-                lest::report( lest_env.os, lest::got{ lest_LOCATION, #expr }, lest_env.testing ); \
+            if ( lest_env.pass() ) \
+                lest::report( lest_env.os, lest::got{ lest_LOCATION, #expr }, lest_env.context() ); \
             break; \
         } \
         throw lest::expected{ lest_LOCATION, #expr }; \
@@ -210,12 +253,14 @@
     { \
         try \
         { \
+            lest_SUPPRESS_WUNUSED \
             expr; \
+            lest_RESTORE_WARNINGS \
         }  \
         catch ( excpt & ) \
         { \
-            if ( lest_env.pass ) \
-                lest::report( lest_env.os, lest::got{ lest_LOCATION, #expr, lest::of_type( #excpt ) }, lest_env.testing ); \
+            if ( lest_env.pass() ) \
+                lest::report( lest_env.os, lest::got{ lest_LOCATION, #expr, lest::of_type( #excpt ) }, lest_env.context() ); \
             break; \
         } \
         catch (...) {} \
@@ -236,6 +281,8 @@
 
 namespace lest {
 
+const int exit_max_value = 255;
+
 using text  = std::string;
 using texts = std::vector<text>;
 
@@ -247,8 +294,8 @@ struct test
     std::function<void( env & )> behaviour;
 
 #if lest_FEATURE_AUTO_REGISTER
-    test( text name, std::function<void( env & )> behaviour )
-    : name( name ), behaviour( behaviour ) {}
+    test( text name_, std::function<void( env & )> behaviour_ )
+    : name( name_), behaviour( behaviour_) {}
 #endif
 };
 
@@ -268,7 +315,7 @@ struct add_test
 
 struct add_module
 {
-    template <std::size_t N>
+    template< std::size_t N >
     add_module( tests & specification, test const (&module)[N] )
     {
         specification.insert( specification.end(), std::begin( module ), std::end( module ) );
@@ -281,10 +328,10 @@ struct result
 {
     const bool passed;
     const text decomposition;
-    
+
     template< typename T >
-    result( T const & passed, text decomposition )
-    : passed( !!passed ), decomposition( decomposition ) {}
+    result( T const & passed_, text decomposition_)
+    : passed( !!passed_), decomposition( decomposition_) {}
 
     explicit operator bool() { return ! passed; }
 };
@@ -294,15 +341,15 @@ struct location
     const text file;
     const int line;
 
-    location( text file, int line )
-    : file( file ), line( line ) {}
+    location( text file_, int line_)
+    : file( file_), line( line_) {}
 };
 
 struct comment
 {
     const text info;
 
-    comment( text info ) : info( info ) {}
+    comment( text info_) : info( info_) {}
     explicit operator bool() { return ! info.empty(); }
 };
 
@@ -314,55 +361,55 @@ struct message : std::runtime_error
 
     ~message() throw() {}   // GCC 4.6
 
-    message( text kind, location where, text expr, text note = "" )
-    : std::runtime_error( expr ), kind( kind ), where( where ), note( note ) {}
+    message( text kind_, location where_, text expr_, text note_ = "" )
+    : std::runtime_error( expr_), kind( kind_), where( where_), note( note_) {}
 };
 
 struct failure : message
 {
-    failure( location where, text expr, text decomposition )
-    : message{ "failed", where, expr + " for " + decomposition } {}
+    failure( location where_, text expr_, text decomposition_)
+    : message{ "failed", where_, expr_ + " for " + decomposition_ } {}
 };
 
 struct success : message
 {
 //    using message::message;   // VC is lagging here
 
-    success( text kind, location where, text expr, text note = "" )
-    : message( kind, where, expr, note ) {}
+    success( text kind_, location where_, text expr_, text note_ = "" )
+    : message( kind_, where_, expr_, note_ ) {}
 };
 
 struct passing : success
 {
-    passing( location where, text expr, text decomposition )
-    : success( "passed", where, expr + " for " + decomposition ) {}
+    passing( location where_, text expr_, text decomposition_ )
+    : success( "passed", where_, expr_ + " for " + decomposition_) {}
 };
 
 struct got_none : success
 {
-    got_none( location where, text expr )
-    : success( "passed: got no exception", where, expr ) {}
+    got_none( location where_, text expr_ )
+    : success( "passed: got no exception", where_, expr_ ) {}
 };
 
 struct got : success
 {
-    got( location where, text expr )
-    : success( "passed: got exception", where, expr ) {}
+    got( location where_, text expr_)
+    : success( "passed: got exception", where_, expr_) {}
 
-    got( location where, text expr, text excpt )
-    : success( "passed: got exception " + excpt, where, expr ) {}
+    got( location where_, text expr_, text excpt_)
+    : success( "passed: got exception " + excpt_, where_, expr_) {}
 };
 
 struct expected : message
 {
-    expected( location where, text expr, text excpt = "" )
-    : message{ "failed: didn't get exception", where, expr, excpt } {}
+    expected( location where_, text expr_, text excpt_ = "" )
+    : message{ "failed: didn't get exception", where_, expr_, excpt_ } {}
 };
 
 struct unexpected : message
 {
-    unexpected( location where, text expr, text note = "" )
-    : message{ "failed: got unexpected exception", where, expr, note } {}
+    unexpected( location where_, text expr_, text note_ = "" )
+    : message{ "failed: got unexpected exception", where_, expr_, note_ } {}
 };
 
 struct guard
@@ -370,8 +417,8 @@ struct guard
     int & id;
     int const & section;
 
-    guard( int & id, int const & section, int & count )
-    : id( id ), section( section )
+    guard( int & id_, int const & section_, int & count )
+    : id( id_), section( section_)
     {
         if ( section == 0 )
             id = count++ - 1;
@@ -391,12 +438,12 @@ public:
 
     static approx custom() { return approx( 0 ); }
 
-    approx operator()( double magnitude )
+    approx operator()( double new_magnitude )
     {
-        approx approx ( magnitude );
-        approx.epsilon( epsilon_  );
-        approx.scale  ( scale_    );
-        return approx;
+        approx appr( new_magnitude );
+        appr.epsilon( epsilon_ );
+        appr.scale  ( scale_   );
+        return appr;
     }
 
     double magnitude() const { return magnitude_; }
@@ -465,55 +512,75 @@ inline void inform( location where, text expr )
 
 // Expression decomposition:
 
-template<typename T>
+template< typename T >
 auto make_value_string( T const & value ) -> std::string;
 
-template<typename T>
+template< typename T >
 auto make_memory_string( T const & item ) -> std::string;
 
 #if lest_FEATURE_LITERAL_SUFFIX
-inline char const * sfx( char const  * text ) { return text; }
+inline char const * sfx( char const  * txt ) { return txt; }
 #else
 inline char const * sfx( char const  *      ) { return ""; }
 #endif
 
 inline std::string to_string( std::nullptr_t               ) { return "nullptr"; }
-inline std::string to_string( std::string     const & text ) { return "\"" + text + "\"" ; }
+inline std::string to_string( std::string     const & txt ) { return "\"" + txt + "\"" ; }
 #if lest_FEATURE_WSTRING
-inline std::string to_string( std::wstring    const & text ) ;
+inline std::string to_string( std::wstring    const & txt ) ;
 #endif
 
-inline std::string to_string( char    const * const   text ) { return text ? to_string( std::string ( text ) ) : "{null string}"; }
-inline std::string to_string( char          * const   text ) { return text ? to_string( std::string ( text ) ) : "{null string}"; }
+inline std::string to_string( char    const * const   txt ) { return txt ? to_string( std::string ( txt ) ) : "{null string}"; }
+inline std::string to_string( char          * const   txt ) { return txt ? to_string( std::string ( txt ) ) : "{null string}"; }
 #if lest_FEATURE_WSTRING
-inline std::string to_string( wchar_t const * const   text ) { return text ? to_string( std::wstring( text ) ) : "{null string}"; }
-inline std::string to_string( wchar_t       * const   text ) { return text ? to_string( std::wstring( text ) ) : "{null string}"; }
+inline std::string to_string( wchar_t const * const   txt ) { return txt ? to_string( std::wstring( txt ) ) : "{null string}"; }
+inline std::string to_string( wchar_t       * const   txt ) { return txt ? to_string( std::wstring( txt ) ) : "{null string}"; }
 #endif
 
-inline std::string to_string(          char           text ) { return "\'" + std::string( 1, text ) + "\'" ; }
-inline std::string to_string(   signed char           text ) { return "\'" + std::string( 1, text ) + "\'" ; }
-inline std::string to_string( unsigned char           text ) { return "\'" + std::string( 1, text ) + "\'" ; }
+inline std::string to_string(          bool          flag ) { return flag ? "true" : "false"; }
 
-inline std::string to_string(          bool           flag ) { return flag ? "true" : "false"; }
+inline std::string to_string(   signed short        value ) { return make_value_string( value ) ;             }
+inline std::string to_string( unsigned short        value ) { return make_value_string( value ) + sfx("u"  ); }
+inline std::string to_string(   signed   int        value ) { return make_value_string( value ) ;             }
+inline std::string to_string( unsigned   int        value ) { return make_value_string( value ) + sfx("u"  ); }
+inline std::string to_string(   signed  long        value ) { return make_value_string( value ) + sfx("l"  ); }
+inline std::string to_string( unsigned  long        value ) { return make_value_string( value ) + sfx("ul" ); }
+inline std::string to_string(   signed  long long   value ) { return make_value_string( value ) + sfx("ll" ); }
+inline std::string to_string( unsigned  long long   value ) { return make_value_string( value ) + sfx("ull"); }
+inline std::string to_string(         double        value ) { return make_value_string( value ) ;             }
+inline std::string to_string(          float        value ) { return make_value_string( value ) + sfx("f"  ); }
 
-inline std::string to_string(   signed short         value ) { return make_value_string( value ) ;             }
-inline std::string to_string( unsigned short         value ) { return make_value_string( value ) + sfx("u"  ); }
-inline std::string to_string(   signed   int         value ) { return make_value_string( value ) ;             }
-inline std::string to_string( unsigned   int         value ) { return make_value_string( value ) + sfx("u"  ); }
-inline std::string to_string(   signed  long         value ) { return make_value_string( value ) + sfx("l"  ); }
-inline std::string to_string( unsigned  long         value ) { return make_value_string( value ) + sfx("ul" ); }
-inline std::string to_string(   signed  long long    value ) { return make_value_string( value ) + sfx("ll" ); }
-inline std::string to_string( unsigned  long long    value ) { return make_value_string( value ) + sfx("ull"); }
-inline std::string to_string(         double         value ) { return make_value_string( value ) ;             }
-inline std::string to_string(          float         value ) { return make_value_string( value ) + sfx("f"  ); }
+inline std::string to_string(   signed char           chr ) { return to_string( static_cast<char>( chr ) ); }
+inline std::string to_string( unsigned char           chr ) { return to_string( static_cast<char>( chr ) ); }
 
-template<typename T>
+inline std::string to_string(          char           chr )
+{
+    struct Tr { char chr; char const * str; } table[] =
+    {
+        {'\r', "'\\r'" }, {'\f', "'\\f'" },
+        {'\n', "'\\n'" }, {'\t', "'\\t'" },
+    };
+
+    for ( auto tr : table )
+    {
+        if ( chr == tr.chr )
+            return tr.str;
+    }
+
+    auto unprintable = [](char c){ return 0 <= c && c < ' '; };
+
+    return unprintable( chr  )
+        ? to_string( static_cast<unsigned int>( chr ) )
+        : "\'" + std::string( 1, chr ) + "\'" ;
+}
+
+template< typename T >
 struct is_streamable
 {
-    template<typename U>
+    template< typename U >
     static auto test( int ) -> decltype( std::declval<std::ostream &>() << std::declval<U>(), std::true_type() );
 
-    template<typename>
+    template< typename >
     static auto test( ... ) -> std::false_type;
 
 #ifdef _MSC_VER
@@ -523,13 +590,13 @@ struct is_streamable
 #endif
 };
 
-template<typename T>
+template< typename T >
 struct is_container
 {
-    template<typename U>
+    template< typename U >
     static auto test( int ) -> decltype( std::declval<U>().begin() == std::declval<U>().end(), std::true_type() );
 
-    template<typename>
+    template< typename >
     static auto test( ... ) -> std::false_type;
 
 #ifdef _MSC_VER
@@ -539,64 +606,50 @@ struct is_container
 #endif
 };
 
-template <typename T, typename R>
+template< typename T, typename R >
 using ForEnum = typename std::enable_if< std::is_enum<T>::value, R>::type;
 
-template <typename T, typename R>
+template< typename T, typename R >
 using ForNonEnum = typename std::enable_if< ! std::is_enum<T>::value, R>::type;
 
-template <typename T, typename R>
+template< typename T, typename R >
 using ForStreamable = typename std::enable_if< is_streamable<T>::value, R>::type;
 
-template <typename T, typename R>
+template< typename T, typename R >
 using ForNonStreamable = typename std::enable_if< ! is_streamable<T>::value, R>::type;
 
-template <typename T, typename R>
+template< typename T, typename R >
 using ForContainer = typename std::enable_if< is_container<T>::value, R>::type;
 
-template <typename T, typename R>
-using ForNonContainer = typename std::enable_if< ! is_container<T>::value, R>::type;
+template< typename T, typename R >
+using ForNonContainerNonPointer = typename std::enable_if< ! (is_container<T>::value || std::is_pointer<T>::value), R>::type;
 
-template<typename T>
-auto make_enum_string( T const & ) -> ForNonEnum<T, std::string>
+template< typename T >
+auto make_enum_string( T const & item ) -> ForNonEnum<T, std::string>
 {
 #if lest__cpp_rtti
-    return text("[type: ") + typeid(T).name() + "]";
+    return text("[type: ") + typeid(T).name() + "]: " + make_memory_string( item );
 #else
-    return text("[type: (no RTTI)]");
+    return text("[type: (no RTTI)]: ") + make_memory_string( item );
 #endif
 }
 
-template<typename T>
+template< typename T >
 auto make_enum_string( T const & item ) -> ForEnum<T, std::string>
 {
     return to_string( static_cast<typename std::underlying_type<T>::type>( item ) );
 }
 
-template<typename T>
+template< typename T >
 auto make_string( T const & item ) -> ForNonStreamable<T, std::string>
 {
     return make_enum_string( item );
 }
 
-template<typename T>
+template< typename T >
 auto make_string( T const & item ) -> ForStreamable<T, std::string>
 {
     std::ostringstream os; os << item; return os.str();
-}
-
-template<typename T>
-auto make_string( T * p )-> std::string
-{
-    if ( p ) return make_memory_string( p );
-    else     return "NULL";
-}
-
-template<typename C, typename R>
-auto make_string( R C::* p ) -> std::string
-{
-    if ( p ) return make_memory_string( p );
-    else     return "NULL";
 }
 
 template<typename T1, typename T2>
@@ -607,7 +660,7 @@ auto make_string( std::pair<T1,T2> const & pair ) -> std::string
     return oss.str();
 }
 
-template<typename TU, std::size_t N>
+template< typename TU, std::size_t N >
 struct make_tuple_string
 {
     static std::string make( TU const & tuple )
@@ -618,25 +671,54 @@ struct make_tuple_string
     }
 };
 
-template<typename TU>
+template< typename TU >
 struct make_tuple_string<TU, 0>
 {
     static std::string make( TU const & ) { return ""; }
 };
 
-template<typename ...TS>
+template< typename ...TS >
 auto make_string( std::tuple<TS...> const & tuple ) -> std::string
 {
     return "{ " + make_tuple_string<std::tuple<TS...>, sizeof...(TS)>::make( tuple ) + "}";
 }
 
-template<typename T>
-auto to_string( T const & item ) -> ForNonContainer<T, std::string>
+template< typename T >
+inline std::string make_string( T const * ptr )
+{
+    // Note showbase affects the behavior of /integer/ output;
+    std::ostringstream os;
+    os << std::internal << std::hex << std::showbase << std::setw( 2 + 2 * sizeof(T*) ) << std::setfill('0') << reinterpret_cast<std::ptrdiff_t>( ptr );
+    return os.str();
+}
+
+template< typename C, typename R >
+inline std::string make_string( R C::* ptr )
+{
+    std::ostringstream os;
+    os << std::internal << std::hex << std::showbase << std::setw( 2 + 2 * sizeof(R C::* ) ) << std::setfill('0') << ptr;
+    return os.str();
+}
+
+template< typename T >
+auto to_string( T const * ptr ) -> std::string
+{
+    return ! ptr ? "nullptr" : make_string( ptr );
+}
+
+template<typename C, typename R>
+auto to_string( R C::* ptr ) -> std::string
+{
+    return ! ptr ? "nullptr" : make_string( ptr );
+}
+
+template< typename T >
+auto to_string( T const & item ) -> ForNonContainerNonPointer<T, std::string>
 {
     return make_string( item );
 }
 
-template<typename C>
+template< typename C >
 auto to_string( C const & cont ) -> ForContainer<C, std::string>
 {
     std::ostringstream os;
@@ -651,11 +733,11 @@ auto to_string( C const & cont ) -> ForContainer<C, std::string>
 
 #if lest_FEATURE_WSTRING
 inline
-auto to_string( std::wstring const & text ) -> std::string
+auto to_string( std::wstring const & txt ) -> std::string
 {
-    std::string result; result.reserve( text.size() );
+    std::string result; result.reserve( txt.size() );
 
-    for( auto & chr : text )
+    for( auto & chr : txt )
     {
         result += chr <= 0xff ? static_cast<char>( chr ) : '?';
     }
@@ -663,7 +745,7 @@ auto to_string( std::wstring const & text ) -> std::string
 }
 #endif
 
-template<typename T>
+template< typename T >
 auto make_value_string( T const & value ) -> std::string
 {
     std::ostringstream os; os << value; return os.str();
@@ -696,7 +778,7 @@ auto make_memory_string( void const * item, std::size_t size ) -> std::string
     return os.str();
 }
 
-template<typename T>
+template< typename T >
 auto make_memory_string( T const & item ) -> std::string
 {
     return make_memory_string( &item, sizeof item );
@@ -708,27 +790,27 @@ auto to_string( approx const & appr ) -> std::string
     return to_string( appr.magnitude() );
 }
 
-template <typename L, typename R>
+template< typename L, typename R >
 auto to_string( L const & lhs, std::string op, R const & rhs ) -> std::string
 {
     std::ostringstream os; os << to_string( lhs ) << " " << op << " " << to_string( rhs ); return os.str();
 }
 
-template <typename L>
+template< typename L >
 struct expression_lhs
 {
     const L lhs;
 
-    expression_lhs( L lhs ) : lhs( lhs ) {}
+    expression_lhs( L lhs_) : lhs( lhs_) {}
 
     operator result() { return result{ !!lhs, to_string( lhs ) }; }
 
-    template <typename R> result operator==( R const & rhs ) { return result{ lhs == rhs, to_string( lhs, "==", rhs ) }; }
-    template <typename R> result operator!=( R const & rhs ) { return result{ lhs != rhs, to_string( lhs, "!=", rhs ) }; }
-    template <typename R> result operator< ( R const & rhs ) { return result{ lhs <  rhs, to_string( lhs, "<" , rhs ) }; }
-    template <typename R> result operator<=( R const & rhs ) { return result{ lhs <= rhs, to_string( lhs, "<=", rhs ) }; }
-    template <typename R> result operator> ( R const & rhs ) { return result{ lhs >  rhs, to_string( lhs, ">" , rhs ) }; }
-    template <typename R> result operator>=( R const & rhs ) { return result{ lhs >= rhs, to_string( lhs, ">=", rhs ) }; }
+    template< typename R > result operator==( R const & rhs ) { return result{ lhs == rhs, to_string( lhs, "==", rhs ) }; }
+    template< typename R > result operator!=( R const & rhs ) { return result{ lhs != rhs, to_string( lhs, "!=", rhs ) }; }
+    template< typename R > result operator< ( R const & rhs ) { return result{ lhs <  rhs, to_string( lhs, "<" , rhs ) }; }
+    template< typename R > result operator<=( R const & rhs ) { return result{ lhs <= rhs, to_string( lhs, "<=", rhs ) }; }
+    template< typename R > result operator> ( R const & rhs ) { return result{ lhs >  rhs, to_string( lhs, ">" , rhs ) }; }
+    template< typename R > result operator>=( R const & rhs ) { return result{ lhs >= rhs, to_string( lhs, ">=", rhs ) }; }
 };
 
 struct expression_decomposer
@@ -849,9 +931,9 @@ inline bool select( text name, texts include )
     auto none = []( texts args ) { return args.size() == 0; };
 
 #if lest_FEATURE_REGEX_SEARCH
-    auto hidden = []( text name ){ return match( { "\\[\\..*", "\\[hide\\]" }, name ); };
+    auto hidden = []( text arg ){ return match( { "\\[\\..*", "\\[hide\\]" }, arg ); };
 #else
-    auto hidden = []( text name ){ return match( { "[.", "[hide]" }, name ); };
+    auto hidden = []( text arg ){ return match( { "[.", "[hide]" }, arg ); };
 #endif
 
     if ( none( include ) )
@@ -899,6 +981,7 @@ struct options
     bool pass    = false;
     bool lexical = false;
     bool random  = false;
+    bool verbose = false;
     bool version = false;
     int  repeat  = 1;
     seed_t seed  = 0;
@@ -907,23 +990,71 @@ struct options
 struct env
 {
     std::ostream & os;
-    bool pass;
+    options opt;
     text testing;
+    std::vector< text > ctx;
 
-    env( std::ostream & os, bool pass )
-    : os( os ), pass( pass ), testing() {}
+    env( std::ostream & out, options option )
+    : os( out ), opt( option ), testing(), ctx() {}
 
     env & operator()( text test )
     {
         testing = test; return *this;
     }
+
+    bool abort() { return opt.abort; }
+    bool pass()  { return opt.pass; }
+
+    void pop()   { ctx.pop_back(); }
+    void push( text proposition ) { ctx.emplace_back( proposition ); }
+
+    text context() { return testing + sections(); }
+
+    text sections()
+    {
+        if ( ! opt.verbose )
+            return "";
+
+        text msg;
+        for( auto section : ctx )
+        {
+            msg += "\n  " + section;
+        }
+        return msg;
+    }
+};
+
+struct ctx
+{
+    env & environment;
+    bool once;
+
+    ctx( env & environment_, text proposition_ )
+    : environment( environment_), once( true )
+    {
+        environment.push( proposition_);
+    }
+
+    ~ctx()
+    {
+#if lest_CPP17_OR_GREATER
+        if ( std::uncaught_exceptions() == 0 )
+#else
+        if ( ! std::uncaught_exception() )
+#endif
+        {
+            environment.pop();
+        }
+    }
+
+    explicit operator bool() { bool result = once; once = false; return result; }
 };
 
 struct action
 {
     std::ostream & os;
 
-    action( std::ostream & os ) : os( os ) {}
+    action( std::ostream & out ) : os( out ) {}
 
     action( action const & ) = delete;
     void operator=( action const & ) = delete;
@@ -935,7 +1066,7 @@ struct action
 
 struct print : action
 {
-    print( std::ostream & os ) : action( os ) {}
+    print( std::ostream & out ) : action( out ) {}
 
     print & operator()( test testing )
     {
@@ -961,7 +1092,7 @@ struct ptags : action
 {
     std::set<text> result;
 
-    ptags( std::ostream & os ) : action( os ), result() {}
+    ptags( std::ostream & out ) : action( out ), result() {}
 
     ptags & operator()( test testing )
     {
@@ -981,7 +1112,7 @@ struct count : action
 {
     int n = 0;
 
-    count( std::ostream & os ) : action( os ) {}
+    count( std::ostream & out ) : action( out ) {}
 
     count & operator()( test ) { ++n; return *this; }
 
@@ -999,28 +1130,27 @@ struct timer
 
     double elapsed_seconds() const
     {
-        return 1e-6 * std::chrono::duration_cast< std::chrono::microseconds >( time::now() - start ).count();
+        return 1e-6 * static_cast<double>( std::chrono::duration_cast< std::chrono::microseconds >( time::now() - start ).count() );
     }
 };
 
 struct times : action
 {
     env output;
-    options option;
     int selected = 0;
     int failures = 0;
 
     timer total;
 
-    times( std::ostream & os, options option )
-    : action( os ), output( os, option.pass ), option( option ), total()
+    times( std::ostream & out, options option )
+    : action( out ), output( out, option ), total()
     {
         os << std::setfill(' ') << std::fixed << std::setprecision( lest_FEATURE_TIME_PRECISION );
     }
 
     operator int() { return failures; }
 
-    bool abort() { return option.abort && failures > 0; }
+    bool abort() { return output.abort() && failures > 0; }
 
     times & operator()( test testing )
     {
@@ -1049,16 +1179,15 @@ struct times : action
 struct confirm : action
 {
     env output;
-    options option;
     int selected = 0;
     int failures = 0;
 
-    confirm( std::ostream & os, options option )
-    : action( os ), output( os, option.pass ), option( option ) {}
+    confirm( std::ostream & out, options option )
+    : action( out ), output( out, option ) {}
 
     operator int() { return failures; }
 
-    bool abort() { return option.abort && failures > 0; }
+    bool abort() { return output.abort() && failures > 0; }
 
     confirm & operator()( test testing )
     {
@@ -1068,7 +1197,7 @@ struct confirm : action
         }
         catch( message const & e )
         {
-            ++failures; report( os, e, testing.name );
+            ++failures; report( os, e, output.context() );
         }
         return *this;
     }
@@ -1079,14 +1208,14 @@ struct confirm : action
         {
             os << failures << " out of " << selected << " selected " << pluralise("test", selected) << " " << colourise( "failed.\n" );
         }
-        else if ( option.pass )
+        else if ( output.pass() )
         {
             os << "All " << selected << " selected " << pluralise("test", selected) << " " << colourise( "passed.\n" );
         }
     }
 };
 
-template<typename Action>
+template< typename Action >
 bool abort( Action & perform )
 {
     return perform.abort();
@@ -1182,6 +1311,7 @@ inline auto split_arguments( texts args ) -> std::tuple<options, texts>
             else if ( opt == "-l"      || "--list-tests" == opt ) { option.list    =  true; continue; }
             else if ( opt == "-t"      || "--time"       == opt ) { option.time    =  true; continue; }
             else if ( opt == "-p"      || "--pass"       == opt ) { option.pass    =  true; continue; }
+            else if ( opt == "-v"      || "--verbose"    == opt ) { option.verbose =  true; continue; }
             else if (                     "--version"    == opt ) { option.version =  true; continue; }
             else if ( opt == "--order" && "declared"     == val ) { /* by definition */   ; continue; }
             else if ( opt == "--order" && "lexical"      == val ) { option.lexical =  true; continue; }
@@ -1208,6 +1338,7 @@ inline int usage( std::ostream & os )
         "  -l, --list-tests   list selected tests\n"
         "  -p, --pass         also report passing tests\n"
         "  -t, --time         list duration of selected tests\n"
+        "  -v, --verbose      also report passing or failing sections\n"
         "  --order=declared   use source code test order (default)\n"
         "  --order=lexical    use lexical sort test order\n"
         "  --order=random     use random test order\n"
@@ -1285,24 +1416,31 @@ inline int run( tests specification, int argc, char * argv[], std::ostream & os 
     return run( specification, texts( argv + 1, argv + argc ), os  );
 }
 
-template <std::size_t N>
+template< std::size_t N >
 int run( test const (&specification)[N], texts arguments, std::ostream & os = std::cout )
 {
-    return run( tests( specification, specification + N ), arguments, os  );
+    std::cout.sync_with_stdio( false );
+    return (std::min)( run( tests( specification, specification + N ), arguments, os  ), exit_max_value );
 }
 
-template <std::size_t N>
+template< std::size_t N >
 int run( test const (&specification)[N], std::ostream & os = std::cout )
 {
     return run( tests( specification, specification + N ), {}, os  );
 }
 
-template <std::size_t N>
+template< std::size_t N >
 int run( test const (&specification)[N], int argc, char * argv[], std::ostream & os = std::cout )
 {
     return run( tests( specification, specification + N ), texts( argv + 1, argv + argc ), os  );
 }
 
 } // namespace lest
+
+#ifdef __clang__
+# pragma clang diagnostic pop
+#elif defined __GNUC__
+# pragma GCC   diagnostic pop
+#endif
 
 #endif // LEST_LEST_HPP_INCLUDED
