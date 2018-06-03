@@ -805,14 +805,14 @@ CASE( "expected<void>: Allows to move-construct from expected<void>" )
     EXPECT( ev.error().val == value );
 }
 
-CASE( "expected<void>: Allows to in-place-construct" ) 
+CASE( "expected<void>: Allows to in-place-construct" )
 {
     expected<void, char> ev{ in_place };
 
     EXPECT( ev.has_value() );
 }
 
-CASE( "expected<void>: Allows to copy-construct from unexpected_type<>" ) 
+CASE( "expected<void>: Allows to copy-construct from unexpected_type<>" )
 {
     auto const value = 7;
     unexpected_type<Oracle> u{ OracleVal{ value } };
@@ -823,7 +823,7 @@ CASE( "expected<void>: Allows to copy-construct from unexpected_type<>" )
     EXPECT( ev.error().val.i == value );
 }
 
-CASE( "expected<void>: Allows to move-construct from unexpected_type<>" ) 
+CASE( "expected<void>: Allows to move-construct from unexpected_type<>" )
 {
     auto const value = 7;
 
@@ -833,7 +833,7 @@ CASE( "expected<void>: Allows to move-construct from unexpected_type<>" )
     EXPECT( ev.error().val.i == value );
 }
 
-CASE( "expected<void>: Allows to in-place-construct unexpected_type<>" ) 
+CASE( "expected<void>: Allows to in-place-construct unexpected_type<>" )
 {
     auto const value = 7;
 
@@ -851,7 +851,7 @@ CASE( "expected<void>: Allows to in-place-construct unexpected_type<>" )
     EXPECT( ec.error().val.i == value );
 }
 
-CASE( "expected<void>: Allows to copy-assign from expected<>" ) 
+CASE( "expected<void>: Allows to copy-assign from expected<>" )
 {
     auto const value = 7;
     expected<void, Oracle> ev{ unexpect, OracleVal{ value } };
@@ -865,7 +865,7 @@ CASE( "expected<void>: Allows to copy-assign from expected<>" )
     EXPECT( ec.error().val.i == value );
 }
 
-CASE( "expected<void>: Allows to move-assign from expected<>" ) 
+CASE( "expected<void>: Allows to move-assign from expected<>" )
 {
     auto const value = 7;
     expected<void, Oracle> ev{ unexpect, OracleVal{ value } };
@@ -879,7 +879,7 @@ CASE( "expected<void>: Allows to move-assign from expected<>" )
     EXPECT( ec.error().val.i == value );
 }
 
-CASE( "expected<void>: Allows to be swapped" ) 
+CASE( "expected<void>: Allows to be swapped" )
 {
     auto const vl = OracleVal{ 3 } ;
     auto const vr = OracleVal{ 7 } ;
@@ -899,7 +899,7 @@ CASE( "expected<void>: Allows to be swapped" )
     EXPECT( er.error().val == vr );
 }
 
-CASE( "expected<void>: Allows to observe if it contains a value (or error)" ) 
+CASE( "expected<void>: Allows to observe if it contains a value (or error)" )
 {
     expected<void, int> ev;
     expected<void, int> ee{ unexpect, 3 };
@@ -908,7 +908,7 @@ CASE( "expected<void>: Allows to observe if it contains a value (or error)" )
     EXPECT( !ee );
 }
 
-CASE( "expected<void>: Allows to observe its error" ) 
+CASE( "expected<void>: Allows to observe its error" )
 {
     auto const value = 7;
     expected<int, int> const ee{ unexpect, value };
@@ -916,7 +916,7 @@ CASE( "expected<void>: Allows to observe its error" )
     EXPECT( ee.error() == value );
 }
 
-CASE( "expected<void>: Allows to modify its error" ) 
+CASE( "expected<void>: Allows to modify its error" )
 {
     auto const old_value = 3;
     auto const new_value = 7;
@@ -927,7 +927,7 @@ CASE( "expected<void>: Allows to modify its error" )
     EXPECT( ee.error() == new_value );
 }
 
-CASE( "expected<void>: Allows to move its error" ) 
+CASE( "expected<void>: Allows to move its error" )
 {
     auto const value = 7;
     expected<void, Oracle> m{ unexpect, OracleVal{ value } };
@@ -938,7 +938,7 @@ CASE( "expected<void>: Allows to move its error" )
     EXPECT( e.error().val.i == value );
 }
 
-CASE( "expected<void>: Allows to observe its error as unexpected<>" ) 
+CASE( "expected<void>: Allows to observe its error as unexpected<>" )
 {
     auto const value = 7;
     expected<void, int> e{ unexpect, value };

@@ -20,12 +20,12 @@
 
 #include <iosfwd>
 namespace lest {
-     
-template< typename T, typename E > 
-std::ostream & operator<<( std::ostream & os, nonstd::expected<T,E> const & ); 
 
-template< typename E > 
-std::ostream & operator<<( std::ostream & os, nonstd::expected<void,E> const & ); 
+template< typename T, typename E >
+std::ostream & operator<<( std::ostream & os, nonstd::expected<T,E> const & );
+
+template< typename E >
+std::ostream & operator<<( std::ostream & os, nonstd::expected<void,E> const & );
 } // namespace lest
 
 #include "lest.hpp"
