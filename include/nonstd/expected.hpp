@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-#define  expected_lite_VERSION "0.0.3"
+#define  expected_lite_VERSION "0.1.0"
 
 // expected-lite configuration
 //
