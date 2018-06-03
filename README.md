@@ -298,10 +298,8 @@ unexpected_type<>: Allows to modify its value
 unexpected_type<>: Allows to modify its value, std::exception_ptr specialization
 unexpected_type<>: Provides relational operators
 unexpected_type<>: Provides relational operators, std::exception_ptr specialization
-is_unexpected<X>: Is true for unexpected_type
-is_unexpected<X>: Is false for non-unexpected_type (int)
 make_unexpected(): Allows to create an unexpected_type<E> from an E
-make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current exception
+unexpected<>: C++17 and later provide unexpected_type as unexpected
 bad_expected_access<>: Disallows default construction
 bad_expected_access<>: Allows construction from error_type
 bad_expected_access<>: Allows to observe its error
@@ -336,6 +334,20 @@ expected<>: Allows to move its error
 expected<>: Allows to observe its error as unexpected<>
 expected<>: Allows to observe its value if available, or obtain a specified value otherwise
 expected<>: Allows to move its value if available, or obtain a specified value otherwise
-expected<>: Provides relational operators
-...
+expected<void>: Allows to default-construct
+expected<void>: Allows to copy-construct from expected<void>
+expected<void>: Allows to move-construct from expected<void>
+expected<void>: Allows to in-place-construct
+expected<void>: Allows to copy-construct from unexpected_type<>
+expected<void>: Allows to move-construct from unexpected_type<>
+expected<void>: Allows to in-place-construct unexpected_type<>
+expected<void>: Allows to copy-assign from expected<>
+expected<void>: Allows to move-assign from expected<>
+expected<void>: Allows to be swapped
+expected<void>: Allows to observe if it contains a value (or error)
+expected<void>: Allows to observe its error
+expected<void>: Allows to modify its error
+expected<void>: Allows to move its error
+expected<void>: Allows to observe its error as unexpected<>
+operator op: Provides relational operators
 ```
