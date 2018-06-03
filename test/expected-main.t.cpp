@@ -12,6 +12,14 @@
 #define expected_ABSENT( x ) \
     std::cout << #x << ": (undefined)\n"
 
+// Suppress:
+// - unused parameter, for cases without assertions such as [.std...]
+#if defined __clang__
+# pragma clang diagnostic ignored "-Wunused-parameter"
+#elif defined __GNUC__
+# pragma GCC   diagnostic ignored "-Wunused-parameter"
+#endif
+
 lest::tests & specification()
 {
     static lest::tests tests;
