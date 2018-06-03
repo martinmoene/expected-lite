@@ -18,6 +18,16 @@
 # pragma warning(disable: ALL_CPPCORECHECK_WARNINGS)
 #endif
 
+#include <iosfwd>
+namespace lest {
+     
+template< typename T, typename E > 
+std::ostream & operator<<( std::ostream & os, nonstd::expected<T,E> const & ); 
+
+template< typename E > 
+std::ostream & operator<<( std::ostream & os, nonstd::expected<void,E> const & ); 
+} // namespace lest
+
 #include "lest.hpp"
 
 using namespace nonstd;
@@ -26,23 +36,24 @@ using namespace nonstd;
 
 extern lest::tests & specification();
 
-namespace nonstd { namespace expected_lite {
+namespace lest {
 
 // use oparator<< instead of to_string() overload;
 // see  http://stackoverflow.com/a/10651752/437272
 
 template< typename T, typename E >
-inline std::ostream & operator<<( std::ostream & os, expected<T,E> const & v )
+inline std::ostream & operator<<( std::ostream & os, nonstd::expected<T,E> const & v )
 {
     using lest::to_string;
     return os << "[expected:" << (v ? to_string(*v) : "[empty]") << "]";
 }
 
-}}
-
-namespace lest {
-
-using ::nonstd::expected_lite::operator<<;
+template< typename E >
+inline std::ostream & operator<<( std::ostream & os, nonstd::expected<void,E> const & v )
+{
+    using lest::to_string;
+    return os << "[expected<void>:" << (v ? "[non-empty]" : "[empty]") << "]";
+}
 
 } // namespace lest
 
