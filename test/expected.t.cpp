@@ -376,7 +376,7 @@ CASE( "bad_expected_access<>: Allows to change its error" )
 }
 
 // -----------------------------------------------------------------------
-// expected<>, expected<void> specialization
+// expected<>
 
 // expected<> constructors
 
@@ -655,12 +655,10 @@ CASE( "expected<>: Allows to modify its value via a reference" )
 
 CASE( "expected<>: Allows to observe if it contains a value (or error)" )
 {
-    expected<int, char> ei;
-
-    EXPECT( ei );
-
+    expected<int, int> ei;
     expected<int, int> ee{ unexpect, 3 };
 
+    EXPECT(  ei );
     EXPECT( !ee );
 }
 
@@ -762,6 +760,182 @@ CASE( "expected<>: Allows to move its value if available, or obtain a specified 
     EXPECT( e.value().val == ov.val );
     EXPECT( m.value().s == sMovedFrom );
     EXPECT( e.value().s == sMoveConstructed );
+}
+
+// -----------------------------------------------------------------------
+// expected<void> specialization
+
+// constructors
+
+CASE( "expected<void>: Allows to default-construct" )
+{
+    expected<void, char> ev;
+
+    EXPECT( ev.has_value() );
+}
+
+CASE( "expected<void>: Allows to copy-construct from expected<void>" )
+{
+    auto const value = 7;
+    OracleVal v{ value };
+    expected<void, Oracle> ev1{ unexpect, v };
+
+    expected<void, expected<void, Oracle>> ev2{ unexpect, ev1 };
+
+    EXPECT( ev2.error().error().s     == sCopyConstructed );
+    EXPECT( ev2.error().error().val.s == sValueConstructed );
+    EXPECT( ev2.error().error().val   == value );
+}
+
+CASE( "expected<void>: Allows to move-construct from expected<void>" )
+{
+    auto const value = 7;
+
+    expected<void, expected<void, Oracle>> ev{ unexpect, expected<void, Oracle>{ unexpect, OracleVal{ value } } };
+
+    EXPECT( ev.error().error().s   == sMoveConstructed );
+    EXPECT( ev.error().error().val == value );
+}
+
+CASE( "expected<void>: Allows to in-place-construct" ) 
+{
+    expected<void, char> ev{ in_place };
+
+    EXPECT( ev.has_value() );
+}
+
+CASE( "expected<void>: Allows to copy-construct from unexpected_type<>" ) 
+{
+    auto const value = 7;
+    unexpected_type<Oracle> u{ OracleVal{ value } };
+
+    expected<void, Oracle> ev{ u };
+
+    EXPECT( ev.error().s == sCopyConstructed );
+    EXPECT( ev.error().val.i == value );
+}
+
+CASE( "expected<void>: Allows to move-construct from unexpected_type<>" ) 
+{
+    auto const value = 7;
+
+    expected<void, Oracle> ev{ unexpected_type<Oracle>{ OracleVal{ value } } };
+
+    EXPECT( ev.error().s == sMoveConstructed );
+    EXPECT( ev.error().val.i == value );
+}
+
+CASE( "expected<void>: Allows to in-place-construct unexpected_type<>" ) 
+{
+    auto const value = 7;
+
+    expected<void, Oracle> em{ unexpect, OracleVal{ value } };
+
+    EXPECT( em.error().s == sMoveConstructed );
+    EXPECT( em.error().val.i == value );
+
+    // Note: ov is moved-from:
+    OracleVal const ov{ value };
+
+    expected<void, Oracle> ec{ unexpect, ov };
+
+    EXPECT( ec.error().s == sMoveConstructed );
+    EXPECT( ec.error().val.i == value );
+}
+
+CASE( "expected<void>: Allows to copy-assign from expected<>" ) 
+{
+    auto const value = 7;
+    expected<void, Oracle> ev{ unexpect, OracleVal{ value } };
+
+    expected<void, Oracle> ec{ ev };
+
+    EXPECT( ev.error().s == sMoveConstructed );
+    EXPECT( ec.error().s == sCopyConstructed );
+
+    EXPECT( ev.error().val.i == value );
+    EXPECT( ec.error().val.i == value );
+}
+
+CASE( "expected<void>: Allows to move-assign from expected<>" ) 
+{
+    auto const value = 7;
+    expected<void, Oracle> ev{ unexpect, OracleVal{ value } };
+
+    expected<void, Oracle> ec{ std::move(ev) };
+
+    EXPECT( ev.error().s == sMovedFrom );
+    EXPECT( ec.error().s == sMoveConstructed );
+
+    EXPECT( ev.error().val.i == value );
+    EXPECT( ec.error().val.i == value );
+}
+
+CASE( "expected<void>: Allows to be swapped" ) 
+{
+    auto const vl = OracleVal{ 3 } ;
+    auto const vr = OracleVal{ 7 } ;
+
+    expected<void, Oracle> el{ unexpect, vl };
+    expected<void, Oracle> er{ unexpect, vr };
+
+    el.swap( er );
+
+    EXPECT( el.error().val == vr );
+    EXPECT( er.error().val == vl );
+
+    using std::swap;
+    swap( el, er );
+
+    EXPECT( el.error().val == vl );
+    EXPECT( er.error().val == vr );
+}
+
+CASE( "expected<void>: Allows to observe if it contains a value (or error)" ) 
+{
+    expected<void, int> ev;
+    expected<void, int> ee{ unexpect, 3 };
+
+    EXPECT(  ev );
+    EXPECT( !ee );
+}
+
+CASE( "expected<void>: Allows to observe its error" ) 
+{
+    auto const value = 7;
+    expected<int, int> const ee{ unexpect, value };
+
+    EXPECT( ee.error() == value );
+}
+
+CASE( "expected<void>: Allows to modify its error" ) 
+{
+    auto const old_value = 3;
+    auto const new_value = 7;
+    expected<void, int> ee{ unexpect, old_value };
+
+    ee.error() = new_value;
+
+    EXPECT( ee.error() == new_value );
+}
+
+CASE( "expected<void>: Allows to move its error" ) 
+{
+    auto const value = 7;
+    expected<void, Oracle> m{ unexpect, OracleVal{ value } };
+
+    expected<void, Oracle> e{ unexpect, std::move( m.error() ) };
+
+    EXPECT( m.error().s == sMovedFrom );
+    EXPECT( e.error().val.i == value );
+}
+
+CASE( "expected<void>: Allows to observe its error as unexpected<>" ) 
+{
+    auto const value = 7;
+    expected<void, int> e{ unexpect, value };
+
+    EXPECT( e.get_unexpected().value() == value );
 }
 
 // [expected<> unwrap()]
