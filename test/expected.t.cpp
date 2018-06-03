@@ -10,6 +10,14 @@
 
 #include "expected-main.t.hpp"
 
+// Suppress:
+// - unused parameter, for cases without assertions such as [.std...]
+#if defined __clang__
+# pragma clang diagnostic ignored "-Wunused-parameter"
+#elif defined __GNUC__
+# pragma GCC   diagnostic ignored "-Wunused-parameter"
+#endif
+
 using namespace nonstd;
 
 enum State
@@ -780,21 +788,21 @@ CASE( "expected<void>: Allows to copy-construct from expected<void>" )
     OracleVal v{ value };
     expected<void, Oracle> ev1{ unexpect, v };
 
-    expected<void, expected<void, Oracle>> ev2{ unexpect, ev1 };
+    expected<void, Oracle> ev2{ ev1 };
 
-    EXPECT( ev2.error().error().s     == sCopyConstructed );
-    EXPECT( ev2.error().error().val.s == sValueConstructed );
-    EXPECT( ev2.error().error().val   == value );
+    EXPECT( ev2.error().s     == sCopyConstructed );
+    EXPECT( ev2.error().val.s == sValueConstructed );
+    EXPECT( ev2.error().val   == value );
 }
 
 CASE( "expected<void>: Allows to move-construct from expected<void>" )
 {
     auto const value = 7;
 
-    expected<void, expected<void, Oracle>> ev{ unexpect, expected<void, Oracle>{ unexpect, OracleVal{ value } } };
+    expected<void, Oracle> ev{ expected<void, Oracle>{ unexpect, OracleVal{ value } } };
 
-    EXPECT( ev.error().error().s   == sMoveConstructed );
-    EXPECT( ev.error().error().val == value );
+    EXPECT( ev.error().s   == sMoveConstructed );
+    EXPECT( ev.error().val == value );
 }
 
 CASE( "expected<void>: Allows to in-place-construct" ) 
@@ -944,7 +952,7 @@ CASE( "expected<void>: Allows to observe its error as unexpected<>" )
 
 // expected<> relational operators
 
-CASE( "expected<>: Provides relational operators" )
+CASE( "operator op: Provides relational operators" )
 {
     SETUP( "" ) {
         expected<int, char> e1( 6 );
