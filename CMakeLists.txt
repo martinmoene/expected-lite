@@ -10,7 +10,7 @@ cmake_minimum_required( VERSION 3.0 )
 # At default, enable building and performing of tests and building of examples:
 
 option( EXPECTED_LITE_OPT_BUILD_TESTS    "Build and perform expected-lite tests" ON )
-option( EXPECTED_LITE_OPT_BUILD_EXAMPLES "Build expected-lite examples" OFF )
+option( EXPECTED_LITE_OPT_BUILD_EXAMPLES "Build expected-lite examples" ON )
 set(    EXPEXTED_P0323R  "99" STRING     "Specify proposal revision compatibility (99: latest)" )
 
 project( expected_lite )
