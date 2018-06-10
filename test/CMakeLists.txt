@@ -2,10 +2,10 @@
 #
 # https://github.com/martinmoene/expected-lite
 #
-# Distributed under the Boost Software License, Version 1.0. 
+# Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.5 )
 
 project( test LANGUAGES CXX )
 
@@ -21,11 +21,11 @@ set( DEFCMN  "-Dlest_FEATURE_AUTO_REGISTER=1" )
 
 set( HAS_STD_FLAGS  FALSE )
 set( HAS_CPP98_FLAG FALSE )
-set( HAS_CPP03_FLAG FALSE )
 set( HAS_CPP11_FLAG FALSE )
 set( HAS_CPP14_FLAG FALSE )
 set( HAS_CPP17_FLAG FALSE )
 set( HAS_CPP20_FLAG FALSE )
+set( HAS_CPPLATEST_FLAG FALSE )
 
 if ( EXPEXTED_P0323R LESS "99" )
     set( DEFCMN  ${DEFCMN} "-Dnsel_P0323R=${EXPEXTED_P0323R}" )
@@ -34,7 +34,6 @@ endif()
 if( MSVC )
     set( HAS_STD_FLAGS TRUE )
 
-    set( STD_OPT     -std: )
     set( OPTIONS     -W3 -EHsc )
     set( DEFINITIONS -D_SCL_SECURE_NO_WARNINGS -DNOMINMAX ${DEFCMN} )
 
@@ -46,14 +45,11 @@ if( MSVC )
         set( HAS_CPP17_FLAG TRUE )
     endif()
 
-elseif( CMAKE_CXX_COMPILER_ID MATCHES GNU OR
-        CMAKE_CXX_COMPILER_ID MATCHES Clang )
+elseif( CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" )
 
     set( HAS_STD_FLAGS  TRUE )
     set( HAS_CPP98_FLAG TRUE )
-    set( HAS_CPP03_FLAG TRUE )
 
-    set( STD_OPT     -std= )
     set( OPTIONS     -Wall -Wno-missing-braces -fno-elide-constructors )
     set( DEFINITIONS ${DEFCMN} )
 
@@ -71,7 +67,7 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES GNU OR
     endif()
 
     # Clang: available -std flags depends on version
-    if( CMAKE_CXX_COMPILER_ID MATCHES Clang )
+    if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
         if( NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.3.0 )
             set( HAS_CPP11_FLAG TRUE )
         endif()
@@ -83,7 +79,7 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES GNU OR
         endif()
     endif()
 
-elseif( CMAKE_CXX_COMPILER_ID MATCHES Intel )
+elseif( CMAKE_CXX_COMPILER_ID MATCHES "Intel" )
 # as is
 else()
 # as is
@@ -103,13 +99,22 @@ endfunction()
 # make target, compile for given standard if specified:
 
 function( make_target target std )
-    if( std )
-        set( OPTIONAL_STD ${STD_OPT}${std} )
-    endif()
     add_executable            ( ${target} ${SOURCES} ${HDRPATH} )
-    target_compile_options    ( ${target} PRIVATE ${OPTIONS} ${OPTIONAL_STD} )
+    target_compile_options    ( ${target} PRIVATE ${OPTIONS} )
     target_compile_definitions( ${target} PRIVATE ${DEFINITIONS} )
     target_include_directories( ${target} PRIVATE ${HDRDIR} )
+    if( std )
+        if( MSVC )
+            target_compile_options( ${target} PRIVATE -std:c++${std} )
+        else()
+            # Necessary for clang 3.x:
+            target_compile_options( ${target} PRIVATE -std=c++${std} )
+            # Ok for clang 4 and later:
+            # set( CMAKE_CXX_STANDARD ${std} )
+            # set( CMAKE_CXX_STANDARD_REQUIRED ON )
+            # set( CMAKE_CXX_EXTENSIONS OFF )
+        endif()
+    endif()
 endfunction()
 
 # add generic executable, unless -std flags can be specified:
@@ -119,33 +124,29 @@ if( NOT HAS_STD_FLAGS )
 else()
 #    # unconditionally add C++98 variant as MSVC has no option for it:
 #    if( HAS_CPP98_FLAG )
-#        make_target( ${MAIN_BASE}-cpp98.t c++98 )
+#        make_target( ${MAIN_BASE}-cpp98.t 98 )
 #    else()
 #        make_target( ${MAIN_BASE}-cpp98.t "" )
-#    endif()
-#
-#    if( HAS_CPP03_FLAG )
-#        make_target( ${MAIN_BASE}-cpp03.t c++03 )
 #    endif()
 
     # unconditionally add C++11 variant as MSVC has no option for it:
     if( HAS_CPP11_FLAG )
-        make_target( ${MAIN_BASE}-cpp11.t c++11 )
+        make_target( ${MAIN_BASE}-cpp11.t 11 )
     else()
         make_target( ${MAIN_BASE}-cpp11.t "" )
     endif()
 
     if( HAS_CPP14_FLAG )
-        make_target( ${MAIN_BASE}-cpp14.t c++14 )
+        make_target( ${MAIN_BASE}-cpp14.t 14 )
     endif()
 
     if( HAS_CPP17_FLAG )
-        make_target( ${MAIN_BASE}-cpp17.t c++17 )
+        make_target( ${MAIN_BASE}-cpp17.t 17 )
         enable_msvs_guideline_checker( ${MAIN_BASE}-cpp17.t )
     endif()
 
     if( HAS_CPPLATEST_FLAG )
-        make_target( ${MAIN_BASE}-cpplatest.t c++latest )
+        make_target( ${MAIN_BASE}-cpplatest.t latest )
     endif()
 endif()
 
@@ -157,9 +158,6 @@ if( HAS_STD_FLAGS )
 #    # unconditionally add C++98 variant for MSVC:
 #    add_test(     NAME test-cpp98     COMMAND ${MAIN_BASE}-cpp98.t )
 #
-#    if( HAS_CPP03_FLAG )
-#        add_test( NAME test-cpp03     COMMAND ${MAIN_BASE}-cpp03.t )
-#    endif()
 
     # unconditionally add C++11 variant for MSVC:
     add_test( NAME test-cpp11     COMMAND ${MAIN_BASE}-cpp11.t )
