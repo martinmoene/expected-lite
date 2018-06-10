@@ -27,7 +27,7 @@
 		<Unit filename="../../.travis.yml" />
 		<Unit filename="../../CHANGES.txt" />
 		<Unit filename="../../CMakeLists.txt" />
-		<Unit filename="../../LICENSE" />
+		<Unit filename="../../LICENSE.txt" />
 		<Unit filename="../../Notes.md" />
 		<Unit filename="../../README.md" />
 		<Unit filename="../../appveyor.yml" />

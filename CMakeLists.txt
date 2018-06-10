@@ -13,7 +13,7 @@ option( EXPECTED_LITE_OPT_BUILD_TESTS    "Build and perform expected-lite tests"
 option( EXPECTED_LITE_OPT_BUILD_EXAMPLES "Build expected-lite examples" ON )
 set(    EXPEXTED_P0323R  "99" STRING     "Specify proposal revision compatibility (99: latest)" )
 
-project( expected_lite )
+project( expected_lite LANGUAGES CXX )
 
 set( package_name "expected-lite" )
 

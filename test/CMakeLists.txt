@@ -7,7 +7,7 @@
 
 cmake_minimum_required( VERSION 3.0 )
 
-project( test )
+project( test LANGUAGES CXX )
 
 set( MAIN_BASE expected-main )
 set( HDRNAME   expected.hpp    )
