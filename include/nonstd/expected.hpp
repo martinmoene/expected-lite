@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2016-2018 Martin Moene.
 //
-// Distributed under the Boost Software License, Version 1.0. 
+// Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 // expected lite is based on:
@@ -197,7 +197,12 @@ private:
         return m_value;
     }
 
-    constexpr value_type && value() const &&
+    constexpr value_type const && value() const &&
+    {
+        return std::move( m_value );
+    }
+
+    nsel_constexpr14 value_type && value() &&
     {
         return std::move( m_value );
     }
@@ -1045,11 +1050,18 @@ public:
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
 
-    constexpr value_type && value() const &&
+    constexpr value_type const && value() const &&
     {
-        return has_value()
+        return std::move( has_value()
             ? ( contained.value() )
-            : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
+            : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() ) );
+    }
+
+    nsel_constexpr14 value_type && value() &&
+    {
+        return std::move( has_value()
+            ? ( contained.value() )
+            : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() ) );
     }
 
     constexpr error_type const & error() const &

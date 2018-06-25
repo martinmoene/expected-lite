@@ -2,7 +2,7 @@
 //
 // Copyright (c) 2016-2018 Martin Moene.
 //
-// Distributed under the Boost Software License, Version 1.0. 
+// Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 // expected lite is based on:
@@ -1070,12 +1070,19 @@ CASE( "make_expected_from_call(): ..." "[.deprecated]" )
 // -----------------------------------------------------------------------
 // expected: issues
 
-// issue #15, https://github.com/martinmoene/expected-lite/issues/15
+// issue #15, https://github.com/martinmoene/expected-dark/issues/15
 
-CASE( "issue #15" )
+CASE( "issue-15d" )
 {
     nonstd::expected< int, std::error_code > e = 12;
     (void)e.value();
+}
+
+// issue #15, https://github.com/martinmoene/expected-lite/issues/15
+
+CASE( "issue-15" )
+{
+    (void) nonstd::expected< int, int >( 12).value();
 }
 
 // -----------------------------------------------------------------------
