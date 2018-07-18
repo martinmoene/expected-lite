@@ -1140,13 +1140,13 @@ public:
 //  expected<decltype(func(declval<T>())),E> map(F&& func) ;
 
 //  template <typename F>
-//  ’see below’ bind(F&& func);
+//  'see below' bind(F&& func);
 
 //  template <typename F>
 //  expected<T,E> catch_error(F&& f);
 
 //  template <typename F>
-//  ’see below’ then(F&& func);
+//  'see below' then(F&& func);
 
 private:
     bool has_value_;
@@ -1351,9 +1351,9 @@ public:
         return ! has_value() && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
     }
 
-//  template constexpr ’see below’ unwrap() const&;
+//  template constexpr 'see below' unwrap() const&;
 //
-//  template ’see below’ unwrap() &&;
+//  template 'see below' unwrap() &&;
 
     // factories
 
@@ -1364,13 +1364,13 @@ public:
 //  expected<decltype(func()), E> map(F&& func) ;
 //
 //  template <typename F>
-//  ’see below’ bind(F&& func) ;
+//  'see below' bind(F&& func) ;
 //
 //  template <typename F>
 //  expected<void,E> catch_error(F&& f);
 //
 //  template <typename F>
-//  ’see below’ then(F&& func);
+//  'see below' then(F&& func);
 
 private:
     bool has_value_;
