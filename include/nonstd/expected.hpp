@@ -1092,7 +1092,8 @@ public:
     template< typename Ex >
     bool has_exception() const
     {
-        return ! has_value() && std::is_base_of< Ex, decltype( get_unexpected().value() ) >::value;
+        using ContainedEx = typename std::remove_reference< decltype( get_unexpected().value() ) >::type;
+        return ! has_value() && std::is_base_of< Ex, ContainedEx>::value;
     }
 
     template< typename U, nsel_REQUIRES_T(
