@@ -739,11 +739,12 @@ CASE( "expected<>: Allows to observe its error as unexpected<>" )
     EXPECT( e.get_unexpected().value() == value );
 }
 
-CASE( "expected<>: Allows to query if it contains an exception of a specific base type" "[.failing]" )
+CASE( "expected<>: Allows to query if it contains an exception of a specific base type" )
 {
-    expected<int, std::exception_ptr> e{ unexpect, make_ep() };
+    expected<int, std::out_of_range> e{ unexpect, std::out_of_range( "oor" ) };
 
-    EXPECT( e.has_exception< std::out_of_range >() );
+    EXPECT( e.has_exception< std::logic_error >() );
+    EXPECT( !e.has_exception< std::runtime_error >() );
 }
 
 CASE( "expected<>: Allows to observe its value if available, or obtain a specified value otherwise" )
