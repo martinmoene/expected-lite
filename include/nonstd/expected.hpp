@@ -117,6 +117,20 @@
 
 nsel_DISABLE_MSVC_WARNINGS( 26409 )
 
+// take in_place from std, if available:
+
+#if nsel_CPP17_OR_GREATER
+
+#include <utility>
+
+namespace nonstd {
+
+    using std::in_place;
+    using std::in_place_t;
+}
+
+#endif // nsel_CPP17_OR_GREATER
+
 namespace nonstd {
 
 namespace std20 {
@@ -526,11 +540,15 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
 
 #endif // nsel_P0323R
 
-/// in-place tag: construct a value in-place (should come from std::experimental::optional)
+/// in-place tag: construct a value in-place (should come from <utility>)
+
+#if ! nsel_CPP17_OR_GREATER
 
 struct in_place_t{};
 
 nsel_inline17 constexpr in_place_t in_place{};
+
+#endif // nsel_CPP17_OR_GREATER
 
 /// unexpect tag, in_place_unexpected tag: construct an error
 
