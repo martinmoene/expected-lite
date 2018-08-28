@@ -22,7 +22,14 @@
 #include <type_traits>
 #include <utility>
 
-#define  expected_lite_VERSION "0.1.0"
+#define expected_lite_MAJOR  0
+#define expected_lite_MINOR  1
+#define expected_lite_PATCH  0
+
+#define expected_lite_VERSION  expected_STRINGIFY(expected_lite_MAJOR) "." expected_STRINGIFY(expected_lite_MINOR) "." expected_STRINGIFY(expected_lite_PATCH)
+
+#define expected_STRINGIFY(  x )  expected_STRINGIFY_( x )
+#define expected_STRINGIFY_( x )  #x
 
 // expected-lite configuration
 //

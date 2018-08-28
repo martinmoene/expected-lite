@@ -7,6 +7,10 @@
 
 cmake_minimum_required( VERSION 3.5 )
 
+# expected-lite version, updated by script/update-version.py:
+
+set( expected_lite_version "0.1.0" )
+
 # At default, enable building and performing of tests and building of examples:
 
 option( EXPECTED_LITE_OPT_BUILD_TESTS    "Build and perform expected-lite tests" ON )

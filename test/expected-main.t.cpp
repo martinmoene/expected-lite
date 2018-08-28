@@ -27,14 +27,17 @@ lest::tests & specification()
     return tests;
 }
 
+CASE( "expected-lite version" "[.version]" )
+{
+    expected_PRESENT( expected_lite_MAJOR );
+    expected_PRESENT( expected_lite_MINOR );
+    expected_PRESENT( expected_lite_PATCH );
+    expected_PRESENT( expected_lite_VERSION );
+}
+
 CASE( "__cplusplus" "[.stdc++]" )
 {
     expected_PRESENT( __cplusplus );
-}
-
-CASE( "expected-lite version" "[.version]" )
-{
-    expected_PRESENT( expected_lite_VERSION );
 }
 
 #if 0
