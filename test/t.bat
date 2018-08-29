@@ -24,7 +24,6 @@ set unit_config=
 
 set msvc_defines=^
     -Dlest_FEATURE_AUTO_REGISTER=1 ^
-    -DNOMINMAX ^
     -D_CRT_SECURE_NO_WARNINGS ^
     -D_SCL_SECURE_NO_WARNINGS
 
