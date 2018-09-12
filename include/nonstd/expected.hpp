@@ -89,7 +89,7 @@
     typename std::enable_if<__VA_ARGS__, R>::type
 
 #define nsel_REQUIRES_T(...) \
-    , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_detail::enabler >::type
+    , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_lite::detail::enabler >::type
 
 // Clang, GNUC, MSVC warning suppression macros:
 
@@ -127,7 +127,7 @@
 
 nsel_DISABLE_MSVC_WARNINGS( 26409 )
 
-namespace nonstd {
+namespace nonstd { namespace expected_lite {
 
 namespace std20 {
 
@@ -146,7 +146,7 @@ struct remove_cvref
 template< typename T, typename E >
 class expected;
 
-namespace expected_detail {
+namespace detail {
 
 /// for nsel_REQUIRES_T
 
@@ -286,7 +286,7 @@ private:
     error_type m_error;
 };
 
-} // namespace expected_detail
+} // namespace detail
 
 /// // x.x.3 Unexpected object type; unexpected_type; C++17 and later can also use aliased type unexpected.
 
@@ -646,6 +646,14 @@ struct error_traits< std::error_code >
         throw std::system_error( e );
     }
 };
+
+} // namespace expected_lite
+
+// provide nonstd::unexpected_type:
+
+using expected_lite::unexpected_type;
+
+namespace expected_lite {
 
 /// class expected
 
@@ -1206,7 +1214,7 @@ public:
 
 private:
     bool has_value_;
-    expected_detail::storage_t<T,E> contained;
+    detail::storage_t<T,E> contained;
 };
 
 /// class expected, void specialization
@@ -1442,7 +1450,7 @@ public:
 
 private:
     bool has_value_;
-    expected_detail::storage_t<void,E> contained;
+    detail::storage_t<void,E> contained;
 };
 
 // expected: relational operators
@@ -1711,6 +1719,13 @@ auto make_expected_from_call( F f,
 
 #endif // nsel_P0323R
 
+} // namespace expected_lite
+
+using namespace expected_lite;
+
+// using expected_lite::expected;
+// using ...
+
 } // namespace nonstd
 
 namespace std {
@@ -1753,7 +1768,6 @@ struct hash< nonstd::expected<void,E> >
 };
 
 } // namespace std
-
 
 namespace nonstd {
 
