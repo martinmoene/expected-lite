@@ -75,7 +75,7 @@
 # define nsel_HAVE_STD_EXPECTED  0
 #endif
 
-#define nsel_USES_STD_EXPECTED  ( (nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) || ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) && nsel_HAVE_STD_EXPECTED) )
+#define  nsel_USES_STD_EXPECTED  ( (nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) || ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) && nsel_HAVE_STD_EXPECTED) )
 
 // Using std::expected:
 
@@ -165,6 +165,94 @@ namespace nonstd {
 // - C26409: Avoid calling new and delete explicitly, use std::make_unique<T> instead (r.11)
 
 nsel_DISABLE_MSVC_WARNINGS( 26409 )
+
+//
+// in_place: code duplicated in any-lite, expected-lite, optional-lite, variant-lite:
+//
+
+#if   ! nonstd_lite_HAVE_IN_PLACE_TYPES
+#define nonstd_lite_HAVE_IN_PLACE_TYPES  1
+
+// C++17 std::in_place in <utility>:
+
+#if nsel_CPP17_OR_GREATER
+
+namespace nonstd {
+
+using std::in_place;
+using std::in_place_type;
+using std::in_place_index;
+using std::in_place_t;
+using std::in_place_type_t;
+using std::in_place_index_t;
+
+#define nonstd_lite_in_place_t(      T)  std::in_place_t
+#define nonstd_lite_in_place_type_t( T)  std::in_place_type_t<T>
+#define nonstd_lite_in_place_index_t(T)  std::in_place_index_t<I>
+
+#define nonstd_lite_in_place(      T)    std::in_place_t{}
+#define nonstd_lite_in_place_type( T)    std::in_place_type_t<T>{}
+#define nonstd_lite_in_place_index(T)    std::in_place_index_t<I>{}
+
+} // namespace nonstd
+
+#else // nsel_CPP17_OR_GREATER
+
+namespace nonstd {
+namespace detail {
+
+template< class T >
+struct in_place_type_tag {};
+
+template< std::size_t I >
+struct in_place_index_tag {};
+
+} // namespace detail
+
+struct in_place_t {};
+
+template< class T >
+inline in_place_t in_place( detail::in_place_type_tag<T> = detail::in_place_type_tag<T>() )
+{
+    return in_place_t();
+}
+
+template< std::size_t I >
+inline in_place_t in_place( detail::in_place_index_tag<I> = detail::in_place_index_tag<I>() )
+{
+    return in_place_t();
+}
+
+template< class T >
+inline in_place_t in_place_type( detail::in_place_type_tag<T> = detail::in_place_type_tag<T>() )
+{
+    return in_place_t();
+}
+
+template< std::size_t I >
+inline in_place_t in_place_index( detail::in_place_index_tag<I> = detail::in_place_index_tag<I>() )
+{
+    return in_place_t();
+}
+
+// mimic templated typedef:
+
+#define nonstd_lite_in_place_t(      T)  nonstd::in_place_t(&)( nonstd::detail::in_place_type_tag<T>  )
+#define nonstd_lite_in_place_type_t( T)  nonstd::in_place_t(&)( nonstd::detail::in_place_type_tag<T>  )
+#define nonstd_lite_in_place_index_t(T)  nonstd::in_place_t(&)( nonstd::detail::in_place_index_tag<I> )
+
+#define nonstd_lite_in_place(      T)    nonstd::in_place_type<T>
+#define nonstd_lite_in_place_type( T)    nonstd::in_place_type<T>
+#define nonstd_lite_in_place_index(T)    nonstd::in_place_index<I>
+
+} // namespace nonstd
+
+#endif // nsel_CPP17_OR_GREATER
+#endif // nonstd_lite_HAVE_IN_PLACE_TYPES
+
+//
+// expected:
+//
 
 namespace nonstd { namespace expected_lite {
 
@@ -582,20 +670,6 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
 
 #endif // nsel_P0323R
 
-/// in-place tag: construct a value in-place (C++17 std::in_place in <utility>)
-
-#if nsel_CPP17_OR_GREATER
-
-using std::in_place;
-using std::in_place_t;
-
-#else
-
-struct in_place_t{};
-nsel_inline17 constexpr in_place_t in_place{};
-
-#endif // nsel_CPP17_OR_GREATER
-
 /// unexpect tag, in_place_unexpected tag: construct an error
 
 struct unexpect_t{};
@@ -853,7 +927,7 @@ public:
     nsel_constexpr14 explicit expected( U && v
         nsel_REQUIRES_A(
             std::is_constructible<T,U&&>::value
-            && !std::is_same<typename std20::remove_cvref<U>::type, in_place_t>::value
+            && !std::is_same<typename std20::remove_cvref<U>::type, nonstd_lite_in_place_t(U)>::value
             && !std::is_same<expected<T,E>, typename std20::remove_cvref<U>::type>::value
             && !std::is_same<nonstd::unexpected_type<E>, typename std20::remove_cvref<U>::type>::value
             && !std::is_convertible<U&&,T>::value /*=> explicit */
@@ -872,7 +946,7 @@ public:
     nsel_constexpr14 expected( U && v
         nsel_REQUIRES_A(
             std::is_constructible<T,U&&>::value
-            && !std::is_same<typename std20::remove_cvref<U>::type, in_place_t>::value
+            && !std::is_same<typename std20::remove_cvref<U>::type, nonstd_lite_in_place_t(U)>::value
             && !std::is_same<expected<T,E>, typename std20::remove_cvref<U>::type>::value
             && !std::is_same<nonstd::unexpected_type<E>, typename std20::remove_cvref<U>::type>::value
             &&  std::is_convertible<U&&,T>::value /*=> non-explicit */
@@ -892,7 +966,7 @@ public:
             std::is_constructible<T, Args&&...>::value
         )
     >
-    nsel_constexpr14 explicit expected( in_place_t, Args&&... args )
+    nsel_constexpr14 explicit expected( nonstd_lite_in_place_t(T), Args&&... args )
     : has_value_( true )
     {
         contained.construct_value( std::forward<Args>( args )... );
@@ -903,7 +977,7 @@ public:
             std::is_constructible<T, std::initializer_list<U>, Args&&...>::value
         )
     >
-    nsel_constexpr14 explicit expected( in_place_t, std::initializer_list<U> il, Args&&... args )
+    nsel_constexpr14 explicit expected( nonstd_lite_in_place_t(T), std::initializer_list<U> il, Args&&... args )
     : has_value_( true )
     {
         contained.construct_value( il, std::forward<Args>( args )... );
@@ -1049,7 +1123,7 @@ public:
     >
     void emplace( Args &&... args )
     {
-        expected( in_place, std::forward<Args>(args)... ).swap( *this );
+        expected( nonstd_lite_in_place_t(T), std::forward<Args>(args)... ).swap( *this );
     }
 
     template< typename U, typename... Args
@@ -1059,7 +1133,7 @@ public:
     >
     void emplace( std::initializer_list<U> il, Args &&... args )
     {
-        expected( in_place, il, std::forward<Args>(args)... ).swap( *this );
+        expected( nonstd_lite_in_place_t(T), il, std::forward<Args>(args)... ).swap( *this );
     }
 
     // x.x.4.4 swap
@@ -1291,7 +1365,7 @@ public:
         if ( ! has_value() ) contained.construct_error( std::move( rhs.contained.error() ) );
     }
 
-    constexpr explicit expected( in_place_t )
+    constexpr explicit expected( nonstd_lite_in_place_t(void) )
     : has_value_( true )
     {
     }

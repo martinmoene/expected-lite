@@ -27,12 +27,23 @@ lest::tests & specification()
     return tests;
 }
 
-CASE( "expected-lite version" "[.version]" )
+CASE( "expected-lite version" "[.expected][.version]" )
 {
     expected_PRESENT( expected_lite_MAJOR );
     expected_PRESENT( expected_lite_MINOR );
     expected_PRESENT( expected_lite_PATCH );
     expected_PRESENT( expected_lite_VERSION );
+}
+
+CASE( "any configuration" "[.expected][.config]" )
+{
+    expected_PRESENT( nsel_HAVE_STD_EXPECTED );
+    expected_PRESENT( nsel_USES_STD_EXPECTED );
+    expected_PRESENT( nsel_CONFIG_SELECT_EXPECTED );
+    expected_PRESENT( nsel_EXPECTED_DEFAULT );
+    expected_PRESENT( nsel_EXPECTED_NONSTD );
+    expected_PRESENT( nsel_EXPECTED_STD );
+    expected_PRESENT( nsel_CPLUSPLUS );
 }
 
 CASE( "__cplusplus" "[.stdc++]" )
