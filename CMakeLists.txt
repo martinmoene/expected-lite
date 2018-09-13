@@ -20,6 +20,8 @@ set(    EXPEXTED_P0323R  "99" STRING     "Specify proposal revision compatibilit
 option( EXPECTED_LITE_OPT_SELECT_STD     "Select std::expected"    OFF )
 option( EXPECTED_LITE_OPT_SELECT_NONSTD  "Select nonstd::expected" OFF )
 
+include( GNUInstallDirs )
+
 project( expected_lite LANGUAGES CXX )
 
 set( package_name "expected-lite" )
@@ -33,6 +35,13 @@ add_library(
     
 target_include_directories( 
     ${package_name} INTERFACE "$<BUILD_INTERFACE:${include_source_dir}>" )
+
+# Installation:
+
+install( 
+    DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} )
+
+# If requested, build and perform tests, build examples:
 
 enable_testing()
 
