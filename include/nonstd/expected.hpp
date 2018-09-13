@@ -69,10 +69,14 @@
 
 // Use C++20 std::expected if available and requested:
 
-#if nsel_CPP20_OR_GREATER && defined(__has_include ) && __has_include( <expected> )
-# define nsel_HAVE_STD_EXPECTED  1
+#if nsel_CPP20_OR_GREATER && defined(__has_include )
+# if __has_include( <expected> )
+#  define nsel_HAVE_STD_EXPECTED  1
+# else
+#  define nsel_HAVE_STD_EXPECTED  0
+# endif
 #else
-# define nsel_HAVE_STD_EXPECTED  0
+# define  nsel_HAVE_STD_EXPECTED  0
 #endif
 
 #define  nsel_USES_STD_EXPECTED  ( (nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) || ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) && nsel_HAVE_STD_EXPECTED) )
