@@ -108,6 +108,12 @@ namespace nonstd {
 #include <type_traits>
 #include <utility>
 
+#if nsel_CPP11_OR_GREATER
+# define nsel_constexpr  constexpr
+#else
+# define nsel_constexpr  /*constexpr*/
+#endif
+
 #if nsel_CPP14_OR_GREATER
 # define nsel_constexpr14 constexpr
 #else
@@ -123,7 +129,7 @@ namespace nonstd {
 // Method enabling
 
 #define nsel_REQUIRES_A(...) \
-    , typename std::enable_if<__VA_ARGS__, void*>::type = 0
+    , typename std::enable_if<__VA_ARGS__, void*>::type = nullptr
 
 #define nsel_REQUIRES_0(...) \
     template< bool B = (__VA_ARGS__), typename std::enable_if<B, int>::type = 0 >
@@ -174,7 +180,7 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 // in_place: code duplicated in any-lite, expected-lite, optional-lite, variant-lite:
 //
 
-#if   ! nonstd_lite_HAVE_IN_PLACE_TYPES
+#ifndef nonstd_lite_HAVE_IN_PLACE_TYPES
 #define nonstd_lite_HAVE_IN_PLACE_TYPES  1
 
 // C++17 std::in_place in <utility>:
@@ -1127,7 +1133,7 @@ public:
     >
     void emplace( Args &&... args )
     {
-        expected( nonstd_lite_in_place_t(T), std::forward<Args>(args)... ).swap( *this );
+        expected( nonstd_lite_in_place(T), std::forward<Args>(args)... ).swap( *this );
     }
 
     template< typename U, typename... Args
@@ -1137,7 +1143,7 @@ public:
     >
     void emplace( std::initializer_list<U> il, Args &&... args )
     {
-        expected( nonstd_lite_in_place_t(T), il, std::forward<Args>(args)... ).swap( *this );
+        expected( nonstd_lite_in_place(T), il, std::forward<Args>(args)... ).swap( *this );
     }
 
     // x.x.4.4 swap
