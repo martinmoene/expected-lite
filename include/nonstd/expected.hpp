@@ -92,7 +92,7 @@ namespace nonstd {
     using std::in_place_t;
 }
 
-#else // C++20 std::any
+#else // nsel_USES_STD_EXPECTED
 
 #include <cassert>
 #include <exception>
