@@ -22,7 +22,7 @@ set unit_config=
 
 rem -flto / -fwhole-program
 set  optflags=-O2
-set warnflags=-Wall -Wextra -Wpedantic -Wconversion -Wno-padded -Wno-missing-noreturn
+set warnflags=-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wno-padded -Wno-missing-noreturn
 set       gpp=g++
 
 %gpp% -std=%std% %optflags% %warnflags% %unit_select% %unit_config% -o %unit%-main.t.exe -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd %unit%-main.t.cpp %unit%.t.cpp && %unit%-main.t.exe

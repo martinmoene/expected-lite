@@ -50,7 +50,7 @@ elseif( CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" )
     set( HAS_STD_FLAGS  TRUE )
     set( HAS_CPP98_FLAG TRUE )
 
-    set( OPTIONS     -Wall -Wextra -Wconversion -Wno-missing-braces -fno-elide-constructors )
+    set( OPTIONS     -Wall -Wextra -Wconversion -Wsign-conversion -Wno-missing-braces -fno-elide-constructors )
     set( DEFINITIONS ${DEFCMN} )
 
     # GNU: available -std flags depends on version
@@ -141,13 +141,31 @@ else()
     endif()
 
     if( HAS_CPP17_FLAG )
-        make_target( ${MAIN_BASE}-cpp17.t 17 )
+        set( std17 17 )
+        if( CMAKE_CXX_COMPILER_ID MATCHES "AppleClang" )
+            set( std17 1z )
+        endif()
+        make_target( ${MAIN_BASE}-cpp17.t ${std17} )
         enable_msvs_guideline_checker( ${MAIN_BASE}-cpp17.t )
     endif()
 
     if( HAS_CPPLATEST_FLAG )
         make_target( ${MAIN_BASE}-cpplatest.t latest )
     endif()
+endif()
+
+# with C++20, honour explicit request for std::expected or nonstd::expected:
+
+if( HAS_CPP20_FLAG )
+    set( WHICH nsel_EXPECTED_DEFAULT )
+
+    if( EXPECTED_LITE_OPT_SELECT_STD )
+        set( WHICH nsel_EXPECTED_STD )
+    elseif( EXPECTED_LITE_OPT_SELECT_NONSTD )
+        set( WHICH nsel_EXPECTED_NONSTD )
+    endif()
+
+    target_compile_definitions( ${MAIN_BASE}-cpp17.t PRIVATE nsel_CONFIG_SELECT_EXPECTED=${WHICH} )
 endif()
 
 # configure unit tests via CTest:

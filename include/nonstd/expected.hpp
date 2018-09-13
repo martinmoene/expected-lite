@@ -12,16 +12,6 @@
 #ifndef NONSTD_EXPECTED_LITE_HPP
 #define NONSTD_EXPECTED_LITE_HPP
 
-#include <cassert>
-#include <exception>
-#include <functional>
-#include <initializer_list>
-#include <new>
-#include <stdexcept>
-#include <system_error>
-#include <type_traits>
-#include <utility>
-
 #define expected_lite_MAJOR  0
 #define expected_lite_MINOR  1
 #define expected_lite_PATCH  0
@@ -31,7 +21,17 @@
 #define expected_STRINGIFY(  x )  expected_STRINGIFY_( x )
 #define expected_STRINGIFY_( x )  #x
 
-// expected-lite configuration
+// expected-lite configuration:
+
+#define nsel_EXPECTED_DEFAULT  0
+#define nsel_EXPECTED_NONSTD   1
+#define nsel_EXPECTED_STD      2
+
+#if !defined( nsel_CONFIG_SELECT_EXPECTED )
+# define nsel_CONFIG_SELECT_EXPECTED  ( nsel_HAVE_STD_EXPECTED ? nsel_EXPECTED_STD : nsel_EXPECTED_NONSTD )
+#endif
+
+// Proposal revisions:
 //
 // DXXXXR0: --
 // N4015  : -2 (2014-05-26)
@@ -50,20 +50,59 @@
 # define nsel_P0323R  5
 #endif
 
-// Compiler detection (C++20 is speculative):
-// Note: MSVC supports C++14 since it supports C++17.
+// C++ language version detection (C++20 is speculative):
+// Note: VC14.0/1900 (VS2015) lacks too much from C++14.
 
-#ifdef _MSVC_LANG
-# define type_MSVC_LANG  _MSVC_LANG
-#else
-# define type_MSVC_LANG  0
+#ifndef   nsel_CPLUSPLUS
+# ifdef  _MSVC_LANG
+#  define nsel_CPLUSPLUS  (_MSC_VER == 1900 ? 201103L : _MSVC_LANG )
+# else
+#  define nsel_CPLUSPLUS  __cplusplus
+# endif
 #endif
 
-#define type_CPP11             (__cplusplus == 201103L )
-#define nsel_CPP11_OR_GREATER  (__cplusplus >= 201103L || type_MSVC_LANG >= 201103L )
-#define nsel_CPP14_OR_GREATER  (__cplusplus >= 201402L || type_MSVC_LANG >= 201703L )
-#define nsel_CPP17_OR_GREATER  (__cplusplus >= 201703L || type_MSVC_LANG >= 201703L )
-#define nsel_CPP20_OR_GREATER  (__cplusplus >= 202000L || type_MSVC_LANG >= 202000L )
+#define nsel_CPP98_OR_GREATER  ( nsel_CPLUSPLUS >= 199711L )
+#define nsel_CPP11_OR_GREATER  ( nsel_CPLUSPLUS >= 201103L )
+#define nsel_CPP14_OR_GREATER  ( nsel_CPLUSPLUS >= 201402L )
+#define nsel_CPP17_OR_GREATER  ( nsel_CPLUSPLUS >= 201703L )
+#define nsel_CPP20_OR_GREATER  ( nsel_CPLUSPLUS >= 202000L )
+
+// Use C++20 std::expected if available and requested:
+
+#if nsel_CPP20_OR_GREATER && defined(__has_include ) && __has_include( <expected> )
+# define nsel_HAVE_STD_EXPECTED  1
+#else
+# define nsel_HAVE_STD_EXPECTED  0
+#endif
+
+#define nsel_USES_STD_EXPECTED  ( (nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) || ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) && nsel_HAVE_STD_EXPECTED) )
+
+// Using std::expected:
+
+#if nsel_USES_STD_EXPECTED
+
+#include <expected>
+
+namespace nonstd {
+
+    using std::expected;
+//  ...
+
+    using std::in_place;
+    using std::in_place_t;
+}
+
+#else // C++20 std::any
+
+#include <cassert>
+#include <exception>
+#include <functional>
+#include <initializer_list>
+#include <new>
+#include <stdexcept>
+#include <system_error>
+#include <type_traits>
+#include <utility>
 
 #if nsel_CPP14_OR_GREATER
 # define nsel_constexpr14 constexpr
@@ -1785,5 +1824,7 @@ using unexpected = unexpected_type<E>;
 #undef nsel_REQUIRES_T
 
 nsel_RESTORE_WARNINGS()
+
+#endif // nsel_USES_STD_EXPECTED
 
 #endif // NONSTD_EXPECTED_LITE_HPP
