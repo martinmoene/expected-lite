@@ -304,14 +304,10 @@ private:
     storage_t() {}
     ~storage_t() {}
 
-    void construct_value( value_type const & v )
+    template<class ...Args>
+    void construct_value(Args&& ...args)
     {
-        new( &m_value ) value_type( v );
-    }
-
-    void construct_value( value_type && v )
-    {
-        new( &m_value ) value_type( std::move( v ) );
+        new(&m_value) value_type(std::forward<Args>(args)...);
     }
 
     void destruct_value()
