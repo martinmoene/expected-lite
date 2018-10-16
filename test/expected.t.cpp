@@ -501,7 +501,7 @@ CASE( "expected<>: Allows to copy-assign from expected<>" )
 
     expected<Oracle, char> ec{ ev };
 
-    EXPECT( ev.value().s == sMoveConstructed );
+    EXPECT( ev.value().s == sValueMoveConstructed );
     EXPECT( ec.value().s == sCopyConstructed );
 
     EXPECT( ev.value().val.i == value );
@@ -540,7 +540,7 @@ CASE( "expected<>: Allows to copy-assign from type convertible to value_type" )
     expected<Oracle, char> ec{ ov };
 
     EXPECT( ov.s == sValueConstructed );
-    EXPECT( ec.value().s == sMoveConstructed );
+    EXPECT( ec.value().s == sValueCopyConstructed);
     EXPECT( ec.value().val.i == value );
 }
 
@@ -552,7 +552,7 @@ CASE( "expected<>: Allows to move-assign from type convertible to value_type" )
     expected<Oracle, char> em{ std::move(om) };
 
     EXPECT( om.s == sMovedFrom );
-    EXPECT( em.value().s == sMoveConstructed );
+    EXPECT( em.value().s == sValueMoveConstructed );
     EXPECT( em.value().val.i == value );
 }
 
