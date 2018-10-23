@@ -5,7 +5,7 @@ class ExpectedLiteConan(ConanFile):
     name = "expected-lite"
     description = "Expected objects for C++11 and later"
     license = "Boost Software License - Version 1.0. http://www.boost.org/LICENSE_1_0.txt"
-    url = "https://github.com/martinmoene/expected-lite"
+    url = "https://github.com/martinmoene/expected-lite.git"
     exports_sources = "include/nonstd/*", "LICENSE.txt"
     author = "Martin Moene"
 
