@@ -31,6 +31,7 @@
 		<Unit filename="../../Notes.md" />
 		<Unit filename="../../README.md" />
 		<Unit filename="../../appveyor.yml" />
+		<Unit filename="../../conanfile.py" />
 		<Unit filename="../../example/01-basic.cpp" />
 		<Unit filename="../../example/02-required.cpp" />
 		<Unit filename="../../example/CMakeLists.txt" />
