@@ -10,5 +10,13 @@ class ExpectedLiteConan(ConanFile):
     build_policy = "missing"
     author = "Martin Moene"
 
+    def build(self):
+        """Avoid warning on build step"""
+        pass
+
+    def package(self):
+        """Provide pkg/include/nonstd/*.hpp"""
+        self.copy("*.hpp")
+
     def package_info(self):
         self.info.header_only()
