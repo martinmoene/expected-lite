@@ -36,7 +36,6 @@
 		<Unit filename="../../example/02-required.cpp" />
 		<Unit filename="../../example/CMakeLists.txt" />
 		<Unit filename="../../include/nonstd/expected.hpp" />
-		<Unit filename="../../include/nonstd/expected_cpp03.hpp" />
 		<Unit filename="../../script/update-version.py" />
 		<Unit filename="../../test/CMakeLists.txt" />
 		<Unit filename="../../test/expected-main.t.cpp" />
