@@ -36,8 +36,8 @@ matrix:
 
 before_build:
     - mkdir build && cd build
-    - cmake -A %platform% -G "%generator%" -DEXPECTED_LITE_OPT_BUILD_TESTS=ON -DEXPECTED_LITE_OPT_BUILD_EXAMPLES=OFF ..
+    - cmake -A %platform% -G "%generator%" -Dnsel_CONFIG_SELECT_EXPECTED=nsel_EXPECTED_NONSTD -DEXPECTED_LITE_OPT_BUILD_TESTS=ON -DEXPECTED_LITE_OPT_BUILD_EXAMPLES=OFF ..
 
 build_script:
     - cmake --build . --config %configuration%
-    - ctest -C %configuration%
+    - ctest --output-on-failure -C %configuration%
