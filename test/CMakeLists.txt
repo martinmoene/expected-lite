@@ -190,6 +190,10 @@ if( HAS_CPP20_FLAG )
     endif()
 
     target_compile_definitions( ${MAIN_BASE}-cpp17.t PRIVATE nsel_CONFIG_SELECT_EXPECTED=${WHICH} )
+
+    if( HAS_CPPLATEST_FLAG )
+        target_compile_definitions( ${MAIN_BASE}-cpplatest.t PRIVATE nsel_CONFIG_SELECT_EXPECTED=${WHICH} )
+    endif()
 endif()
 
 # configure unit tests via CTest:
