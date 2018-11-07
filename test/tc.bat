@@ -19,7 +19,7 @@ set UCAP=%unit%
 call :toupper UCAP
 
 set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_DEFAULT
-::set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_LITE
+::set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_NONSTD
 ::set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_STD
 
 set unit_config=
@@ -41,7 +41,7 @@ set tmpsource=%tmpprogram%.c
 echo #include ^<stdio.h^>     > %tmpsource%
 echo int main(){printf("%%d.%%d.%%d\n",__clang_major__,__clang_minor__,__clang_patchlevel__);} >> %tmpsource%
 
-"%clang%" -o %tmpprogram% %tmpsource% >nul
+"%clang%" -m32 -o %tmpprogram% %tmpsource% >nul
 for /f %%x in ('%tmpprogram%') do set version=%%x
 del %tmpprogram%.* >nul
 endlocal & set %1=%version%& goto :EOF
