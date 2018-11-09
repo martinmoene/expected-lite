@@ -666,7 +666,7 @@ template< typename E>
 nsel_constexpr14 auto
 make_unexpected( E && value ) -> unexpected_type< typename std::decay<E>::type >
 {
-    return unexpected_type< typename std::decay<E>::type >( value );
+    return unexpected_type< typename std::decay<E>::type >( std::forward<E>(value) );
 }
 
 #if nsel_P0323R <= 3
