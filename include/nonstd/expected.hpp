@@ -230,9 +230,11 @@ namespace nonstd {
 // Clang, GNUC, MSVC warning suppression macros:
 
 #if defined(_MSC_VER) && !defined(__clang__)
-# define nsel_COMPILER_MSVC_VERSION   (_MSC_VER / 10 - 10 * ( 5 + (_MSC_VER < 1900)) )
+# define nsel_COMPILER_MSVC_VER      (_MSC_VER )
+# define nsel_COMPILER_MSVC_VERSION  (_MSC_VER / 10 - 10 * ( 5 + (_MSC_VER < 1900)) )
 #else
-# define nsel_COMPILER_MSVC_VERSION   0
+# define nsel_COMPILER_MSVC_VER      0
+# define nsel_COMPILER_MSVC_VERSION  0
 #endif
 
 #ifdef __clang__
