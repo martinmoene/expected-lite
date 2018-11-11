@@ -263,7 +263,7 @@ namespace nonstd {
 #endif
 
 // half-open range [lo..hi):
-//#define nsel_BETWEEN( v, lo, hi ) ( lo <= v && v < hi )
+//#define nsel_BETWEEN( v, lo, hi ) ( (lo) <= (v) && (v) < (hi) )
 
 // Presence of language and library features:
 
