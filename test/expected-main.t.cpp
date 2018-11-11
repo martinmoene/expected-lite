@@ -51,22 +51,18 @@ CASE( "__cplusplus" "[.stdc++]" )
     expected_PRESENT( __cplusplus );
 }
 
-#if 0
-
-CASE( "compiler version" "[.compiler]" )
+CASE( "Compiler version" "[.compiler]" )
 {
-#if expected_COMPILER_GNUC_VERSION
-    expected_PRESENT( expected_COMPILER_GNUC_VERSION );
+#if nsel_USES_STD_EXPECTED
+    std::cout << "(Compiler version not available: using std::expected)\n";
 #else
-    expected_ABSENT(  expected_COMPILER_GNUC_VERSION );
-#endif
-
-#if expected_COMPILER_MSVC_VERSION
-    expected_PRESENT( expected_COMPILER_MSVC_VERSION );
-#else
-    expected_ABSENT(  expected_COMPILER_MSVC_VERSION );
+    expected_PRESENT( nsel_COMPILER_CLANG_VERSION );
+    expected_PRESENT( nsel_COMPILER_GNUC_VERSION );
+    expected_PRESENT( nsel_COMPILER_MSVC_VERSION );
 #endif
 }
+
+#if 0
 
 CASE( "presence of C++ language features" "[.stdlanguage]" )
 {

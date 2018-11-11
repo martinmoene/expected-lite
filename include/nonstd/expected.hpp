@@ -54,7 +54,7 @@
 // Note: VC14.0/1900 (VS2015) lacks too much from C++14.
 
 #ifndef   nsel_CPLUSPLUS
-# ifdef  _MSVC_LANG
+# if defined(_MSVC_LANG ) && !defined(__clang__)
 #  define nsel_CPLUSPLUS  (_MSC_VER == 1900 ? 201103L : _MSVC_LANG )
 # else
 #  define nsel_CPLUSPLUS  __cplusplus
@@ -227,7 +227,18 @@ namespace nonstd {
 #define nsel_REQUIRES_T(...) \
     , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_lite::detail::enabler >::type
 
-// Clang, GNUC, MSVC warning suppression macros:
+// Compiler versions:
+//
+// MSVC++ 6.0  _MSC_VER == 1200 (Visual Studio 6.0)
+// MSVC++ 7.0  _MSC_VER == 1300 (Visual Studio .NET 2002)
+// MSVC++ 7.1  _MSC_VER == 1310 (Visual Studio .NET 2003)
+// MSVC++ 8.0  _MSC_VER == 1400 (Visual Studio 2005)
+// MSVC++ 9.0  _MSC_VER == 1500 (Visual Studio 2008)
+// MSVC++ 10.0 _MSC_VER == 1600 (Visual Studio 2010)
+// MSVC++ 11.0 _MSC_VER == 1700 (Visual Studio 2012)
+// MSVC++ 12.0 _MSC_VER == 1800 (Visual Studio 2013)
+// MSVC++ 14.0 _MSC_VER == 1900 (Visual Studio 2015)
+// MSVC++ 14.1 _MSC_VER >= 1910 (Visual Studio 2017)
 
 #if defined(_MSC_VER) && !defined(__clang__)
 # define nsel_COMPILER_MSVC_VER      (_MSC_VER )
@@ -236,6 +247,35 @@ namespace nonstd {
 # define nsel_COMPILER_MSVC_VER      0
 # define nsel_COMPILER_MSVC_VERSION  0
 #endif
+
+#define nsel_COMPILER_VERSION( major, minor, patch )  ( 10 * ( 10 * (major) + (minor) ) + (patch) )
+
+#if defined(__clang__)
+# define nsel_COMPILER_CLANG_VERSION  nsel_COMPILER_VERSION(__clang_major__, __clang_minor__, __clang_patchlevel__)
+#else
+# define nsel_COMPILER_CLANG_VERSION  0
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+# define nsel_COMPILER_GNUC_VERSION  nsel_COMPILER_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+#else
+# define nsel_COMPILER_GNUC_VERSION  0
+#endif
+
+// half-open range [lo..hi):
+//#define nsel_BETWEEN( v, lo, hi ) ( lo <= v && v < hi )
+
+// Presence of language and library features:
+
+#ifdef _HAS_CPP0X
+# define nsel_HAS_CPP0X  _HAS_CPP0X
+#else
+# define nsel_HAS_CPP0X  0
+#endif
+
+//#define nsel_CPP11_140  (nsel_CPP11_OR_GREATER || nsel_COMPILER_MSVC_VER >= 1900)
+
+// Clang, GNUC, MSVC warning suppression macros:
 
 #ifdef __clang__
 # pragma clang diagnostic push
