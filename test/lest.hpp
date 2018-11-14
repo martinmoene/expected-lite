@@ -31,7 +31,7 @@
 #include <cmath>
 #include <cstddef>
 
-#define  lest_VERSION "1.33.1"
+#define  lest_VERSION "1.33.4"
 
 #ifndef  lest_FEATURE_AUTO_REGISTER
 # define lest_FEATURE_AUTO_REGISTER  0
@@ -49,22 +49,22 @@
 # define lest_FEATURE_REGEX_SEARCH  0
 #endif
 
-#ifndef lest_FEATURE_TIME_PRECISION
-#define lest_FEATURE_TIME_PRECISION  0
+#ifndef  lest_FEATURE_TIME_PRECISION
+# define lest_FEATURE_TIME_PRECISION  0
 #endif
 
-#ifndef lest_FEATURE_WSTRING
-#define lest_FEATURE_WSTRING  1
+#ifndef  lest_FEATURE_WSTRING
+# define lest_FEATURE_WSTRING  1
 #endif
 
-#ifdef lest_FEATURE_RTTI
-# define lest__cpp_rtti  lest_FEATURE_RTTI
+#ifdef    lest_FEATURE_RTTI
+# define  lest__cpp_rtti  lest_FEATURE_RTTI
 #elif defined(__cpp_rtti)
-# define lest__cpp_rtti  __cpp_rtti
+# define  lest__cpp_rtti  __cpp_rtti
 #elif defined(__GXX_RTTI) || defined (_CPPRTTI)
-# define lest__cpp_rtti  1
+# define  lest__cpp_rtti  1
 #else
-# define lest__cpp_rtti  0
+# define  lest__cpp_rtti  0
 #endif
 
 #if lest_FEATURE_REGEX_SEARCH
@@ -73,26 +73,26 @@
 
 // Compiler warning suppression:
 
-#ifdef __clang__
+#if defined (__clang__)
 # pragma clang diagnostic ignored "-Waggregate-return"
 # pragma clang diagnostic ignored "-Woverloaded-shift-op-parentheses"
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wunused-comparison"
-#elif defined __GNUC__
+#elif defined (__GNUC__)
 # pragma GCC   diagnostic ignored "-Waggregate-return"
 # pragma GCC   diagnostic push
 #endif
 
 // Suppress shadow and unused-value warning for sections:
 
-#if defined __clang__
+#if defined (__clang__)
 # define lest_SUPPRESS_WSHADOW    _Pragma( "clang diagnostic push" ) \
                                   _Pragma( "clang diagnostic ignored \"-Wshadow\"" )
 # define lest_SUPPRESS_WUNUSED    _Pragma( "clang diagnostic push" ) \
                                   _Pragma( "clang diagnostic ignored \"-Wunused-value\"" )
 # define lest_RESTORE_WARNINGS    _Pragma( "clang diagnostic pop"  )
 
-#elif defined __GNUC__
+#elif defined (__GNUC__)
 # define lest_SUPPRESS_WSHADOW    _Pragma( "GCC diagnostic push" ) \
                                   _Pragma( "GCC diagnostic ignored \"-Wshadow\"" )
 # define lest_SUPPRESS_WUNUSED    _Pragma( "GCC diagnostic push" ) \
@@ -104,7 +104,7 @@
 # define lest_RESTORE_WARNINGS    /*empty*/
 #endif
 
-#ifdef  _MSVC_LANG
+#if defined ( _MSVC_LANG)
 # define lest_CPP17_OR_GREATER_MS (  _MSVC_LANG >= 201703L )
 #else
 # define lest_CPP17_OR_GREATER_MS    0
@@ -968,7 +968,7 @@ inline bool select( text name, texts include )
 
 inline int indefinite( int repeat ) { return repeat == -1; }
 
-using seed_t = unsigned long;
+using seed_t = typename std::mt19937::result_type;
 
 struct options
 {
@@ -999,12 +999,13 @@ struct env
 
     env & operator()( text test )
     {
-        testing = test; return *this;
+        clear(); testing = test; return *this;
     }
 
     bool abort() { return opt.abort; }
     bool pass()  { return opt.pass; }
 
+    void clear() { ctx.clear(); }
     void pop()   { ctx.pop_back(); }
     void push( text proposition ) { ctx.emplace_back( proposition ); }
 
@@ -1437,9 +1438,9 @@ int run( test const (&specification)[N], int argc, char * argv[], std::ostream &
 
 } // namespace lest
 
-#ifdef __clang__
+#if defined (__clang__)
 # pragma clang diagnostic pop
-#elif defined __GNUC__
+#elif defined (__GNUC__)
 # pragma GCC   diagnostic pop
 #endif
 
