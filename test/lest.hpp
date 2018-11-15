@@ -31,7 +31,7 @@
 #include <cmath>
 #include <cstddef>
 
-#define  lest_VERSION "1.33.4"
+#define  lest_VERSION "1.33.5"
 
 #ifndef  lest_FEATURE_AUTO_REGISTER
 # define lest_FEATURE_AUTO_REGISTER  0
@@ -968,7 +968,7 @@ inline bool select( text name, texts include )
 
 inline int indefinite( int repeat ) { return repeat == -1; }
 
-using seed_t = typename std::mt19937::result_type;
+using seed_t = std::mt19937::result_type;
 
 struct options
 {
