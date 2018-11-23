@@ -7,13 +7,23 @@
 
 cmake_minimum_required( VERSION 3.5 )
 
-# expected-lite version, updated by script/update-version.py:
+# expected-lite project and version, updated by script/update-version.py:
+
+project( expected_lite LANGUAGES CXX )
 
 set( expected_lite_version "0.2.0" )
 
+# Toplevel or subproject:
+
+if ( CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR )
+    set( expected_IS_TOPLEVEL_PROJECT TRUE )
+else()
+    set( expected_IS_TOPLEVEL_PROJECT FALSE )
+endif()
+
 # At default, enable building and performing of tests and building of examples:
 
-option( EXPECTED_LITE_OPT_BUILD_TESTS    "Build and perform expected-lite tests" OFF )
+option( EXPECTED_LITE_OPT_BUILD_TESTS    "Build and perform expected-lite tests" ${expected_IS_TOPLEVEL_PROJECT} )
 option( EXPECTED_LITE_OPT_BUILD_EXAMPLES "Build expected-lite examples" OFF )
 set(    EXPEXTED_P0323R  "99" STRING     "Specify proposal revision compatibility (99: latest)" )
 
@@ -21,8 +31,6 @@ option( EXPECTED_LITE_OPT_SELECT_STD     "Select std::expected"    OFF )
 option( EXPECTED_LITE_OPT_SELECT_NONSTD  "Select nonstd::expected" OFF )
 
 include( GNUInstallDirs )
-
-project( expected_lite LANGUAGES CXX )
 
 set( package_name "expected-lite" )
 
