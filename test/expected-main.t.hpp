@@ -31,8 +31,6 @@ std::ostream & operator<<( std::ostream & os, nonstd::expected<void,E> const & )
 
 #include "lest.hpp"
 
-using namespace nonstd;
-
 #define CASE( name ) lest_CASE( specification(), name )
 
 extern lest::tests & specification();
