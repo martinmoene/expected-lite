@@ -49,6 +49,12 @@ CASE( "any configuration" "[.expected][.config]" )
 CASE( "__cplusplus" "[.stdc++]" )
 {
     expected_PRESENT( __cplusplus );
+
+#ifdef _MSVC_LANG
+    expected_PRESENT( _MSVC_LANG );
+#else
+    expected_ABSENT(  _MSVC_LANG );
+#endif
 }
 
 CASE( "Compiler version" "[.compiler]" )
@@ -66,139 +72,19 @@ CASE( "Compiler version" "[.compiler]" )
 
 CASE( "presence of C++ language features" "[.stdlanguage]" )
 {
-#if expected_HAVE_AUTO
-    expected_PRESENT( expected_HAVE_AUTO );
+#if nsel_USES_STD_EXPECTED
+    std::cout << "(Presence of C++ language features not available: using std::expected)\n";
 #else
-    expected_ABSENT(  expected_HAVE_AUTO );
-#endif
-
-#if expected_HAVE_NULLPTR
-    expected_PRESENT( expected_HAVE_NULLPTR );
-#else
-    expected_ABSENT(  expected_HAVE_NULLPTR );
-#endif
-
-#if expected_HAVE_STATIC_ASSERT
-    expected_PRESENT( expected_HAVE_STATIC_ASSERT );
-#else
-    expected_ABSENT(  expected_HAVE_STATIC_ASSERT );
-#endif
-
-#if expected_HAVE_DEFAULT_FUNCTION_TEMPLATE_ARG
-    expected_PRESENT( expected_HAVE_DEFAULT_FUNCTION_TEMPLATE_ARG );
-#else
-    expected_ABSENT(  expected_HAVE_DEFAULT_FUNCTION_TEMPLATE_ARG );
-#endif
-
-#if expected_HAVE_ALIAS_TEMPLATE
-    expected_PRESENT( expected_HAVE_ALIAS_TEMPLATE );
-#else
-    expected_ABSENT(  expected_HAVE_ALIAS_TEMPLATE );
-#endif
-
-#if expected_HAVE_CONSTEXPR_11
-    expected_PRESENT( expected_HAVE_CONSTEXPR_11 );
-#else
-    expected_ABSENT(  expected_HAVE_CONSTEXPR_11 );
-#endif
-
-#if expected_HAVE_CONSTEXPR_14
-    expected_PRESENT( expected_HAVE_CONSTEXPR_14 );
-#else
-    expected_ABSENT(  expected_HAVE_CONSTEXPR_14 );
-#endif
-
-#if expected_HAVE_ENUM_CLASS
-    expected_PRESENT( expected_HAVE_ENUM_CLASS );
-#else
-    expected_ABSENT(  expected_HAVE_ENUM_CLASS );
-#endif
-
-#if expected_HAVE_ENUM_CLASS_CONSTRUCTION_FROM_UNDERLYING_TYPE
-    expected_PRESENT( expected_HAVE_ENUM_CLASS_CONSTRUCTION_FROM_UNDERLYING_TYPE );
-#else
-    expected_ABSENT(  expected_HAVE_ENUM_CLASS_CONSTRUCTION_FROM_UNDERLYING_TYPE );
-#endif
-
-#if expected_HAVE_EXPLICIT_CONVERSION
-    expected_PRESENT( expected_HAVE_EXPLICIT_CONVERSION );
-#else
-    expected_ABSENT(  expected_HAVE_EXPLICIT_CONVERSION );
-#endif
-
-#if expected_HAVE_INITIALIZER_LIST
-    expected_PRESENT( expected_HAVE_INITIALIZER_LIST );
-#else
-    expected_ABSENT(  expected_HAVE_INITIALIZER_LIST );
-#endif
-
-#if expected_HAVE_IS_DEFAULT
-    expected_PRESENT( expected_HAVE_IS_DEFAULT );
-#else
-    expected_ABSENT(  expected_HAVE_IS_DEFAULT );
-#endif
-
-#if expected_HAVE_IS_DELETE
-    expected_PRESENT( expected_HAVE_IS_DELETE );
-#else
-    expected_ABSENT(  expected_HAVE_IS_DELETE );
-#endif
-
-#if expected_HAVE_NOEXCEPT
-    expected_PRESENT( expected_HAVE_NOEXCEPT );
-#else
-    expected_ABSENT(  expected_HAVE_NOEXCEPT );
-#endif
-
-#if expected_HAVE_REF_QUALIFIER
-    expected_PRESENT( expected_HAVE_REF_QUALIFIER );
-#else
-    expected_ABSENT(  expected_HAVE_REF_QUALIFIER );
+    REQUIRE( true );
 #endif
 }
 
 CASE( "presence of C++ library features" "[.stdlibrary]" )
 {
-#if expected_HAVE_ARRAY
-    expected_PRESENT( expected_HAVE_ARRAY );
+#if nsel_USES_STD_EXPECTED
+    std::cout << "(Presence of C++ library features not available: using std::expected)\n";
 #else
-    expected_ABSENT(  expected_HAVE_ARRAY );
-#endif
-
-#if expected_HAVE_CONDITIONAL
-    expected_PRESENT( expected_HAVE_CONDITIONAL );
-#else
-    expected_ABSENT(  expected_HAVE_CONDITIONAL );
-#endif
-
-#if expected_HAVE_CONTAINER_DATA_METHOD
-    expected_PRESENT( expected_HAVE_CONTAINER_DATA_METHOD );
-#else
-    expected_ABSENT(  expected_HAVE_CONTAINER_DATA_METHOD );
-#endif
-
-#if expected_HAVE_REMOVE_CV
-    expected_PRESENT( expected_HAVE_REMOVE_CV );
-#else
-    expected_ABSENT(  expected_HAVE_REMOVE_CV );
-#endif
-
-#if expected_HAVE_SIZED_TYPES
-    expected_PRESENT( expected_HAVE_SIZED_TYPES );
-#else
-    expected_ABSENT(  expected_HAVE_SIZED_TYPES );
-#endif
-
-#if expected_HAVE_TYPE_TRAITS
-    expected_PRESENT( expected_HAVE_TYPE_TRAITS );
-#else
-    expected_ABSENT(  expected_HAVE_TYPE_TRAITS );
-#endif
-
-#if _HAS_CPP0X
-    expected_PRESENT( _HAS_CPP0X );
-#else
-    expected_ABSENT(  _HAS_CPP0X );
+    REQUIRE( true );
 #endif
 }
 
