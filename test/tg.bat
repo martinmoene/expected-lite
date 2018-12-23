@@ -11,8 +11,10 @@ set std=%1
 set args=%2 %3 %4 %5 %6 %7 %8 %9
 if "%1" == "" set std=c++11
 
+set gpp=g++
+
 call :CompilerVersion version
-echo g++ %version%: %std% %args%
+echo %gpp% %version%: %std% %args%
 
 set UCAP=%unit%
 call :toupper UCAP
@@ -26,7 +28,6 @@ set unit_config=
 rem -flto / -fwhole-program
 set  optflags=-O2
 set warnflags=-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wno-padded -Wno-missing-noreturn
-set       gpp=g++
 
 %gpp% -std=%std% %optflags% %warnflags% %unit_select% %unit_config% -o %unit%-main.t.exe -Dlest_FEATURE_AUTO_REGISTER=1 -I../include/nonstd %unit%-main.t.cpp %unit%.t.cpp && %unit%-main.t.exe
 
@@ -42,7 +43,7 @@ set tmpsource=%tmpprogram%.c
 echo #include ^<stdio.h^>     > %tmpsource%
 echo int main(){printf("%%d.%%d.%%d\n",__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__);} >> %tmpsource%
 
-g++ -o %tmpprogram% %tmpsource% >nul
+%gpp% -o %tmpprogram% %tmpsource% >nul
 for /f %%x in ('%tmpprogram%') do set version=%%x
 del %tmpprogram%.* >nul
 endlocal & set %1=%version%& goto :EOF

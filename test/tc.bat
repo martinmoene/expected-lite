@@ -13,7 +13,7 @@ if "%std%"=="" set std=c++14
 set  clang=clang
 
 call :CompilerVersion version
-echo clang %version%: %std%
+echo %clang% %version%: %std%
 
 set UCAP=%unit%
 call :toupper UCAP
