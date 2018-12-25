@@ -9,9 +9,14 @@ cmake_minimum_required( VERSION 3.5 )
 
 # expected-lite project and version, updated by script/update-version.py:
 
-project( expected_lite LANGUAGES CXX )
+project(
+    expected_lite
+    VERSION 0.2.0
+    DESCRIPTION "Expected objects in C++11 and later in a single-file header-only library"
+#   HOMEPAGE_URL "https://github.com/martinmoene/expected-lite"
+    LANGUAGES CXX )
 
-set( expected_lite_version "0.2.0" )
+set( ${PROJECT_NAME}_version "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" )
 
 # Toplevel or subproject:
 
@@ -21,7 +26,7 @@ else()
     set( expected_IS_TOPLEVEL_PROJECT FALSE )
 endif()
 
-# At default, enable building and performing of tests and building of examples:
+# If toplevel project, enable building and performing of tests, disable building of examples:
 
 option( EXPECTED_LITE_OPT_BUILD_TESTS    "Build and perform expected-lite tests" ${expected_IS_TOPLEVEL_PROJECT} )
 option( EXPECTED_LITE_OPT_BUILD_EXAMPLES "Build expected-lite examples" OFF )
