@@ -1,6 +1,6 @@
 // Use a non-ignorable value with expected.
 
-#include "expected.hpp"
+#include "nonstd/expected.hpp"
 #include <iostream>
 
 using namespace nonstd;
@@ -11,14 +11,14 @@ class required
 public:
     required( T const & value)
     : content( value ) {}
-    
+
     required( required && other )
     : content( other.content )
     , ignored( other.ignored )
     {
         other.ignored = false;
     }
-    
+
     required( required const & other ) = delete;
 
     ~required() noexcept( false )
@@ -26,10 +26,10 @@ public:
         if ( ignored )
             throw std::runtime_error("required: content unobserved");
     };
-    
+
     T const & operator *() const { ignored = false; return content; }
 
-private:    
+private:
     T content;
     mutable bool ignored = true;
 };

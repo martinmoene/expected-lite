@@ -1,18 +1,20 @@
 # Copyright (c) 2016-2018 Martin Moene.
 #
-# Distributed under the Boost Software License, Version 1.0. 
+# Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 project( example LANGUAGES CXX )
 
-include_directories  ( "${PROJECT_SOURCE_DIR}/../include/nonstd" )
+set( PACKAGE ${package_name} )
+
+message( STATUS "Subproject '${PROJECT_NAME}'")
 
 set( SOURCES_CPP11
-    02-required.cpp 
+    02-required.cpp
 )
 
-set( SOURCES_CPP14 
-    01-basic.cpp 
+set( SOURCES_CPP14
+    01-basic.cpp
 )
 
 # note: here variable must be quoted to create semicolon separated list:
@@ -27,7 +29,8 @@ set( TARGETS_ALL   ${TARGETS_CPP11} ${TARGETS_CPP14} )
 # add targets:
 
 foreach( name ${TARGETS_ALL} )
-    add_executable( ${name} ${name}.cpp )
+    add_executable(        ${name} ${name}.cpp )
+    target_link_libraries( ${name} PRIVATE ${PACKAGE} )
 endforeach()
 
 # set compiler options:
