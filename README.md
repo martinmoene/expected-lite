@@ -2,7 +2,7 @@
 
 [![Language](https://img.shields.io/badge/C%2B%2B-11-blue.svg)](https://en.wikipedia.org/wiki/C%2B%2B#Standardization) [![License](https://img.shields.io/badge/license-BSL-blue.svg)](https://opensource.org/licenses/BSL-1.0) [![Build Status](https://travis-ci.org/martinmoene/expected-lite.svg?branch=master)](https://travis-ci.org/martinmoene/expected-lite) [![Build status](https://ci.appveyor.com/api/projects/status/sle31w7obrm8lhe1?svg=true)](https://ci.appveyor.com/project/martinmoene/expected-lite) [![Version](https://badge.fury.io/gh/martinmoene%2Fexpected-lite.svg)](https://github.com/martinmoene/expected-lite/releases) [![download](https://img.shields.io/badge/latest-download-blue.svg)](https://raw.githubusercontent.com/martinmoene/expected-lite/master/include/nonstd/expected.hpp) [![Conan](https://img.shields.io/badge/on-conan-blue.svg)](https://bintray.com/martinmoene/nonstd-lite/expected-lite%3Anonstd-lite/_latestVersion) [![Try it online](https://img.shields.io/badge/on-wandbox-blue.svg)](https://wandbox.org/permlink/bUsuVeJsKRr5Cw10)
 
-*expected lite* is a single-file header-only library for objects that either represent a valid value or an error that you can pass by value. It is intended for use with C++11 and later. The library is based on the [std:&#58;expected](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf) proposal [1] .
+*expected lite* is a single-file header-only library for objects that either represent a valid value or an error that you can pass by value. It is intended for use with C++11 and later. The library is based on the [std:&#58;expected](http://wg21.link/p0323) proposal [1] .
 
 **Contents**  
 - [Example usage](#example-usage)
