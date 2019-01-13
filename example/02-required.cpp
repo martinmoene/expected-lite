@@ -62,7 +62,7 @@ int main( int argc, char * argv[] )
     }
 }
 
-// cl -EHsc -wd4814 -Zc:implicitNoexcept- -I../include/nonstd 02-required.cpp && 02-required.exe
-// g++ -std=c++14 -Wall -I../include/nonstd -o 02-required.exe 02-required.cpp && 02-required.exe
+// cl -EHsc -wd4814 -Zc:implicitNoexcept- -I../include 02-required.cpp && 02-required.exe
+// g++ -std=c++14 -Wall -I../include -o 02-required.exe 02-required.cpp && 02-required.exe
 // value: 42
 // Error: required: content unobserved
