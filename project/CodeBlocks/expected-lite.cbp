@@ -42,7 +42,6 @@
 		<Unit filename="../../test/expected-main.t.cpp" />
 		<Unit filename="../../test/expected-main.t.hpp" />
 		<Unit filename="../../test/expected.t.cpp" />
-		<Unit filename="../../test/expected_cpp03.t.cpp" />
 		<Unit filename="../../test/lest.hpp" />
 		<Unit filename="../../test/odr.cpp" />
 		<Unit filename="../../test/t-odr.bat" />
