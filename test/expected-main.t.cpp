@@ -43,6 +43,7 @@ CASE( "any configuration" "[.expected][.config]" )
     expected_PRESENT( nsel_EXPECTED_DEFAULT );
     expected_PRESENT( nsel_EXPECTED_NONSTD );
     expected_PRESENT( nsel_EXPECTED_STD );
+    expected_PRESENT( nsel_CONFIG_SELECT_EXPECTED );
     expected_PRESENT( nsel_CPLUSPLUS );
 }
 
