@@ -765,7 +765,7 @@ CASE( "expected<>: Allows to move its value if available, or obtain a specified 
     expected<Oracle, char> m{ ov };
     EXPECT( m.value().s == sCopyConstructed );
 
-    expected<Oracle, char> e{ std::move( m ).value_or( std::forward<Oracle>( uv ) ) };
+    expected<Oracle, char> e{ std::move( m ).value_or( uv ) };
 
     EXPECT( e.value().val == ov.val );
     EXPECT( m.value().s == sMovedFrom );
