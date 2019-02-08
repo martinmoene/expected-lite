@@ -38,6 +38,7 @@
 		<Unit filename="../../example/CMakeLists.txt" />
 		<Unit filename="../../include/nonstd/expected.hpp" />
 		<Unit filename="../../script/update-version.py" />
+		<Unit filename="../../script/upload-conan.py" />
 		<Unit filename="../../test/CMakeLists.txt" />
 		<Unit filename="../../test/expected-main.t.cpp" />
 		<Unit filename="../../test/expected-main.t.hpp" />
