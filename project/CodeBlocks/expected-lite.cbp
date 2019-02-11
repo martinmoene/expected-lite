@@ -37,6 +37,7 @@
 		<Unit filename="../../example/02-required.cpp" />
 		<Unit filename="../../example/CMakeLists.txt" />
 		<Unit filename="../../include/nonstd/expected.hpp" />
+		<Unit filename="../../script/create-vcpkg.py" />
 		<Unit filename="../../script/update-version.py" />
 		<Unit filename="../../script/upload-conan.py" />
 		<Unit filename="../../test/CMakeLists.txt" />
