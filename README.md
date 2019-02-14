@@ -287,9 +287,15 @@ Notes and references
 
 [15] Niall Douglas. [Outcome](https://ned14.github.io/outcome/). Very lightweight outcome&lt;T> and result&lt;T> (non-Boost edition). 
 
+
 Appendix
 --------
-### A.1 expected lite test specification
+
+### A.1 Compile-time information
+
+The version of *expected lite* is available via tag `[.version]`. The following tags are available for information on the compiler and on the C++ standard library used: `[.compiler]`, `[.stdc++]`, `[.stdlanguage]` and `[.stdlibrary]`.
+
+### A.2 Expected lite test specification
 
 ```
 unexpected_type<>: Disallows default construction
