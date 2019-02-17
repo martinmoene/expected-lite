@@ -22,7 +22,7 @@
 Example usage
 -------------
 ```C++
-#include "expected.hpp"
+#include "nonstd/expected.hpp"
 
 #include <cstdlib>
 #include <iostream>
