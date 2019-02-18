@@ -102,6 +102,12 @@ Synopsis
 \-D<b>nsel\_CPLUSPLUS</b>=199711L  
 Define this macro to override the auto-detection of the supported C++ standard, or if your compiler does not set the `__cplusplus` macro correctly.
 
+#### Select `std::expected` or `nonstd::expected`
+At default, *expected lite* uses `std::expected` if it is available and lets you use it via namespace `nonstd`. You can however override this default and explicitly request to use `std::expected` or expected lite's `nonstd::expected` as `nonstd::expected` via the following macros.
+
+-D<b>nsel\_CONFIG\_SELECT\_EXPECTED</b>=nsel_EXPECTED_DEFAULT  
+Define this to `nsel_EXPECTED_STD` to select `std::expected` as `nonstd::expected`. Define this to `nsel_EXPECTED_NONSTD` to select `nonstd::expected` as `nonstd::expected`. Default is undefined, which has the same effect as defining to `nsel_EXPECTED_DEFAULT`.
+
 #### Enable compilation errors
 \-D<b>nsel\_CONFIG\_CONFIRMS\_COMPILATION\_ERRORS</b>=0  
 Define this macro to 1 to experience the by-design compile-time errors of the library in the test suite. Default is 0.
