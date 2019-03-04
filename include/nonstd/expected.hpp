@@ -602,6 +602,8 @@ public:
         return m_error;
     }
 
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
     nsel_constexpr14 E && value() && noexcept
     {
         return std::move( m_error );
@@ -611,6 +613,8 @@ public:
     {
         return std::move( m_error );
     }
+
+#endif
 
 //      nsel_REQUIRES_A(
 //        std::is_move_constructible<E>::value
@@ -830,6 +834,8 @@ public:
         return m_error;
     }
 
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
     nsel_constexpr14 error_type && error() &&
     {
         return std::move( m_error );
@@ -839,6 +845,8 @@ public:
     {
         return std::move( m_error );
     }
+
+#endif
 
 private:
     error_type m_error;
@@ -1311,6 +1319,8 @@ public:
         return assert( has_value() ), contained.value();
     }
 
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
     constexpr value_type const && operator *() const &&
     {
         return assert( has_value() ), std::move( contained.value() );
@@ -1320,6 +1330,8 @@ public:
     {
         return assert( has_value() ), std::move( contained.value() );
     }
+
+#endif
 
     constexpr explicit operator bool() const noexcept
     {
@@ -1345,6 +1357,8 @@ public:
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
 
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
     constexpr value_type const && value() const &&
     {
         return std::move( has_value()
@@ -1359,6 +1373,8 @@ public:
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() ) );
     }
 
+#endif
+
     constexpr error_type const & error() const &
     {
         return assert( ! has_value() ), contained.error();
@@ -1369,6 +1385,8 @@ public:
         return assert( ! has_value() ), contained.error();
     }
 
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
     constexpr error_type const && error() const &&
     {
         return assert( ! has_value() ), std::move( contained.error() );
@@ -1378,6 +1396,8 @@ public:
     {
         return assert( ! has_value() ), std::move( contained.error() );
     }
+
+#endif
 
     constexpr unexpected_type get_unexpected() const
     {
@@ -1649,6 +1669,8 @@ public:
         return assert( ! has_value() ), contained.error();
     }
 
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
     constexpr error_type const && error() const &&
     {
         return assert( ! has_value() ), std::move( contained.error() );
@@ -1658,6 +1680,8 @@ public:
     {
         return assert( ! has_value() ), std::move( contained.error() );
     }
+
+#endif
 
     constexpr unexpected_type get_unexpected() const
     {
