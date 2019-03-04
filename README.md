@@ -304,69 +304,101 @@ The version of *expected lite* is available via tag `[.version]`. The following 
 ### A.2 Expected lite test specification
 
 ```
-unexpected_type<>: Disallows default construction
-unexpected_type<>: Disallows default construction, std::exception_ptr specialization
-unexpected_type<>: Allows to copy-construct from error_type
-unexpected_type<>: Allows to copy-construct from error_type, std::exception_ptr specialization
-unexpected_type<>: Allows to move-construct from error_type
-unexpected_type<>: Allows to move-construct from error_type, std::exception_ptr specialization
-unexpected_type<>: Allows to copy-construct from an exception, std::exception_ptr specialization
-unexpected_type<>: Allows to observe its value
-unexpected_type<>: Allows to observe its value, std::exception_ptr specialization
-unexpected_type<>: Allows to modify its value
-unexpected_type<>: Allows to modify its value, std::exception_ptr specialization
-unexpected_type<>: Provides relational operators
-unexpected_type<>: Provides relational operators, std::exception_ptr specialization
+unexpected_type: Disallows default construction
+unexpected_type: Disallows default construction, std::exception_ptr specialization
+unexpected_type: Allows to copy-construct from error_type
+unexpected_type: Allows to copy-construct from error_type, std::exception_ptr specialization
+unexpected_type: Allows to move-construct from error_type
+unexpected_type: Allows to move-construct from error_type, std::exception_ptr specialization
+unexpected_type: Allows to copy-construct from an exception, std::exception_ptr specialization
+unexpected_type: Allows to observe its value
+unexpected_type: Allows to observe its value, std::exception_ptr specialization
+unexpected_type: Allows to modify its value
+unexpected_type: Allows to modify its value, std::exception_ptr specialization
+unexpected_type: Provides relational operators
+unexpected_type: Provides relational operators, std::exception_ptr specialization
 make_unexpected(): Allows to create an unexpected_type<E> from an E
-unexpected<>: C++17 and later provide unexpected_type as unexpected
-bad_expected_access<>: Disallows default construction
-bad_expected_access<>: Allows construction from error_type
-bad_expected_access<>: Allows to observe its error
-bad_expected_access<>: Allows to change its error
-expected<>: Allows default construction
-expected<>: Allows to copy-construct from value_type
-expected<>: Allows to move-construct from value_type
-expected<>: Allows to copy-construct from expected<>
-expected<>: Allows to move-construct from expected<>
-expected<>: Allows to in-place-construct value_type
-expected<>: Allows to copy-construct from unexpected_type<>
-expected<>: Allows to move-construct from unexpected_type<>
-expected<>: Allows to in-place-construct unexpected_type<>
-expected<>: Allows to copy-assign from expected<>
-expected<>: Allows to move-assign from expected<>
-expected<>: Allows to copy-assign from type convertible to value_type
-expected<>: Allows to move-assign from type convertible to value_type
-expected<>: Allows to be swapped
-expected<>: Allows to observe its value via a pointer
-expected<>: Allows to observe its value via a pointer to constant
-expected<>: Allows to modify its value via a pointer
-expected<>: Allows to observe its value via a reference
-expected<>: Allows to observe its value via a r-value reference
-expected<>: Allows to modify its value via a reference
-expected<>: Allows to observe if it contains a value (or error)
-expected<>: Allows to observe its value
-expected<>: Allows to modify its value
-expected<>: Allows to move its value
-expected<>: Allows to observe its error
-expected<>: Allows to modify its error
-expected<>: Allows to move its error
-expected<>: Allows to observe its error as unexpected<>
-expected<>: Allows to observe its value if available, or obtain a specified value otherwise
-expected<>: Allows to move its value if available, or obtain a specified value otherwise
+unexpected: C++17 and later provide unexpected_type as unexpected
+bad_expected_access: Disallows default construction
+bad_expected_access: Allows construction from error_type
+bad_expected_access: Allows to observe its error
+bad_expected_access: Allows to change its error
+bad_expected_access: Provides non-empty what()
+expected: Allows to default construct
+expected: Allows to copy-construct from expected: value
+expected: Allows to copy-construct from expected: error
+expected: Allows to move-construct from expected: value
+expected: Allows to move-construct from expected: error
+expected: Allows to copy-construct from expected; value, explicit converting
+expected: Allows to copy-construct from expected; error, explicit converting
+expected: Allows to copy-construct from expected; value, non-explicit converting
+expected: Allows to copy-construct from expected; error, non-explicit converting
+expected: Allows to move-construct from expected; value, explicit converting
+expected: Allows to move-construct from expected; error, explicit converting
+expected: Allows to move-construct from expected; value, non-explicit converting
+expected: Allows to move-construct from expected; error, non-explicit converting
+expected: Allows to forward-construct from value, explicit converting
+expected: Allows to forward-construct from value, non-explicit converting
+expected: Allows to in-place-construct value
+expected: Allows to in-place-construct value from initializer_list
+expected: Allows to copy-construct from unexpected, explicit converting
+expected: Allows to copy-construct from unexpected, non-explicit converting
+expected: Allows to move-construct from unexpected, explicit converting
+expected: Allows to move-construct from unexpected, non-explicit converting
+expected: Allows to in-place-construct error
+expected: Allows to in-place-construct error from initializer_list
+expected: Allows to copy-assign from expected, value
+expected: Allows to copy-assign from expected, error
+expected: Allows to move-assign from expected, value
+expected: Allows to move-assign from expected, error
+expected: Allows to forward-assign from value
+expected: Allows to copy-assign from unexpected
+expected: Allows to move-assign from unexpected
+expected: Allows to emplace value
+expected: Allows to emplace value from initializer_list
+expected: Allows to be swapped
+expected: Allows to observe its value via a pointer
+expected: Allows to observe its value via a pointer to constant
+expected: Allows to modify its value via a pointer
+expected: Allows to observe its value via a reference
+expected: Allows to observe its value via a r-value reference
+expected: Allows to modify its value via a reference
+expected: Allows to observe if it contains a value (or error)
+expected: Allows to observe its value
+expected: Allows to modify its value
+expected: Allows to move its value
+expected: Allows to observe its error
+expected: Allows to modify its error
+expected: Allows to move its error
+expected: Allows to observe its error as unexpected
+expected: Allows to query if it contains an exception of a specific base type
+expected: Allows to observe its value if available, or obtain a specified value otherwise
+expected: Allows to move its value if available, or obtain a specified value otherwise
 expected<void>: Allows to default-construct
-expected<void>: Allows to copy-construct from expected<void>
-expected<void>: Allows to move-construct from expected<void>
+expected<void>: Allows to copy-construct from expected<void>: value
+expected<void>: Allows to copy-construct from expected<void>: error
+expected<void>: Allows to move-construct from expected<void>: value
+expected<void>: Allows to move-construct from expected<void>: error
 expected<void>: Allows to in-place-construct
-expected<void>: Allows to copy-construct from unexpected_type<>
-expected<void>: Allows to move-construct from unexpected_type<>
-expected<void>: Allows to in-place-construct unexpected_type<>
-expected<void>: Allows to copy-assign from expected<>
-expected<void>: Allows to move-assign from expected<>
+expected<void>: Allows to copy-construct from unexpected, explicit converting
+expected<void>: Allows to copy-construct from unexpected, non-explicit converting
+expected<void>: Allows to move-construct from unexpected, explicit converting
+expected<void>: Allows to move-construct from unexpected, non-explicit converting
+expected<void>: Allows to in-place-construct unexpected_type
+expected<void>: Allows to in-place-construct error from initializer_list
+expected<void>: Allows to copy-assign from expected, value
+expected<void>: Allows to copy-assign from expected, error
+expected<void>: Allows to move-assign from expected, value
+expected<void>: Allows to move-assign from expected, error
+expected<void>: Allows to emplace value
 expected<void>: Allows to be swapped
 expected<void>: Allows to observe if it contains a value (or error)
+expected<void>: Allows to observe its value
 expected<void>: Allows to observe its error
 expected<void>: Allows to modify its error
 expected<void>: Allows to move its error
-expected<void>: Allows to observe its error as unexpected<>
-operator op: Provides relational operators
+expected<void>: Allows to observe its error as unexpected
+expected<void>: Allows to query if it contains an exception of a specific base type
+operators: Provides expected relational operators
+swap: Allows expected to be swapped
 ```
