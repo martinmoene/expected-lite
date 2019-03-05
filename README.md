@@ -305,16 +305,30 @@ The version of *expected lite* is available via tag `[.version]`. The following 
 
 ```
 unexpected_type: Disallows default construction
-unexpected_type: Disallows default construction, std::exception_ptr specialization
+unexpected_type: Allows to copy-construct from unexpected_type, default
+unexpected_type: Allows to move-construct from unexpected_type, default
+unexpected_type: Allows to in-place-construct
+unexpected_type: Allows to in-place-construct from initializer_list
 unexpected_type: Allows to copy-construct from error_type
-unexpected_type: Allows to copy-construct from error_type, std::exception_ptr specialization
 unexpected_type: Allows to move-construct from error_type
-unexpected_type: Allows to move-construct from error_type, std::exception_ptr specialization
-unexpected_type: Allows to copy-construct from an exception, std::exception_ptr specialization
-unexpected_type: Allows to observe its value
-unexpected_type: Allows to observe its value, std::exception_ptr specialization
-unexpected_type: Allows to modify its value
-unexpected_type: Allows to modify its value, std::exception_ptr specialization
+unexpected_type: Allows to copy-construct from unexpected_type, explicit converting
+unexpected_type: Allows to copy-construct from unexpected_type, non-explicit converting
+unexpected_type: Allows to move-construct from unexpected_type, explicit converting
+unexpected_type: Allows to move-construct from unexpected_type, non-explicit converting
+unexpected_type: Allows to copy-assign from unexpected_type, default
+unexpected_type: Allows to move-assign from unexpected_type, default
+unexpected_type: Allows to copy-assign from unexpected_type, converting
+unexpected_type: Allows to move-assign from unexpected, converting
+unexpected_type: Allows to observe its value via a l-value reference
+unexpected_type: Allows to observe its value via a r-value reference
+unexpected_type: Allows to modify its value via a l-value reference
+unexpected_type: Allows to be swapped
+unexpected_type<std::exception_ptr>: Disallows default construction
+unexpected_type<std::exception_ptr>: Allows to copy-construct from error_type
+unexpected_type<std::exception_ptr>: Allows to move-construct from error_type
+unexpected_type<std::exception_ptr>: Allows to copy-construct from an exception
+unexpected_type<std::exception_ptr>: Allows to observe its value
+unexpected_type<std::exception_ptr>: Allows to modify its value
 unexpected_type: Provides relational operators
 unexpected_type: Provides relational operators, std::exception_ptr specialization
 make_unexpected(): Allows to create an unexpected_type<E> from an E
@@ -360,9 +374,10 @@ expected: Allows to be swapped
 expected: Allows to observe its value via a pointer
 expected: Allows to observe its value via a pointer to constant
 expected: Allows to modify its value via a pointer
-expected: Allows to observe its value via a reference
+expected: Allows to observe its value via a l-value reference
 expected: Allows to observe its value via a r-value reference
-expected: Allows to modify its value via a reference
+expected: Allows to modify its value via a l-value reference
+expected: Allows to modify its value via a r-value reference
 expected: Allows to observe if it contains a value (or error)
 expected: Allows to observe its value
 expected: Allows to modify its value
@@ -401,4 +416,5 @@ expected<void>: Allows to observe its error as unexpected
 expected<void>: Allows to query if it contains an exception of a specific base type
 operators: Provides expected relational operators
 swap: Allows expected to be swapped
+std::hash: Allows to compute hash value for expected
 ```

@@ -528,7 +528,7 @@ private:
 
 } // namespace detail
 
-/// // x.x.3 Unexpected object type; unexpected_type; C++17 and later can also use aliased type unexpected.
+/// x.x.5 Unexpected object type; unexpected_type; C++17 and later can also use aliased type unexpected.
 
 #if nsel_P0323R <= 2
 template< typename E = std::exception_ptr >
@@ -541,56 +541,131 @@ class unexpected_type
 public:
     using error_type = E;
 
-    unexpected_type() = delete;
-    constexpr unexpected_type( unexpected_type const &) = default;
-    constexpr unexpected_type( unexpected_type &&) = default;
-    nsel_constexpr14 unexpected_type& operator=( unexpected_type const &) = default;
-    nsel_constexpr14 unexpected_type& operator=( unexpected_type &&) = default;
+    // x.x.5.2.1 Constructors
+
+//  unexpected_type() = delete;
+
+    constexpr unexpected_type( unexpected_type const & ) = default;
+    constexpr unexpected_type( unexpected_type && ) = default;
+
+    template< typename... Args
+        nsel_REQUIRES_T(
+            std::is_constructible<E, Args&&...>::value
+        )
+    >
+    constexpr explicit unexpected_type( nonstd_lite_in_place_t(E), Args &&... args )
+    : m_error( std::forward<Args>( args )...)
+    {}
+
+    template< typename U, typename... Args
+        nsel_REQUIRES_T(
+            std::is_constructible<E, std::initializer_list<U>, Args&&...>::value
+        )
+    >
+    constexpr explicit unexpected_type( nonstd_lite_in_place_t(E), std::initializer_list<U> il, Args &&... args )
+    : m_error( il, std::forward<Args>( args )...)
+    {}
 
     template< typename E2
         nsel_REQUIRES_T(
-            std::is_constructible<E,E2&&>::value
+            std::is_constructible<E,E2>::value
+            && !std::is_same< typename std20::remove_cvref<E2>::type, nonstd_lite_in_place_t(E2) >::value
+            && !std::is_same< typename std20::remove_cvref<E2>::type, unexpected_type >::value
         )
     >
     constexpr explicit unexpected_type( E2 && error )
     : m_error( std::forward<E2>( error ) )
     {}
 
+
     template< typename E2 >
     constexpr explicit unexpected_type( unexpected_type<E2> const & error
         nsel_REQUIRES_A(
-            std::is_constructible<E,E2 const &>::value
-            && !std::is_convertible<E2 const &, E>::value /*=> explicit */ )
+            std::is_constructible<    E, E2>::value
+            && !std::is_constructible<E, unexpected_type<E2>       &   >::value
+            && !std::is_constructible<E, unexpected_type<E2>           >::value
+            && !std::is_constructible<E, unexpected_type<E2> const &   >::value
+            && !std::is_constructible<E, unexpected_type<E2> const     >::value
+            && !std::is_convertible<     unexpected_type<E2>       &, E>::value
+            && !std::is_convertible<     unexpected_type<E2>        , E>::value
+            && !std::is_convertible<     unexpected_type<E2> const &, E>::value
+            && !std::is_convertible<     unexpected_type<E2> const  , E>::value
+            && !std::is_convertible< E2 const &, E>::value /*=> explicit */ )
         )
-    : m_error( error )
+    : m_error( E{ error.value() } )
     {}
 
     template< typename E2 >
     constexpr /*non-explicit*/ unexpected_type( unexpected_type<E2> const & error
         nsel_REQUIRES_A(
-            std::is_constructible<E,E2 const &>::value
-            && std::is_convertible<E2 const &, E>::value /*=> non-explicit */ )
+            std::is_constructible<    E, E2>::value
+            && !std::is_constructible<E, unexpected_type<E2>       &   >::value
+            && !std::is_constructible<E, unexpected_type<E2>           >::value
+            && !std::is_constructible<E, unexpected_type<E2> const &   >::value
+            && !std::is_constructible<E, unexpected_type<E2> const     >::value
+            && !std::is_convertible<     unexpected_type<E2>       &, E>::value
+            && !std::is_convertible<     unexpected_type<E2>        , E>::value
+            && !std::is_convertible<     unexpected_type<E2> const &, E>::value
+            && !std::is_convertible<     unexpected_type<E2> const  , E>::value
+            &&  std::is_convertible< E2 const &, E>::value /*=> explicit */ )
         )
-    : m_error( error )
+    : m_error( error.value() )
     {}
 
     template< typename E2 >
     constexpr explicit unexpected_type( unexpected_type<E2> && error
         nsel_REQUIRES_A(
-            std::is_constructible<E,E2&&>::value
-            && !std::is_convertible<E2&&, E>::value /*=> explicit */ )
+            std::is_constructible<    E, E2>::value
+            && !std::is_constructible<E, unexpected_type<E2>       &   >::value
+            && !std::is_constructible<E, unexpected_type<E2>           >::value
+            && !std::is_constructible<E, unexpected_type<E2> const &   >::value
+            && !std::is_constructible<E, unexpected_type<E2> const     >::value
+            && !std::is_convertible<     unexpected_type<E2>       &, E>::value
+            && !std::is_convertible<     unexpected_type<E2>        , E>::value
+            && !std::is_convertible<     unexpected_type<E2> const &, E>::value
+            && !std::is_convertible<     unexpected_type<E2> const  , E>::value
+            && !std::is_convertible< E2 const &, E>::value /*=> explicit */ )
         )
-    : m_error( error )
+    : m_error( E{ std::move( error.value() ) } )
     {}
 
     template< typename E2 >
     constexpr /*non-explicit*/ unexpected_type( unexpected_type<E2> && error
         nsel_REQUIRES_A(
-            std::is_constructible<E,E2&&>::value
-            && std::is_convertible<E2&&, E>::value /*=> non-explicit */ )
+            std::is_constructible<    E, E2>::value
+            && !std::is_constructible<E, unexpected_type<E2>       &   >::value
+            && !std::is_constructible<E, unexpected_type<E2>           >::value
+            && !std::is_constructible<E, unexpected_type<E2> const &   >::value
+            && !std::is_constructible<E, unexpected_type<E2> const     >::value
+            && !std::is_convertible<     unexpected_type<E2>       &, E>::value
+            && !std::is_convertible<     unexpected_type<E2>        , E>::value
+            && !std::is_convertible<     unexpected_type<E2> const &, E>::value
+            && !std::is_convertible<     unexpected_type<E2> const  , E>::value
+            &&  std::is_convertible< E2 const &, E>::value /*=> non-explicit */ )
         )
-    : m_error( error )
+    : m_error( std::move( error.value() ) )
     {}
+
+    // x.x.5.2.2 Assignment
+
+    nsel_constexpr14 unexpected_type& operator=( unexpected_type const & ) = default;
+    nsel_constexpr14 unexpected_type& operator=( unexpected_type && ) = default;
+
+    template< typename E2 = E >
+    nsel_constexpr14 unexpected_type & operator=( unexpected_type<E2> const & other )
+    {
+        unexpected_type{ other.value() }.swap( *this );
+        return *this;
+    }
+
+    template< typename E2 = E >
+    nsel_constexpr14 unexpected_type & operator=( unexpected_type<E2> && other )
+    {
+        unexpected_type{ std::move( other.value() ) }.swap( *this );
+        return *this;
+    }
+
+    // x.x.5.2.3 Observers
 
     nsel_constexpr14 E & value() & noexcept
     {
@@ -616,15 +691,16 @@ public:
 
 #endif
 
+    // x.x.5.2.4 Swap
+
 //      nsel_REQUIRES_A(
-//        std::is_move_constructible<E>::value
-//        && std::is_swappable<E>::value
+//          std::is_swappable<E>::value
 //      )
 
+    // TODO: unexpected_type::swap: noexcept(XXX)
     void swap( unexpected_type & other ) noexcept (
 #if nsel_CPP17_OR_GREATER
-        std::is_nothrow_move_constructible<E>::value
-        && std::is_nothrow_swappable<E&>::value
+        std::is_nothrow_swappable<E>::value
 #else
         std::is_nothrow_move_constructible<E>::value
         && noexcept ( std::swap( std::declval<E&>(), std::declval<E&>() ) )
@@ -635,14 +711,27 @@ public:
         swap( m_error, other.m_error );
     }
 
+    // TODO: ??? unexpected_type: in-class friend operator==, !=
+
 private:
     error_type m_error;
 };
+
+#if nsel_CPP17_OR_GREATER
+
+/// template deduction guide:
+
+template< typename E >
+unexpected_type( E ) -> unexpected_type< E >;
+
+#endif
 
 /// class unexpected_type, std::exception_ptr specialization (P0323R2)
 
 #if nsel_P0323R <= 2
 
+// TODO: Should expected be specialized for particular E types such as exception_ptr and how?
+//       See p0323r7 2.1. Ergonomics, http://wg21.link/p0323
 template<>
 class unexpected_type< std::exception_ptr >
 {
@@ -684,14 +773,14 @@ private:
 
 /// x.x.4, Unexpected equality operators
 
-template< typename E >
-constexpr bool operator==( unexpected_type<E> const & x, unexpected_type<E> const & y )
+template< typename E1, typename E2 >
+constexpr bool operator==( unexpected_type<E1> const & x, unexpected_type<E2> const & y )
 {
     return x.value() == y.value();
 }
 
-template< typename E >
-constexpr bool operator!=( unexpected_type<E> const & x, unexpected_type<E> const & y )
+template< typename E1, typename E2 >
+constexpr bool operator!=( unexpected_type<E1> const & x, unexpected_type<E2> const & y )
 {
     return ! ( x == y );
 }
@@ -722,6 +811,8 @@ constexpr bool operator>=( unexpected_type<E> const & x, unexpected_type<E> cons
     return ! ( x < y );
 }
 
+#endif // nsel_P0323R
+
 /// x.x.5 Specialized algorithms
 
 template< typename E >
@@ -729,6 +820,8 @@ void swap( unexpected_type<E> & x, unexpected_type<E> & y) noexcept ( noexcept (
 {
     x.swap( y );
 }
+
+#if nsel_P0323R <= 2
 
 // unexpected: relational operators for std::exception_ptr:
 
@@ -787,18 +880,12 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
 
 #endif // nsel_P0323R
 
-/// unexpect tag, in_place_unexpected tag: construct an error
-
-struct unexpect_t{};
-using in_place_unexpected_t = unexpect_t;
-
-nsel_inline17 constexpr unexpect_t unexpect{};
-nsel_inline17 constexpr unexpect_t in_place_unexpected{};
-
-/// expected access error
+/// x.x.6, x.x.7 expected access error
 
 template< typename E >
 class bad_expected_access;
+
+/// x.x.7 bad_expected_access<void>: expected access error
 
 template <>
 class bad_expected_access< void > : public std::exception
@@ -808,6 +895,8 @@ public:
     : std::exception()
     {}
 };
+
+/// x.x.6 bad_expected_access: expected access error
 
 template< typename E >
 class bad_expected_access : public bad_expected_access< void >
@@ -851,6 +940,14 @@ public:
 private:
     error_type m_error;
 };
+
+/// x.x.8 unexpect tag, in_place_unexpected tag: construct an error
+
+struct unexpect_t{};
+using in_place_unexpected_t = unexpect_t;
+
+nsel_inline17 constexpr unexpect_t unexpect{};
+nsel_inline17 constexpr unexpect_t in_place_unexpected{};
 
 /// class error_traits
 
@@ -951,24 +1048,24 @@ public:
     )
     : has_value_( other.has_value_ )
     {
-        if ( has_value() ) contained.construct_value( std::move(other.contained).value() );
-        else               contained.construct_error( std::move(other.contained).error() );
+        if ( has_value() ) contained.construct_value( std::move( other.contained.value() ) );
+        else               contained.construct_error( std::move( other.contained.error() ) );
     }
 
     template< typename U, typename G >
     nsel_constexpr14 explicit expected( expected<U, G> const & other
         nsel_REQUIRES_A(
-            std::is_constructible<T, const U&>::value
-            && std::is_constructible<E, const G&>::value
-            && !std::is_constructible<T, expected<U, G>&>::value
-            && !std::is_constructible<T, expected<U, G>&&>::value
-            && !std::is_constructible<T, const expected<U, G>&>::value
-            && !std::is_constructible<T, const expected<U, G>&&>::value
-            && !std::is_convertible<expected<U, G>&, T>::value
-            && !std::is_convertible<expected<U, G>&&, T>::value
-            && !std::is_convertible<const expected<U, G>&, T>::value
-            && !std::is_convertible<const expected<U, G>&&, T>::value
-            && (!std::is_convertible<U const&, T>::value || !std::is_convertible<const G&, E>::value ) /*=> explicit */ )
+            std::is_constructible<    T, U const &>::value
+            &&  std::is_constructible<E, G const &>::value
+            && !std::is_constructible<T, expected<U, G>       &    >::value
+            && !std::is_constructible<T, expected<U, G>       &&   >::value
+            && !std::is_constructible<T, expected<U, G> const &    >::value
+            && !std::is_constructible<T, expected<U, G> const &&   >::value
+            && !std::is_convertible<     expected<U, G>       & , T>::value
+            && !std::is_convertible<     expected<U, G>       &&, T>::value
+            && !std::is_convertible<     expected<U, G> const & , T>::value
+            && !std::is_convertible<     expected<U, G> const &&, T>::value
+            && (!std::is_convertible<U const &, T>::value || !std::is_convertible<G const &, E>::value ) /*=> explicit */ )
         )
     : has_value_( other.has_value_ )
     {
@@ -979,17 +1076,17 @@ public:
     template< typename U, typename G >
     nsel_constexpr14 /*non-explicit*/ expected( expected<U, G> const & other
         nsel_REQUIRES_A(
-            std::is_constructible<T, const U&>::value
-            && std::is_constructible<E, const G&>::value
-            && !std::is_constructible<T, expected<U, G>&>::value
-            && !std::is_constructible<T, expected<U, G>&&>::value
-            && !std::is_constructible<T, const expected<U, G>&>::value
-            && !std::is_constructible<T, const expected<U, G>&&>::value
-            && !std::is_convertible<expected<U, G>&, T>::value
-            && !std::is_convertible<expected<U, G>&&, T>::value
-            && !std::is_convertible<const expected<U, G>&, T>::value
-            && !std::is_convertible<const expected<U, G>&&, T>::value
-            && !(!std::is_convertible<U const&, T>::value || !std::is_convertible<const G&, E>::value ) /*=> non-explicit */ )
+            std::is_constructible<    T, U const &>::value
+            &&  std::is_constructible<E, G const &>::value
+            && !std::is_constructible<T, expected<U, G>       &    >::value
+            && !std::is_constructible<T, expected<U, G>       &&   >::value
+            && !std::is_constructible<T, expected<U, G> const &    >::value
+            && !std::is_constructible<T, expected<U, G> const &&   >::value
+            && !std::is_convertible<     expected<U, G>       & , T>::value
+            && !std::is_convertible<     expected<U, G>       &&, T>::value
+            && !std::is_convertible<     expected<U, G> const  &, T>::value
+            && !std::is_convertible<     expected<U, G> const &&, T>::value
+            && !(!std::is_convertible<U const &, T>::value || !std::is_convertible<G const &, E>::value ) /*=> non-explicit */ )
         )
     : has_value_( other.has_value_ )
     {
@@ -1000,16 +1097,16 @@ public:
     template< typename U, typename G >
     nsel_constexpr14 explicit expected( expected<U, G> && other
         nsel_REQUIRES_A(
-            std::is_constructible<T, U>::value
-            && std::is_constructible<E, G>::value
-            && !std::is_constructible<T, expected<U, G>&>::value
-            && !std::is_constructible<T, expected<U, G>&&>::value
-            && !std::is_constructible<T, const expected<U, G>&>::value
-            && !std::is_constructible<T, const expected<U, G>&&>::value
-            && !std::is_convertible<expected<U, G>&, T>::value
-            && !std::is_convertible<expected<U, G>&&, T>::value
-            && !std::is_convertible<const expected<U, G>&, T>::value
-            && !std::is_convertible<const expected<U, G>&&, T>::value
+            std::is_constructible<    T, U>::value
+            &&  std::is_constructible<E, G>::value
+            && !std::is_constructible<T, expected<U, G>       &    >::value
+            && !std::is_constructible<T, expected<U, G>       &&   >::value
+            && !std::is_constructible<T, expected<U, G> const &    >::value
+            && !std::is_constructible<T, expected<U, G> const &&   >::value
+            && !std::is_convertible<     expected<U, G>       & , T>::value
+            && !std::is_convertible<     expected<U, G>       &&, T>::value
+            && !std::is_convertible<     expected<U, G> const & , T>::value
+            && !std::is_convertible<     expected<U, G> const &&, T>::value
             && (!std::is_convertible<U, T>::value || !std::is_convertible<G, E>::value ) /*=> explicit */ )
         )
     : has_value_( other.has_value_ )
@@ -1021,16 +1118,16 @@ public:
     template< typename U, typename G >
     nsel_constexpr14 /*non-explicit*/ expected( expected<U, G> && other
         nsel_REQUIRES_A(
-            std::is_constructible<T, U>::value
-            && std::is_constructible<E, G>::value
-            && !std::is_constructible<T, expected<U, G>&>::value
-            && !std::is_constructible<T, expected<U, G>&&>::value
-            && !std::is_constructible<T, const expected<U, G>&>::value
-            && !std::is_constructible<T, const expected<U, G>&&>::value
-            && !std::is_convertible<expected<U, G>&, T>::value
-            && !std::is_convertible<expected<U, G>&&, T>::value
-            && !std::is_convertible<const expected<U, G>&, T>::value
-            && !std::is_convertible<const expected<U, G>&&, T>::value
+            std::is_constructible<    T, U>::value
+            &&  std::is_constructible<E, G>::value
+            && !std::is_constructible<T, expected<U, G>      &     >::value
+            && !std::is_constructible<T, expected<U, G>      &&    >::value
+            && !std::is_constructible<T, expected<U, G> const &    >::value
+            && !std::is_constructible<T, expected<U, G> const &&   >::value
+            && !std::is_convertible<     expected<U, G>       & , T>::value
+            && !std::is_convertible<     expected<U, G>       &&, T>::value
+            && !std::is_convertible<     expected<U, G> const & , T>::value
+            && !std::is_convertible<     expected<U, G> const &&, T>::value
             && !(!std::is_convertible<U, T>::value || !std::is_convertible<G, E>::value ) /*=> non-explicit */ )
         )
     : has_value_( other.has_value_ )
@@ -1113,7 +1210,7 @@ public:
     template< typename G = E >
     nsel_constexpr14 explicit expected( nonstd::unexpected_type<G> const & error
         nsel_REQUIRES_A(
-            !std::is_convertible<const G&, E>::value /*=> explicit */ )
+            !std::is_convertible<G const &, E>::value /*=> explicit */ )
         )
     : has_value_( false )
     {
@@ -1123,7 +1220,7 @@ public:
     template< typename G = E >
     nsel_constexpr14 /*non-explicit*/ expected( nonstd::unexpected_type<G> const & error
         nsel_REQUIRES_A(
-            std::is_convertible<const G&, E>::value /*=> non-explicit */ )
+            std::is_convertible<G const &, E>::value /*=> non-explicit */ )
         )
     : has_value_( false )
     {
@@ -1137,7 +1234,7 @@ public:
         )
     : has_value_( false )
     {
-        contained.construct_error( E{ std::move(error).value() } );
+        contained.construct_error( E{ std::move( error.value() ) } );
     }
 
     template< typename G = E >
@@ -1147,7 +1244,7 @@ public:
         )
     : has_value_( false )
     {
-        contained.construct_error( std::move(error).value() );
+        contained.construct_error( std::move( error.value() ) );
     }
 
     template< typename... Args
@@ -1270,8 +1367,10 @@ public:
     // x.x.4.4 swap
 
 //    nsel_REQUIRES_A(
-//        std::is_move_constructible<T>::value &&
-//        std::is_move_constructible<E>::value )
+//        std::is_swappable<   T&>::value
+//        && std::is_swappable<E&>::value
+//        && ( std::is_void<T>::value || (std::is_move_constructible<T>::value || std::is_move_constructible<E>::value) )
+//    )
 
     void swap( expected & other ) noexcept
     (
@@ -1519,7 +1618,7 @@ public:
     template< typename G = E >
     nsel_constexpr14 explicit expected( nonstd::unexpected_type<G> const & error
         nsel_REQUIRES_A(
-            !std::is_convertible<const G&, E>::value /*=> explicit */
+            !std::is_convertible<G const &, E>::value /*=> explicit */
         )
     )
     : has_value_( false )
@@ -1530,7 +1629,7 @@ public:
     template< typename G = E >
     nsel_constexpr14 /*non-explicit*/ expected( nonstd::unexpected_type<G> const & error
         nsel_REQUIRES_A(
-            std::is_convertible<const G&, E>::value /*=> non-explicit */
+            std::is_convertible<G const &, E>::value /*=> non-explicit */
         )
     )
     : has_value_( false )
@@ -1581,7 +1680,6 @@ public:
     {
         contained.emplace_error( il, std::forward<Args>( args )... );
     }
-
 
     // destructor
 
@@ -1721,19 +1819,21 @@ private:
     detail::storage_t<void,E> contained;
 };
 
-// x.x.4.7 expected<>: relational operators
+// x.x.4.6 expected<>: comparison operators
 
-template< typename T, typename E >
-constexpr bool operator==( expected<T,E> const & x, expected<T,E> const & y )
+template< typename T1, typename E1, typename T2, typename E2 >
+constexpr bool operator==( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
     return bool(x) != bool(y) ? false : bool(x) == false ? true : *x == *y;
 }
 
-template< typename T, typename E >
-constexpr bool operator!=( expected<T,E> const & x, expected<T,E> const & y )
+template< typename T1, typename E1, typename T2, typename E2 >
+constexpr bool operator!=( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
     return !(x == y);
 }
+
+#if nsel_P0323R <= 2
 
 template< typename T, typename E >
 constexpr bool operator<( expected<T,E> const & x, expected<T,E> const & y )
@@ -1759,109 +1859,35 @@ constexpr bool operator>=( expected<T,E> const & x, expected<T,E> const & y )
     return !(x < y);
 }
 
-// expected: comparison with unexpected_type
+#endif
 
-template< typename T, typename E >
-constexpr bool operator==( expected<T,E> const & x, unexpected_type<E> const & u )
-{
-    return (!x) ? x.get_unexpected() == u : false;
-}
+// x.x.4.7 expected: comparison with T
 
-template< typename T, typename E >
-constexpr bool operator==( unexpected_type<E> const & u, expected<T,E> const & x )
-{
-    return ( x == u );
-}
-
-template< typename T, typename E >
-constexpr bool operator!=( expected<T,E> const & x, unexpected_type<E> const & u )
-{
-    return ! ( x == u );
-}
-
-template< typename T, typename E >
-constexpr bool operator!=( unexpected_type<E> const & u, expected<T,E> const & x )
-{
-    return ! ( x == u );
-}
-
-template< typename T, typename E >
-constexpr bool operator<( expected<T,E> const & x, unexpected_type<E> const & u )
-{
-    return (!x) ? ( x.get_unexpected() < u ) : false;
-}
-
-#if nsel_P0323R <= 2
-
-template< typename T, typename E >
-constexpr bool operator<( unexpected_type<E> const & u, expected<T,E> const & x )
-{
-  return (!x) ? ( u < x.get_unexpected() ) : true ;
-}
-
-template< typename T, typename E >
-constexpr bool operator>( expected<T,E> const & x, unexpected_type<E> const & u )
-{
-    return ( u < x );
-}
-
-template< typename T, typename E >
-constexpr bool operator>( unexpected_type<E> const & u, expected<T,E> const & x )
-{
-    return ( x < u );
-}
-
-template< typename T, typename E >
-constexpr bool operator<=( expected<T,E> const & x, unexpected_type<E> const & u )
-{
-    return ! ( u < x );
-}
-
-template< typename T, typename E >
-constexpr bool operator<=( unexpected_type<E> const & u, expected<T,E> const & x)
-{
-    return ! ( x < u );
-}
-
-template< typename T, typename E >
-constexpr bool operator>=( expected<T,E> const & x, unexpected_type<E> const & u  )
-{
-    return ! ( u > x );
-}
-
-template< typename T, typename E >
-constexpr bool operator>=( unexpected_type<E> const & u, expected<T,E> const & x )
-{
-    return ! ( x > u );
-}
-
-#endif // nsel_P0323R
-
-// expected: comparison with T
-
-template< typename T, typename E >
-constexpr bool operator==( expected<T,E> const & x, T const & v )
+template< typename T1, typename E1, typename T2 >
+constexpr bool operator==( expected<T1,E1> const & x, T2 const & v )
 {
     return bool(x) ? *x == v : false;
 }
 
-template< typename T, typename E >
-constexpr bool operator==(T const & v, expected<T,E> const & x )
+template< typename T1, typename E1, typename T2 >
+constexpr bool operator==(T2 const & v, expected<T1,E1> const & x )
 {
     return bool(x) ? v == *x : false;
 }
 
-template< typename T, typename E >
-constexpr bool operator!=( expected<T,E> const & x, T const & v )
+template< typename T1, typename E1, typename T2 >
+constexpr bool operator!=( expected<T1,E1> const & x, T2 const & v )
 {
     return bool(x) ? *x != v : true;
 }
 
-template< typename T, typename E >
-constexpr bool operator!=( T const & v, expected<T,E> const & x )
+template< typename T1, typename E1, typename T2 >
+constexpr bool operator!=( T2 const & v, expected<T1,E1> const & x )
 {
     return bool(x) ? v != *x : true;
 }
+
+#if nsel_P0323R <= 2
 
 template< typename T, typename E >
 constexpr bool operator<( expected<T,E> const & x, T const & v )
@@ -1911,9 +1937,101 @@ constexpr bool operator>=( T const & v, expected<T,E> const & x )
     return bool(x) ? ! ( v < *x ) : true;
 }
 
-/// x.x.x Specialized algorithms
+#endif // nsel_P0323R
+
+// x.x.4.8 expected: comparison with unexpected_type
+
+template< typename T1, typename E1 , typename E2 >
+constexpr bool operator==( expected<T1,E1> const & x, unexpected_type<E2> const & u )
+{
+    return (!x) ? x.get_unexpected() == u : false;
+}
+
+template< typename T1, typename E1 , typename E2 >
+constexpr bool operator==( unexpected_type<E2> const & u, expected<T1,E1> const & x )
+{
+    return ( x == u );
+}
+
+template< typename T1, typename E1 , typename E2 >
+constexpr bool operator!=( expected<T1,E1> const & x, unexpected_type<E2> const & u )
+{
+    return ! ( x == u );
+}
+
+template< typename T1, typename E1 , typename E2 >
+constexpr bool operator!=( unexpected_type<E2> const & u, expected<T1,E1> const & x )
+{
+    return ! ( x == u );
+}
+
+#if nsel_P0323R <= 2
 
 template< typename T, typename E >
+constexpr bool operator<( expected<T,E> const & x, unexpected_type<E> const & u )
+{
+    return (!x) ? ( x.get_unexpected() < u ) : false;
+}
+
+template< typename T, typename E >
+constexpr bool operator<( unexpected_type<E> const & u, expected<T,E> const & x )
+{
+  return (!x) ? ( u < x.get_unexpected() ) : true ;
+}
+
+template< typename T, typename E >
+constexpr bool operator>( expected<T,E> const & x, unexpected_type<E> const & u )
+{
+    return ( u < x );
+}
+
+template< typename T, typename E >
+constexpr bool operator>( unexpected_type<E> const & u, expected<T,E> const & x )
+{
+    return ( x < u );
+}
+
+template< typename T, typename E >
+constexpr bool operator<=( expected<T,E> const & x, unexpected_type<E> const & u )
+{
+    return ! ( u < x );
+}
+
+template< typename T, typename E >
+constexpr bool operator<=( unexpected_type<E> const & u, expected<T,E> const & x)
+{
+    return ! ( x < u );
+}
+
+template< typename T, typename E >
+constexpr bool operator>=( expected<T,E> const & x, unexpected_type<E> const & u  )
+{
+    return ! ( u > x );
+}
+
+template< typename T, typename E >
+constexpr bool operator>=( unexpected_type<E> const & u, expected<T,E> const & x )
+{
+    return ! ( x > u );
+}
+
+#endif // nsel_P0323R
+
+/// x.x.x Specialized algorithms
+
+template< typename T, typename E
+#if nsel_CPP17_OR_GREATER
+    nsel_REQUIRES_T(
+        ( std::is_void<T>::value || std::is_move_constructible<T>::value )
+        && std::is_move_constructible<E>::value
+        && std::is_swappable<T>::value
+        && std::is_swappable<E>::value )
+#else
+    nsel_REQUIRES_T(
+        ( std::is_void<T>::value || std::is_move_constructible<T>::value )
+        && std::is_move_constructible<E>::value )
+#endif
+>
 void swap( expected<T,E> & x, expected<T,E> & y ) noexcept ( noexcept ( x.swap(y) ) )
 {
     x.swap( y );
@@ -2003,7 +2121,7 @@ namespace std {
 template< typename T, typename E >
 struct hash< nonstd::expected<T,E> >
 {
-    using result_type = typename hash<T>::result_type;
+    using result_type = std::size_t;
     using argument_type = nonstd::expected<T,E>;
 
     constexpr result_type operator()(argument_type const & arg) const
@@ -2016,7 +2134,7 @@ struct hash< nonstd::expected<T,E> >
 template< typename T, typename E >
 struct hash< nonstd::expected<T&,E> >
 {
-    using result_type = typename hash<T>::result_type;
+    using result_type = std::size_t;
     using argument_type = nonstd::expected<T&,E>;
 
     constexpr result_type operator()(argument_type const & arg) const
