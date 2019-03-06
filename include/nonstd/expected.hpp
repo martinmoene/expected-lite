@@ -42,14 +42,14 @@
 // P0323R2:  2 (2017-06-15)
 // P0323R3:  3 (2017-10-15)
 // P0323R4:  4 (2017-11-26)
-// P0323R5:  5 (2018-02-08) *
+// P0323R5:  5 (2018-02-08)
 // P0323R6:  6 (2018-04-02)
-// P0323R7:  7 (2018-06-22)
+// P0323R7:  7 (2018-06-22) *
 //
 // expected-lite uses 2 and higher
 
 #ifndef  nsel_P0323R
-# define nsel_P0323R  5
+# define nsel_P0323R  7
 #endif
 
 // C++ language version detection (C++20 is speculative):
@@ -313,15 +313,49 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 
 namespace nonstd { namespace expected_lite {
 
-namespace std20 {
+// type traits C++17:
+
+namespace std17 {
+
+#if nsel_CPP17_OR_GREATER
+
+using std::is_nothrow_swappable;
+
+#else
+
+namespace detail {
+
+template <typename T>
+constexpr bool is_nothrow_swappable_test()
+{
+    using std::swap;
+    return noexcept( swap( std::declval<T&>(), std::declval<T&>() ) );
+}
+} // namespace detail
+
+template<typename T>
+struct is_nothrow_swappable : std::integral_constant<bool, detail::is_nothrow_swappable_test<T>()>{};
+#endif
+
+} // namespace std17
 
 // type traits C++20:
+
+namespace std20 {
+
+#if nsel_CPP20_OR_GREATER
+
+using std::remove_cvref;
+
+#else
 
 template< typename T >
 struct remove_cvref
 {
     typedef typename std::remove_cv< typename std::remove_reference<T>::type >::type type;
 };
+
+#endif
 
 } // namespace std20
 
@@ -699,12 +733,7 @@ public:
 
     // TODO: unexpected_type::swap: noexcept(XXX)
     void swap( unexpected_type & other ) noexcept (
-#if nsel_CPP17_OR_GREATER
-        std::is_nothrow_swappable<E>::value
-#else
-        std::is_nothrow_move_constructible<E>::value
-        && noexcept ( std::swap( std::declval<E&>(), std::declval<E&>() ) )
-#endif
+        std17::is_nothrow_swappable<E>::value
     )
     {
         using std::swap;
@@ -1374,13 +1403,8 @@ public:
 
     void swap( expected & other ) noexcept
     (
-#if nsel_CPP17_OR_GREATER
-        std::is_nothrow_move_constructible<T>::value && std::is_nothrow_swappable<T&>::value &&
-        std::is_nothrow_move_constructible<E>::value && std::is_nothrow_swappable<E&>::value
-#else
-        std::is_nothrow_move_constructible<T>::value && noexcept ( std::swap( std::declval<T&>(), std::declval<T&>() ) ) &&
-        std::is_nothrow_move_constructible<E>::value && noexcept ( std::swap( std::declval<E&>(), std::declval<E&>() ) )
-#endif
+        std::is_nothrow_move_constructible<T>::value && std17::is_nothrow_swappable<T&>::value &&
+        std::is_nothrow_move_constructible<E>::value && std17::is_nothrow_swappable<E&>::value
     )
     {
         using std::swap;
@@ -1727,11 +1751,7 @@ public:
 
     void swap( expected & other ) noexcept
     (
-#if nsel_CPP17_OR_GREATER
-        std::is_nothrow_move_constructible<E>::value && std::is_nothrow_swappable<E&>::value
-#else
-        std::is_nothrow_move_constructible<E>::value && noexcept ( std::swap( std::declval<E&>(), std::declval<E&>() ) )
-#endif
+        std::is_nothrow_move_constructible<E>::value && std17::is_nothrow_swappable<E&>::value
     )
     {
         using std::swap;
