@@ -41,11 +41,14 @@ struct InitList
     std::vector<int> vec;
     char c;
 
-    InitList( std::initializer_list<int> il, char k  )
+    InitList( std::initializer_list<int> il, char k  ) noexcept
     : vec( il ), c( k ) {}
 
-//    InitList( std::initializer_list<int> il, char k, S && t )
-//    : vec( il ), c( k ), s( std::move( t ) ) {}
+//    InitList( InitList const & ) noexcept = default;
+//    InitList( InitList && ) noexcept = default;
+//
+//    InitList & operator=( InitList const & ) noexcept = default;
+//    InitList & operator=( InitList && ) noexcept = default;
 };
 
 enum State
@@ -900,9 +903,11 @@ CASE( "expected: Allows to emplace value" )
     expected<int, char> a;
     expected<int, char> b;
 
-    a.emplace( '7' );
-    b.emplace(  7  );
+    auto va = a.emplace( '7' );
+    auto vb = b.emplace(  7  );
 
+    EXPECT( va == '7' );
+    EXPECT( vb ==  7  );
     EXPECT( a.value() == '7' );
     EXPECT( b.value() ==  7  );
 }
@@ -911,9 +916,13 @@ CASE( "expected: Allows to emplace value from initializer_list" )
 {
     expected<InitList, char> e{ {}, 'x'};
 
-    e.emplace( { 7, 8, 9 }, 'a' );
+    auto ve = e.emplace( { 7, 8, 9 }, 'a' );
 
-    EXPECT( e                       );
+    EXPECT( e                );
+    EXPECT( ve.vec[0]  ==  7 );
+    EXPECT( ve.vec[1]  ==  8 );
+    EXPECT( ve.vec[2]  ==  9 );
+    EXPECT( ve.c       == 'a');
     EXPECT( e.value().vec[0]  ==  7 );
     EXPECT( e.value().vec[1]  ==  8 );
     EXPECT( e.value().vec[2]  ==  9 );
