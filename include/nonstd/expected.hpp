@@ -340,8 +340,16 @@ struct is_swappable
 
 struct is_nothrow_swappable
 {
+    // wrap noexcept(epr) in separate function as work-around for VC140 (VS2015):
+
+    template <typename T>
+    static constexpr bool test()
+    {
+        return noexcept( swap( std::declval<T&>(), std::declval<T&>() ) );
+    }
+
     template< typename T >
-    static auto test( int ) -> std::integral_constant<bool, noexcept( swap( std::declval<T&>(), std::declval<T&>() ) ) >;
+    static auto test( int ) -> std::integral_constant<bool, test<T>()>{};
 
     template< typename >
     static std::false_type test(...);
@@ -349,11 +357,15 @@ struct is_nothrow_swappable
 
 } // namespace detail
 
+// is [nothow] swappable:
+
 template< typename T >
 struct is_swappable : decltype( detail::is_swappable::test<T>(0) ){};
 
 template< typename T >
 struct is_nothrow_swappable : decltype( detail::is_nothrow_swappable::test<T>(0) ){};
+
+// conjunction:
 
 template< typename... > struct conjunction : std::true_type{};
 template< typename B1 > struct conjunction<B1> : B1{};
