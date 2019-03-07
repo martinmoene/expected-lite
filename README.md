@@ -409,6 +409,7 @@ expected: Allows to observe its error as unexpected
 expected: Allows to query if it contains an exception of a specific base type
 expected: Allows to observe its value if available, or obtain a specified value otherwise
 expected: Allows to move its value if available, or obtain a specified value otherwise
+expected: Throws bad_expected_access on value access when disengaged
 expected<void>: Allows to default-construct
 expected<void>: Allows to copy-construct from expected<void>: value
 expected<void>: Allows to copy-construct from expected<void>: error
@@ -434,6 +435,7 @@ expected<void>: Allows to modify its error
 expected<void>: Allows to move its error
 expected<void>: Allows to observe its error as unexpected
 expected<void>: Allows to query if it contains an exception of a specific base type
+expected<void>: Throws bad_expected_access on value access when disengaged
 operators: Provides expected relational operators
 swap: Allows expected to be swapped
 std::hash: Allows to compute hash value for expected

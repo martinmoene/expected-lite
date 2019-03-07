@@ -565,8 +565,12 @@ CASE( "bad_expected_access: Allows to observe its error" )
 {
     const int error = 7;
     bad_expected_access<int> bea( error );
+    bad_expected_access<int> const beac( error );
 
-    EXPECT( bea.error() == error );
+    EXPECT(             bea.error()   == error );
+    EXPECT(            beac.error()   == error );
+    EXPECT( std::move(  bea.error() ) == error );
+    EXPECT( std::move( beac.error() ) == error );
 }
 
 CASE( "bad_expected_access: Allows to change its error" )
@@ -1163,6 +1167,22 @@ CASE( "expected: Allows to move its value if available, or obtain a specified va
     EXPECT( std::move( mu ).value_or( vu ) == vu );
 }
 
+CASE( "expected: Throws bad_expected_access on value access when disengaged" )
+{
+    expected<char, int >  e{ unexpect, 7 };
+    expected<char, int > ec{ unexpect, 7 };
+
+    EXPECT_THROWS(     e.value() );
+    EXPECT_THROWS_AS(  e.value(), bad_expected_access<int> );
+    EXPECT_THROWS(    ec.value() );
+    EXPECT_THROWS_AS( ec.value(), bad_expected_access<int> );
+
+    EXPECT_THROWS(    std::move( e).value() );
+    EXPECT_THROWS_AS( std::move( e).value(), bad_expected_access<int> );
+    EXPECT_THROWS(    std::move(ec).value() );
+    EXPECT_THROWS_AS( std::move(ec).value(), bad_expected_access<int> );
+}
+
 // -----------------------------------------------------------------------
 // expected<void> specialization
 
@@ -1441,6 +1461,22 @@ CASE( "expected<void>: Allows to query if it contains an exception of a specific
 
     EXPECT(  e.has_exception< std::logic_error   >() );
     EXPECT( !e.has_exception< std::runtime_error >() );
+}
+
+CASE( "expected<void>: Throws bad_expected_access on value access when disengaged" )
+{
+    expected<void, int >  e{ unexpect, 7 };
+    expected<void, int > ec{ unexpect, 7 };
+
+    EXPECT_THROWS(     e.value() );
+    EXPECT_THROWS_AS(  e.value(), bad_expected_access<int> );
+    EXPECT_THROWS(    ec.value() );
+    EXPECT_THROWS_AS( ec.value(), bad_expected_access<int> );
+
+    EXPECT_THROWS(    std::move( e).value() );
+    EXPECT_THROWS_AS( std::move( e).value(), bad_expected_access<int> );
+    EXPECT_THROWS(    std::move(ec).value() );
+    EXPECT_THROWS_AS( std::move(ec).value(), bad_expected_access<int> );
 }
 
 // [expected<> unwrap()]
