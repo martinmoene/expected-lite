@@ -739,12 +739,10 @@ public:
 
     // x.x.5.2.4 Swap
 
-//      nsel_REQUIRES_A(
-//          std17::is_swappable<E>::value
-//      )
-
-    // TODO: unexpected_type::swap: noexcept(XXX)
-    void swap( unexpected_type & other ) noexcept (
+    nsel_REQUIRES_R( void,
+        std17::is_swappable<E>::value
+    )
+    swap( unexpected_type & other ) noexcept (
         std17::is_nothrow_swappable<E>::value
     )
     {
@@ -856,7 +854,11 @@ constexpr bool operator>=( unexpected_type<E> const & x, unexpected_type<E> cons
 
 /// x.x.5 Specialized algorithms
 
-template< typename E >
+template< typename E
+    nsel_REQUIRES_T(
+        std17::is_swappable<E>::value
+    )
+>
 void swap( unexpected_type<E> & x, unexpected_type<E> & y) noexcept ( noexcept ( x.swap(y) ) )
 {
     x.swap( y );
@@ -1424,13 +1426,12 @@ public:
 
     // x.x.4.4 swap
 
-//    nsel_REQUIRES_A(
-//        std17::is_swappable<   T>::value
-//        && std17::is_swappable<E>::value
-//        && ( std::is_move_constructible<T>::value || std::is_move_constructible<E>::value ) )
-//    )
-
-    void swap( expected & other ) noexcept
+    nsel_REQUIRES_R( void,
+        std17::is_swappable<   T>::value
+        && std17::is_swappable<E>::value
+        && ( std::is_move_constructible<T>::value || std::is_move_constructible<E>::value )
+    )
+    swap( expected & other ) noexcept
     (
         std::is_nothrow_move_constructible<T>::value && std17::is_nothrow_swappable<T&>::value &&
         std::is_nothrow_move_constructible<E>::value && std17::is_nothrow_swappable<E&>::value
@@ -1783,10 +1784,11 @@ public:
 
     // x.x.4.4 swap
 
-//    nsel_REQUIRES_A(
-//        std::is_move_constructible<E>::value )
-
-    void swap( expected & other ) noexcept
+    nsel_REQUIRES_R( void,
+        std17::is_swappable<E>::value
+        && std::is_move_constructible<E>::value
+    )
+    swap( expected & other ) noexcept
     (
         std::is_nothrow_move_constructible<E>::value && std17::is_nothrow_swappable<E&>::value
     )
