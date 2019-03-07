@@ -320,6 +320,7 @@ namespace std17 {
 #if nsel_CPP17_OR_GREATER
 
 using std::conjunction;
+using std::is_swappable;
 using std::is_nothrow_swappable;
 
 #else
@@ -339,6 +340,11 @@ template<class B1> struct conjunction<B1> : B1{};
 
 template<class B1, class... Bn>
 struct conjunction<B1, Bn...> : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type{};
+
+// Forgo the intricacies of is_swappable for now, see https://stackoverflow.com/a/26852703/437272
+
+template<typename T>
+struct is_swappable : std::true_type{};
 
 template<typename T>
 struct is_nothrow_swappable : std::integral_constant<bool, detail::is_nothrow_swappable_test<T>()>{};
@@ -734,7 +740,7 @@ public:
     // x.x.5.2.4 Swap
 
 //      nsel_REQUIRES_A(
-//          std::is_swappable<E>::value
+//          std17::is_swappable<E>::value
 //      )
 
     // TODO: unexpected_type::swap: noexcept(XXX)
@@ -1419,9 +1425,9 @@ public:
     // x.x.4.4 swap
 
 //    nsel_REQUIRES_A(
-//        std::is_swappable<   T&>::value
-//        && std::is_swappable<E&>::value
-//        && ( std::is_void<T>::value || (std::is_move_constructible<T>::value || std::is_move_constructible<E>::value) )
+//        std17::is_swappable<   T>::value
+//        && std17::is_swappable<E>::value
+//        && ( std::is_move_constructible<T>::value || std::is_move_constructible<E>::value ) )
 //    )
 
     void swap( expected & other ) noexcept
@@ -2076,17 +2082,11 @@ constexpr bool operator>=( unexpected_type<E> const & u, expected<T,E> const & x
 /// x.x.x Specialized algorithms
 
 template< typename T, typename E
-#if nsel_CPP17_OR_GREATER
     nsel_REQUIRES_T(
         ( std::is_void<T>::value || std::is_move_constructible<T>::value )
         && std::is_move_constructible<E>::value
-        && std::is_swappable<T>::value
-        && std::is_swappable<E>::value )
-#else
-    nsel_REQUIRES_T(
-        ( std::is_void<T>::value || std::is_move_constructible<T>::value )
-        && std::is_move_constructible<E>::value )
-#endif
+        && std17::is_swappable<T>::value
+        && std17::is_swappable<E>::value )
 >
 void swap( expected<T,E> & x, expected<T,E> & y ) noexcept ( noexcept ( x.swap(y) ) )
 {
