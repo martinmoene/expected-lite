@@ -1672,7 +1672,7 @@ public:
     )
     nsel_constexpr14 expected( expected && other ) noexcept
     (
-        true    // TODO: noexcept; see also non-void specialization
+        std::is_nothrow_move_constructible<E>::value
     )
     : has_value_( other.has_value_ )
     {
