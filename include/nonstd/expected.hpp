@@ -323,32 +323,45 @@ using std::conjunction;
 using std::is_swappable;
 using std::is_nothrow_swappable;
 
-#else
+#else // nsel_CPP17_OR_GREATER
 
 namespace detail {
 
-template <typename T>
-constexpr bool is_nothrow_swappable_test()
+using std::swap;
+
+struct is_swappable
 {
-    using std::swap;
-    return noexcept( swap( std::declval<T&>(), std::declval<T&>() ) );
-}
+    template< typename T, typename = decltype( swap( std::declval<T&>(), std::declval<T&>() ) ) >
+    static std::true_type test( int );
+
+    template< typename >
+    static std::false_type test(...);
+};
+
+struct is_nothrow_swappable
+{
+    template< typename T >
+    static auto test( int ) -> std::integral_constant<bool, noexcept( swap( std::declval<T&>(), std::declval<T&>() ) ) >;
+
+    template< typename >
+    static std::false_type test(...);
+};
+
 } // namespace detail
 
-template<class...> struct conjunction : std::true_type{};
-template<class B1> struct conjunction<B1> : B1{};
+template< typename T >
+struct is_swappable : decltype( detail::is_swappable::test<T>(0) ){};
 
-template<class B1, class... Bn>
+template< typename T >
+struct is_nothrow_swappable : decltype( detail::is_nothrow_swappable::test<T>(0) ){};
+
+template< typename... > struct conjunction : std::true_type{};
+template< typename B1 > struct conjunction<B1> : B1{};
+
+template< typename B1, typename... Bn >
 struct conjunction<B1, Bn...> : std::conditional<bool(B1::value), conjunction<Bn...>, B1>::type{};
 
-// Forgo the intricacies of is_swappable for now, see https://stackoverflow.com/a/26852703/437272
-
-template<typename T>
-struct is_swappable : std::true_type{};
-
-template<typename T>
-struct is_nothrow_swappable : std::integral_constant<bool, detail::is_nothrow_swappable_test<T>()>{};
-#endif
+#endif // nsel_CPP17_OR_GREATER
 
 } // namespace std17
 
