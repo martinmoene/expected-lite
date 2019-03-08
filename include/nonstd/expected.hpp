@@ -342,7 +342,7 @@ struct is_nothrow_swappable
 {
     // wrap noexcept(epr) in separate function as work-around for VC140 (VS2015):
 
-    template <typename T>
+    template< typename T >
     static constexpr bool test()
     {
         return noexcept( swap( std::declval<T&>(), std::declval<T&>() ) );
