@@ -16,10 +16,11 @@ import subprocess
 
 # Configuration:
 
-cfg_github_project = 'expected-lite'
-cfg_github_user    = 'martinmoene'
+cfg_github_project   = 'expected-lite'
+cfg_github_user      = 'martinmoene'
+cfg_prj_folder_level = 3
 
-tpl_coverage_cmd   = 'opencppcoverage --no_aggregate_by_file --sources {src} -- {exe}'
+tpl_coverage_cmd     = 'opencppcoverage --no_aggregate_by_file --sources {src} -- {exe}'
 
 # End configuration.
 
@@ -27,7 +28,7 @@ def project_folder( f, args ):
     """Project root"""
     if args.prj_folder:
         return args.prj_folder
-    return os.path.normpath( os.path.join( os.path.dirname( os.path.abspath(f) ), '../../..') ) 
+    return os.path.normpath( os.path.join( os.path.dirname( os.path.abspath(f) ), '../' * args.prj_folder_level ) ) 
 
 def executable_folder( f ):
     """Folder where the xecutable is"""
@@ -97,6 +98,13 @@ def createCoverageReportFromCommandLine():
         type=str,
         default=None,
         help='project root folder')
+
+    parser.add_argument(
+        '--prj-folder-level',
+        metavar='n',
+        type=int,
+        default=cfg_prj_folder_level,
+        help='project root folder level from executable')
 
     createCoverageReports( parser.parse_args() )
 
