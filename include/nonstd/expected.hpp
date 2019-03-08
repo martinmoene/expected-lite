@@ -349,7 +349,7 @@ struct is_nothrow_swappable
     }
 
     template< typename T >
-    static auto test( int ) -> std::integral_constant<bool, test<T>()>{};
+    static auto test( int ) -> std::integral_constant<bool, test<T>()>{}
 
     template< typename >
     static std::false_type test(...);
@@ -1913,13 +1913,19 @@ private:
 template< typename T1, typename E1, typename T2, typename E2 >
 constexpr bool operator==( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
-    return bool(x) != bool(y) ? false : bool(x) == false ? true : *x == *y;
+    return bool(x) != bool(y) ? false : bool(x) == false ? x.error() == y.error() : *x == *y;
 }
 
 template< typename T1, typename E1, typename T2, typename E2 >
 constexpr bool operator!=( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
     return !(x == y);
+}
+
+template< typename E1, typename E2 >
+constexpr bool operator==( expected<void,E1> const & x, expected<void,E1> const & y )
+{
+    return bool(x) != bool(y) ? false : bool(x) == false ? x.error() == y.error() : true;
 }
 
 #if nsel_P0323R <= 2
