@@ -31,7 +31,11 @@
 #include <cmath>
 #include <cstddef>
 
-#define  lest_VERSION "1.33.5"
+#define lest_MAJOR  1
+#define lest_MINOR  35
+#define lest_PATCH  0
+
+#define  lest_VERSION  lest_STRINGIFY(lest_MAJOR) "." lest_STRINGIFY(lest_MINOR) "." lest_STRINGIFY(lest_PATCH)
 
 #ifndef  lest_FEATURE_AUTO_REGISTER
 # define lest_FEATURE_AUTO_REGISTER  0
@@ -70,6 +74,11 @@
 #if lest_FEATURE_REGEX_SEARCH
 # include <regex>
 #endif
+
+// Stringify:
+
+#define lest_STRINGIFY(  x )  lest_STRINGIFY_( x )
+#define lest_STRINGIFY_( x )  #x
 
 // Compiler warning suppression:
 
@@ -186,7 +195,7 @@
             if ( lest::result score = lest_DECOMPOSE( expr ) ) \
                 throw lest::failure{ lest_LOCATION, #expr, score.decomposition }; \
             else if ( lest_env.pass() ) \
-                lest::report( lest_env.os, lest::passing{ lest_LOCATION, #expr, score.decomposition }, lest_env.context() ); \
+                lest::report( lest_env.os, lest::passing{ lest_LOCATION, #expr, score.decomposition, lest_env.zen() }, lest_env.context() ); \
         } \
         catch(...) \
         { \
@@ -201,7 +210,7 @@
             if ( lest::result score = lest_DECOMPOSE( expr ) ) \
             { \
                 if ( lest_env.pass() ) \
-                    lest::report( lest_env.os, lest::passing{ lest_LOCATION, lest::not_expr( #expr ), lest::not_expr( score.decomposition ) }, lest_env.context() ); \
+                    lest::report( lest_env.os, lest::passing{ lest_LOCATION, lest::not_expr( #expr ), lest::not_expr( score.decomposition ), lest_env.zen() }, lest_env.context() ); \
             } \
             else \
                 throw lest::failure{ lest_LOCATION, lest::not_expr( #expr ), lest::not_expr( score.decomposition ) }; \
@@ -381,8 +390,8 @@ struct success : message
 
 struct passing : success
 {
-    passing( location where_, text expr_, text decomposition_ )
-    : success( "passed", where_, expr_ + " for " + decomposition_) {}
+    passing( location where_, text expr_, text decomposition_, bool zen )
+    : success( "passed", where_, expr_ + (zen ? "":" for " + decomposition_) ) {}
 };
 
 struct got_none : success
@@ -524,14 +533,45 @@ inline char const * sfx( char const  * txt ) { return txt; }
 inline char const * sfx( char const  *      ) { return ""; }
 #endif
 
-inline std::string to_string( std::nullptr_t               ) { return "nullptr"; }
-inline std::string to_string( std::string     const & txt ) { return "\"" + txt + "\"" ; }
+inline std::string transformed( char chr )
+{
+    struct Tr { char chr; char const * str; } table[] =
+    {
+        {'\\', "\\\\" },
+        {'\r', "\\r"  }, {'\f', "\\f" },
+        {'\n', "\\n"  }, {'\t', "\\t" },
+    };
+
+    for ( auto tr : table )
+    {
+        if ( chr == tr.chr )
+            return tr.str;
+    }
+
+    auto unprintable = [](char c){ return 0 <= c && c < ' '; };
+
+    auto to_hex_string = [](char c)
+    {
+        std::ostringstream os;
+        os << "\\x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>( static_cast<unsigned char>(c) );
+        return os.str();
+    };
+
+    return unprintable( chr  ) ? to_hex_string( chr ) : std::string( 1, chr );
+}
+
+inline std::string make_tran_string( std::string const & txt ) { std::ostringstream os; for(auto c:txt) os << transformed(c); return os.str(); }
+inline std::string make_strg_string( std::string const & txt ) { return "\"" + make_tran_string(                 txt   ) + "\"" ; }
+inline std::string make_char_string(                char chr ) { return "\'" + make_tran_string( std::string( 1, chr ) ) + "\'" ; }
+
+inline std::string to_string( std::nullptr_t              ) { return "nullptr"; }
+inline std::string to_string( std::string     const & txt ) { return make_strg_string( txt ); }
 #if lest_FEATURE_WSTRING
 inline std::string to_string( std::wstring    const & txt ) ;
 #endif
 
-inline std::string to_string( char    const * const   txt ) { return txt ? to_string( std::string ( txt ) ) : "{null string}"; }
-inline std::string to_string( char          * const   txt ) { return txt ? to_string( std::string ( txt ) ) : "{null string}"; }
+inline std::string to_string( char    const * const   txt ) { return txt ? make_strg_string( txt ) : "{null string}"; }
+inline std::string to_string( char          * const   txt ) { return txt ? make_strg_string( txt ) : "{null string}"; }
 #if lest_FEATURE_WSTRING
 inline std::string to_string( wchar_t const * const   txt ) { return txt ? to_string( std::wstring( txt ) ) : "{null string}"; }
 inline std::string to_string( wchar_t       * const   txt ) { return txt ? to_string( std::wstring( txt ) ) : "{null string}"; }
@@ -550,29 +590,9 @@ inline std::string to_string( unsigned  long long   value ) { return make_value_
 inline std::string to_string(         double        value ) { return make_value_string( value ) ;             }
 inline std::string to_string(          float        value ) { return make_value_string( value ) + sfx("f"  ); }
 
-inline std::string to_string(   signed char           chr ) { return to_string( static_cast<char>( chr ) ); }
-inline std::string to_string( unsigned char           chr ) { return to_string( static_cast<char>( chr ) ); }
-
-inline std::string to_string(          char           chr )
-{
-    struct Tr { char chr; char const * str; } table[] =
-    {
-        {'\r', "'\\r'" }, {'\f', "'\\f'" },
-        {'\n', "'\\n'" }, {'\t', "'\\t'" },
-    };
-
-    for ( auto tr : table )
-    {
-        if ( chr == tr.chr )
-            return tr.str;
-    }
-
-    auto unprintable = [](char c){ return 0 <= c && c < ' '; };
-
-    return unprintable( chr  )
-        ? to_string( static_cast<unsigned int>( chr ) )
-        : "\'" + std::string( 1, chr ) + "\'" ;
-}
+inline std::string to_string(   signed char           chr ) { return make_char_string( static_cast<char>( chr ) ); }
+inline std::string to_string( unsigned char           chr ) { return make_char_string( static_cast<char>( chr ) ); }
+inline std::string to_string(          char           chr ) { return make_char_string(                    chr   ); }
 
 template< typename T >
 struct is_streamable
@@ -979,6 +999,7 @@ struct options
     bool tags    = false;
     bool time    = false;
     bool pass    = false;
+    bool zen     = false;
     bool lexical = false;
     bool random  = false;
     bool verbose = false;
@@ -1004,6 +1025,7 @@ struct env
 
     bool abort() { return opt.abort; }
     bool pass()  { return opt.pass; }
+    bool zen()   { return opt.zen; }
 
     void clear() { ctx.clear(); }
     void pop()   { ctx.pop_back(); }
@@ -1312,6 +1334,7 @@ inline auto split_arguments( texts args ) -> std::tuple<options, texts>
             else if ( opt == "-l"      || "--list-tests" == opt ) { option.list    =  true; continue; }
             else if ( opt == "-t"      || "--time"       == opt ) { option.time    =  true; continue; }
             else if ( opt == "-p"      || "--pass"       == opt ) { option.pass    =  true; continue; }
+            else if ( opt == "-z"      || "--pass-zen"   == opt ) { option.zen     =  true; continue; }
             else if ( opt == "-v"      || "--verbose"    == opt ) { option.verbose =  true; continue; }
             else if (                     "--version"    == opt ) { option.version =  true; continue; }
             else if ( opt == "--order" && "declared"     == val ) { /* by definition */   ; continue; }
@@ -1323,6 +1346,8 @@ inline auto split_arguments( texts args ) -> std::tuple<options, texts>
         }
         in.push_back( arg );
     }
+    option.pass = option.pass || option.zen;
+
     return std::make_tuple( option, in );
 }
 
@@ -1338,6 +1363,7 @@ inline int usage( std::ostream & os )
         "  -g, --list-tags    list tags of selected tests\n"
         "  -l, --list-tests   list selected tests\n"
         "  -p, --pass         also report passing tests\n"
+        "  -z, --pass-zen     ... without expansion\n"
         "  -t, --time         list duration of selected tests\n"
         "  -v, --verbose      also report passing or failing sections\n"
         "  --order=declared   use source code test order (default)\n"
