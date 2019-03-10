@@ -217,17 +217,17 @@ namespace nonstd {
 
 // Method enabling
 
-#define nsel_REQUIRES_A(...) \
-    , typename std::enable_if<__VA_ARGS__, void*>::type = nullptr
-
 #define nsel_REQUIRES_0(...) \
     template< bool B = (__VA_ARGS__), typename std::enable_if<B, int>::type = 0 >
+
+#define nsel_REQUIRES_T(...) \
+    , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_lite::detail::enabler >::type
 
 #define nsel_REQUIRES_R(R, ...) \
     typename std::enable_if<__VA_ARGS__, R>::type
 
-#define nsel_REQUIRES_T(...) \
-    , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_lite::detail::enabler >::type
+#define nsel_REQUIRES_A(...) \
+    , typename std::enable_if<__VA_ARGS__, void*>::type = nullptr
 
 // Compiler versions:
 //
