@@ -224,10 +224,10 @@ namespace nonstd {
     , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_lite::detail::enabler >::type
 
 #define nsel_REQUIRES_R(R, ...) \
-    typename std::enable_if<__VA_ARGS__, R>::type
+    typename std::enable_if< (__VA_ARGS__), R>::type
 
 #define nsel_REQUIRES_A(...) \
-    , typename std::enable_if<__VA_ARGS__, void*>::type = nullptr
+    , typename std::enable_if< (__VA_ARGS__), void*>::type = nullptr
 
 // Compiler versions:
 //
