@@ -33,7 +33,7 @@
 
 #define lest_MAJOR  1
 #define lest_MINOR  35
-#define lest_PATCH  0
+#define lest_PATCH  1
 
 #define  lest_VERSION  lest_STRINGIFY(lest_MAJOR) "." lest_STRINGIFY(lest_MINOR) "." lest_STRINGIFY(lest_PATCH)
 
@@ -113,12 +113,22 @@
 # define lest_RESTORE_WARNINGS    /*empty*/
 #endif
 
-#if defined ( _MSVC_LANG)
-# define lest_CPP17_OR_GREATER_MS (  _MSVC_LANG >= 201703L )
-#else
-# define lest_CPP17_OR_GREATER_MS    0
+// C++ language version detection (C++20 is speculative):
+// Note: VC14.0/1900 (VS2015) lacks too much from C++14.
+
+#ifndef   lest_CPLUSPLUS
+# if defined(_MSVC_LANG ) && !defined(__clang__)
+#  define lest_CPLUSPLUS  (_MSC_VER == 1900 ? 201103L : _MSVC_LANG )
+# else
+#  define lest_CPLUSPLUS  __cplusplus
+# endif
 #endif
-# define lest_CPP17_OR_GREATER    ( __cplusplus >= 201703L ||  lest_CPP17_OR_GREATER_MS )
+
+#define lest_CPP98_OR_GREATER  ( lest_CPLUSPLUS >= 199711L )
+#define lest_CPP11_OR_GREATER  ( lest_CPLUSPLUS >= 201103L )
+#define lest_CPP14_OR_GREATER  ( lest_CPLUSPLUS >= 201402L )
+#define lest_CPP17_OR_GREATER  ( lest_CPLUSPLUS >= 201703L )
+#define lest_CPP20_OR_GREATER  ( lest_CPLUSPLUS >= 202000L )
 
 #if ! defined( lest_NO_SHORT_MACRO_NAMES ) && ! defined( lest_NO_SHORT_ASSERTION_NAMES )
 # define MODULE            lest_MODULE
