@@ -13,7 +13,7 @@
 #define NONSTD_EXPECTED_LITE_HPP
 
 #define expected_lite_MAJOR  0
-#define expected_lite_MINOR  2
+#define expected_lite_MINOR  3
 #define expected_lite_PATCH  0
 
 #define expected_lite_VERSION  expected_STRINGIFY(expected_lite_MAJOR) "." expected_STRINGIFY(expected_lite_MINOR) "." expected_STRINGIFY(expected_lite_PATCH)
@@ -50,6 +50,16 @@
 
 #ifndef  nsel_P0323R
 # define nsel_P0323R  7
+#endif
+
+// Control presence of exception handling (try and auto discover):
+
+#ifndef nsel_CONFIG_NO_EXCEPTIONS
+# if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)
+#  define nsel_CONFIG_NO_EXCEPTIONS  0
+# else
+#  define nsel_CONFIG_NO_EXCEPTIONS  1
+# endif
 #endif
 
 // C++ language version detection (C++20 is speculative):
