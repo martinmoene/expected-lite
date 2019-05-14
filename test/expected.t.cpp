@@ -1723,6 +1723,32 @@ CASE( "issue-15" )
     (void) nonstd::expected< int, int >( 12).value();
 }
 
+// issue #xx, https://github.com/martinmoene/expected-lite/issues/xx
+
+struct issue_xx
+{
+    issue_xx() {}
+    issue_xx( issue_xx const & ) {}
+    issue_xx & operator=( issue_xx const & ) { return *this; }
+
+#if 0
+    issue_xx( issue_xx && ) {}
+    issue_xx & operator=( issue_xx && ) { return *this; }
+#else
+    issue_xx( issue_xx && ) = delete;
+    issue_xx & operator=( issue_xx && ) = delete;
+#endif
+};
+
+CASE( "issue-xx" )
+{
+    issue_xx ix;
+    nonstd::expected< issue_xx, int > a = ix;
+//    nonstd::expected< issue_xx, int > b;
+
+    //b = a;
+}
+
 // -----------------------------------------------------------------------
 //  using as optional
 
