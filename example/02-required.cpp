@@ -37,14 +37,14 @@ private:
 template< typename T >
 auto make_required( T value ) -> required<T>
 {
-    return required<T>( value );
+    return required<T>( std::move(value) );
 }
 
 using unused_type = char;
 
 auto produce( int value ) -> expected< required<int>, unused_type >
 {
-    return make_required( value );
+    return make_required( std::move(value) );
 }
 
 int main( int argc, char * argv[] )
