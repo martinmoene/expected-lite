@@ -1723,7 +1723,7 @@ CASE( "issue-15" )
     (void) nonstd::expected< int, int >( 12).value();
 }
 
-// issue #xx, https://github.com/martinmoene/expected-lite/issues/xx
+// issue #29, https://github.com/martinmoene/expected-lite/issues/29
 
 struct issue_xx
 {
@@ -1731,7 +1731,7 @@ struct issue_xx
     issue_xx( issue_xx const & ) {}
     issue_xx & operator=( issue_xx const & ) { return *this; }
 
-#if 0
+#if 1
     issue_xx( issue_xx && ) {}
     issue_xx & operator=( issue_xx && ) { return *this; }
 #else
