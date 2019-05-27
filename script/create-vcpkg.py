@@ -29,6 +29,8 @@ cfg_sha512            = 'dadeda'
 cfg_vcpkg_description = '(no description found)'
 cfg_vcpkg_root        = os.environ['VCPKG_ROOT']
 
+cfg_cmake_optpfx      = "EXPECTED_LITE"
+
 # End configuration.
 
 # vcpkg  control and port templates:
@@ -51,10 +53,28 @@ vcpkg_from_github(
     SHA512 {sha}
 )
 
-# To allow side-by-side use with ms-gsl, only provide include/gsl/gsl-lite.hpp:
+vcpkg_configure_cmake(
+    SOURCE_PATH ${{SOURCE_PATH}}
+    PREFER_NINJA
+    OPTIONS
+        -D{optpfx}_OPT_BUILD_TESTS=OFF
+        -D{optpfx}_OPT_BUILD_EXAMPLES=OFF
+)
 
-file(INSTALL ${{SOURCE_PATH}}/include/gsl/gsl-lite.hpp DESTINATION ${{CURRENT_PACKAGES_DIR}}/include/gsl)
-file(INSTALL ${{SOURCE_PATH}}/{lic} DESTINATION ${{CURRENT_PACKAGES_DIR}}/share/{prj} RENAME copyright)"""
+vcpkg_install_cmake()
+
+vcpkg_fixup_cmake_targets(
+    CONFIG_PATH lib/cmake/${{PORT}}
+)
+
+file(REMOVE_RECURSE
+    ${{CURRENT_PACKAGES_DIR}}/debug
+    ${{CURRENT_PACKAGES_DIR}}/lib
+)
+
+file(INSTALL
+    ${{SOURCE_PATH}}/{lic} DESTINATION ${{CURRENT_PACKAGES_DIR}}/share/${{PORT}} RENAME copyright
+)"""
 
 tpl_vcpkg_note_sha =\
 """
@@ -114,7 +134,7 @@ def createControl( args ):
 def createPortfile( args ):
     """Create vcpkg portfile"""
     output = tpl_vcpkg_portfile.format(
-        usr=args.user, prj=args.project, ref=to_ref(args.version), sha=args.sha, lic=cfg_license )
+        optpfx=cfg_cmake_optpfx, usr=args.user, prj=args.project, ref=to_ref(args.version), sha=args.sha, lic=cfg_license )
     if args.verbose:
         print( "Creating portfile '{f}':".format( f=portfile_path( args ) ) )
     if args.verbose > 1:
