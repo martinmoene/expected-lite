@@ -21,7 +21,7 @@
 
 Example usage
 -------------
-```C++
+```Cpp
 #include "nonstd/expected.hpp"
 
 #include <cstdlib>
