@@ -342,7 +342,7 @@ using std::swap;
 struct is_swappable
 {
     template< typename T, typename = decltype( swap( std::declval<T&>(), std::declval<T&>() ) ) >
-    static std::true_type test( int );
+    static std::true_type test( int /* unused */);
 
     template< typename >
     static std::false_type test(...);
@@ -350,21 +350,20 @@ struct is_swappable
 
 struct is_nothrow_swappable
 {
-    // wrap noexcept(epr) in separate function as work-around for VC140 (VS2015):
+    // wrap noexcept(expr) in separate function as work-around for VC140 (VS2015):
 
     template< typename T >
-    static constexpr bool test()
+    static constexpr bool satisfies()
     {
         return noexcept( swap( std::declval<T&>(), std::declval<T&>() ) );
     }
 
     template< typename T >
-    static auto test( int ) -> std::integral_constant<bool, test<T>()>{}
+    static auto test( int ) -> std::integral_constant<bool, satisfies<T>()>{}
 
     template< typename >
-    static std::false_type test(...);
+    static auto test(...) -> std::false_type;
 };
-
 } // namespace detail
 
 // is [nothow] swappable:
