@@ -1724,30 +1724,50 @@ CASE( "issue-15" )
 }
 
 // issue #29, https://github.com/martinmoene/expected-lite/issues/29
+// issue #32, https://github.com/martinmoene/expected-lite/issues/32
 
-struct issue_xx
+namespace issue_32 {
+
+enum class Error
 {
-    issue_xx() {}
-    issue_xx( issue_xx const & ) {}
-    issue_xx & operator=( issue_xx const & ) { return *this; }
-
-#if 1
-    issue_xx( issue_xx && ) {}
-    issue_xx & operator=( issue_xx && ) { return *this; }
-#else
-    issue_xx( issue_xx && ) = delete;
-    issue_xx & operator=( issue_xx && ) = delete;
-#endif
+    Bad
 };
 
-CASE( "issue-xx" )
+class MyNonMoveableObject
 {
-    issue_xx ix;
-    nonstd::expected< issue_xx, int > a = ix;
-//    nonstd::expected< issue_xx, int > b;
+public:
+    MyNonMoveableObject() = default;
+    MyNonMoveableObject( MyNonMoveableObject const &  ) = default;
+    MyNonMoveableObject( MyNonMoveableObject       && ) = delete;
+    MyNonMoveableObject& operator=( MyNonMoveableObject const  &) = default;
+    MyNonMoveableObject& operator=( MyNonMoveableObject       &&) = delete;
 
-    //b = a;
+    ~MyNonMoveableObject() = default;
+};
+
+nonstd::expected< MyNonMoveableObject, Error > create_copyable()
+{
+    return MyNonMoveableObject{};
 }
+
+class MyNonCopyableObject
+{
+public:
+    MyNonCopyableObject() = default;
+    MyNonCopyableObject( MyNonCopyableObject const &  ) = delete;
+    MyNonCopyableObject( MyNonCopyableObject       && ) = default;
+    MyNonCopyableObject& operator=( MyNonCopyableObject const &  ) = delete;
+    MyNonCopyableObject& operator=( MyNonCopyableObject       && ) = default;
+
+    ~MyNonCopyableObject() = default;
+};
+
+nonstd::expected< MyNonCopyableObject, Error > create_moveable()
+{
+    return MyNonCopyableObject{};
+}
+
+} // namespace issue_32
 
 // -----------------------------------------------------------------------
 //  using as optional

@@ -1099,10 +1099,11 @@ public:
         contained.construct_value( value_type() );
     }
 
+    template< typename U=T, typename G=E >
     nsel_constexpr14 expected( expected const & other
         nsel_REQUIRES_A(
-            std::is_copy_constructible<T>::value
-            && std::is_copy_constructible<E>::value
+            std::is_copy_constructible<U>::value
+            && std::is_copy_constructible<G>::value
         )
     )
     : has_value_( other.has_value_ )
@@ -1111,10 +1112,11 @@ public:
         else               contained.construct_error( other.contained.error() );
     }
 
+    template< typename U=T, typename G=E >
     nsel_constexpr14 expected( expected && other
         nsel_REQUIRES_A(
-            std::is_move_constructible<T>::value
-            && std::is_move_constructible<E>::value
+            std::is_move_constructible<U>::value
+            && std::is_move_constructible<G>::value
         )
     ) noexcept (
         std::is_nothrow_move_constructible<T>::value
@@ -1210,9 +1212,10 @@ public:
         else               contained.construct_error( std::move( other.contained.error() ) );
     }
 
+    template< typename U = T >
     nsel_constexpr14 expected( value_type const & value
         nsel_REQUIRES_A(
-            std::is_copy_constructible<T>::value )
+            std::is_copy_constructible<U>::value )
     )
     : has_value_( true )
     {
@@ -1365,14 +1368,15 @@ public:
 
     // x.x.4.3 assignment
 
+    template< typename U=T, typename G=E >
     nsel_REQUIRES_R(
         expected &,
-        std::is_copy_constructible<   T>::value
-        && std::is_copy_assignable<   T>::value
-        && std::is_copy_constructible<E>::value
-        && std::is_copy_assignable<   E>::value
-        && (   std::is_nothrow_move_constructible<T>::value
-            || std::is_nothrow_move_constructible<E>::value )
+        std::is_copy_constructible<   U>::value
+        && std::is_copy_assignable<   U>::value
+        && std::is_copy_constructible<G>::value
+        && std::is_copy_assignable<   G>::value
+        && (   std::is_nothrow_move_constructible<U>::value
+            || std::is_nothrow_move_constructible<G>::value )
     )
     operator=( expected const & other )
     {
@@ -1380,12 +1384,13 @@ public:
         return *this;
     }
 
+    template< typename U=T, typename G=E >
     nsel_REQUIRES_R(
         expected &,
-        std::is_move_constructible<   T>::value
-        && std::is_move_assignable<   T>::value
-        && std::is_move_constructible<E>::value // TODO: std::is_nothrow_move_constructible<E>
-        && std::is_move_assignable<   E>::value // TODO: std::is_nothrow_move_assignable<E>
+        std::is_move_constructible<   U>::value
+        && std::is_move_assignable<   U>::value
+        && std::is_move_constructible<G>::value // TODO: std::is_nothrow_move_constructible<E>
+        && std::is_move_assignable<   G>::value // TODO: std::is_nothrow_move_assignable<E>
     )
     operator=( expected && other ) noexcept
     (
@@ -1460,10 +1465,11 @@ public:
 
     // x.x.4.4 swap
 
+    template< typename U=T, typename G=E >
     nsel_REQUIRES_R( void,
-        std17::is_swappable<   T>::value
-        && std17::is_swappable<E>::value
-        && ( std::is_move_constructible<T>::value || std::is_move_constructible<E>::value )
+        std17::is_swappable<   U>::value
+        && std17::is_swappable<G>::value
+        && ( std::is_move_constructible<U>::value || std::is_move_constructible<G>::value )
     )
     swap( expected & other ) noexcept
     (
