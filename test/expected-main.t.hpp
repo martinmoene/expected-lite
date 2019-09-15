@@ -14,7 +14,7 @@
 
 #include "nonstd/expected.hpp"
 
-#if defined(_MSC_VER) && _MSC_VER >= 1910
+#if nsel_COMPILER_MSVC_VER >= 1910
 # include <CppCoreCheck/Warnings.h>
 # pragma warning(disable: ALL_CPPCORECHECK_WARNINGS)
 #endif
