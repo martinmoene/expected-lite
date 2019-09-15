@@ -1792,10 +1792,11 @@ public:
 
     // x.x.4.3 assignment
 
+    template< typename G = E >
     nsel_REQUIRES_R(
         expected &,
-        std::is_copy_constructible<E>::value
-        && std::is_copy_assignable<E>::value
+        std::is_copy_constructible<G>::value
+        && std::is_copy_assignable<G>::value
     )
     operator=( expected const & other )
     {
@@ -1803,10 +1804,11 @@ public:
         return *this;
     }
 
+    template< typename G = E >
     nsel_REQUIRES_R(
         expected &,
-        std::is_move_constructible<E>::value
-        && std::is_move_assignable<E>::value
+        std::is_move_constructible<G>::value
+        && std::is_move_assignable<G>::value
     )
     operator=( expected && other ) noexcept
     (
@@ -1824,9 +1826,10 @@ public:
 
     // x.x.4.4 swap
 
+    template< typename G = E >
     nsel_REQUIRES_R( void,
-        std17::is_swappable<E>::value
-        && std::is_move_constructible<E>::value
+        std17::is_swappable<G>::value
+        && std::is_move_constructible<G>::value
     )
     swap( expected & other ) noexcept
     (
