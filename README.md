@@ -283,7 +283,7 @@ Other implementations of expected
 
 Notes and references
 --------------------
-[1] Vicente J. Botet Escriba. [p0323 - A proposal to add a utility class to represent expected object (latest)](http://wg21.link/p0323) (HTML). ([r7](http://wg21.link/p0323r7), [r6](http://wg21.link/p0323r6), [r5](http://wg21.link/p0323r5), [r4](http://wg21.link/p0323r4), [r3](http://wg21.link/p0323r3), [r2](http://wg21.link/p0323r2), [r1](http://wg21.link/n4109), [r0](http://wg21.link/n4015), [draft](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf)).
+[1] Vicente J. Botet Escriba. [p0323 - A proposal to add a utility class to represent expected object (latest)](http://wg21.link/p0323) (HTML). ([r9](http://wg21.link/p0323r9), [r8](http://wg21.link/p0323r8), [r7](http://wg21.link/p0323r7), [r6](http://wg21.link/p0323r6), [r5](http://wg21.link/p0323r5), [r4](http://wg21.link/p0323r4), [r3](http://wg21.link/p0323r3), [r2](http://wg21.link/p0323r2), [r1](http://wg21.link/n4109), [r0](http://wg21.link/n4015), [draft](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf)).
 
 [2] Vicente J. Botet Escriba. [JASEL: Just a simple experimental library for C++](https://github.com/viboes/std-make). Reference implementation of [expected](https://github.com/viboes/std-make/tree/master/include/experimental/fundamental/v3/expected).
 
