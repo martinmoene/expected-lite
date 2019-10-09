@@ -70,7 +70,7 @@ struct OracleVal
 {
     State s;
     int i;
-    OracleVal(int i = 0) : s(sValueConstructed), i(i) {}
+    OracleVal(int i_ = 0) : s(sValueConstructed), i(i_) {}
 
     bool operator==( OracleVal const & other ) const { return s==other.s && i==other.i; }
 };
