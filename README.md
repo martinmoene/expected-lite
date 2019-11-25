@@ -111,6 +111,10 @@ Define this to `nsel_EXPECTED_STD` to select `std::expected` as `nonstd::expecte
 -D<b>nsel\_P0323R</b>=7  *(default)*  
 Define this to the proposal revision number to control the presence and behavior of features (see tables). Default is 7 for the latest revision.   
 
+#### Disable exceptions
+-D<b>nsel\_CONFIG\_NO\_EXCEPTIONS</b>=0
+Define this to 1 if you want to compile without exceptions. If not defined, the header tries and detect if exceptions have been disabled (e.g. via `-fno-exceptions`). Default is undefined.
+
 #### Enable compilation errors
 \-D<b>nsel\_CONFIG\_CONFIRMS\_COMPILATION\_ERRORS</b>=0  
 Define this macro to 1 to experience the by-design compile-time errors of the library in the test suite. Default is 0.
