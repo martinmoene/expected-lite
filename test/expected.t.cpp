@@ -539,8 +539,8 @@ CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_
 
 CASE( "unexpected: C++17 and later provide unexpected_type as unexpected" )
 {
-#if nsel_CPP17_OR_GREATER && nsel_COMPILER_MSVC_VERSION > 141
-    unexpected<Oracle> u;
+#if nsel_CPP17_OR_GREATER || nsel_COMPILER_MSVC_VERSION > 141
+    nonstd::unexpected<int> u{7};
 #else
     EXPECT( !!"unexpected is not available (no C++17)." );
 #endif

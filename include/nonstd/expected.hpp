@@ -2398,7 +2398,7 @@ namespace nonstd {
 
 // void unexpected() is deprecated && removed in C++17
 
-#if nsel_CPP17_OR_GREATER && nsel_COMPILER_MSVC_VERSION > 141
+#if nsel_CPP17_OR_GREATER || nsel_COMPILER_MSVC_VERSION > 141
 template< typename E >
 using unexpected = unexpected_type<E>;
 #endif
