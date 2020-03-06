@@ -241,7 +241,7 @@ namespace nonstd {
     template< bool B = (__VA_ARGS__), typename std::enable_if<B, int>::type = 0 >
 
 #define nsel_REQUIRES_T(...) \
-    , typename = typename std::enable_if< (__VA_ARGS__), nonstd::expected_lite::detail::enabler >::type
+    , typename std::enable_if< (__VA_ARGS__), int >::type = 0
 
 #define nsel_REQUIRES_R(R, ...) \
     typename std::enable_if< (__VA_ARGS__), R>::type
@@ -423,10 +423,6 @@ template< typename T, typename E >
 class expected;
 
 namespace detail {
-
-/// for nsel_REQUIRES_T
-
-enum class enabler{};
 
 /// discriminated union to hold value or 'error'.
 
