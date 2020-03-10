@@ -2370,11 +2370,11 @@ constexpr auto make_expected_from_error( E e ) -> expected<T, typename std::deca
     return expected<T, typename std::decay<E>::type>( make_unexpected( e ) );
 }
 
-template< typename F >
+template< typename F
+    nsel_REQUIRES_T( ! std::is_same<typename std::result_of<F()>::type, void>::value )
+>
 /*nsel_constexpr14*/
-auto make_expected_from_call( F f,
-    nsel_REQUIRES_A( ! std::is_same<typename std::result_of<F()>::type, void>::value )
-) -> expected< typename std::result_of<F()>::type >
+auto make_expected_from_call( F f ) -> expected< typename std::result_of<F()>::type >
 {
     try
     {
@@ -2386,11 +2386,11 @@ auto make_expected_from_call( F f,
     }
 }
 
-template< typename F >
+template< typename F
+    nsel_REQUIRES_T( std::is_same<typename std::result_of<F()>::type, void>::value )
+>
 /*nsel_constexpr14*/
-auto make_expected_from_call( F f,
-    nsel_REQUIRES_A( std::is_same<typename std::result_of<F()>::type, void>::value )
-) -> expected<void>
+auto make_expected_from_call( F f ) -> expected<void>
 {
     try
     {
