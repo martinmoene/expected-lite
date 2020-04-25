@@ -1238,8 +1238,9 @@ nsel_inline17 constexpr unexpect_t in_place_unexpected{};
 #if nsel_CONFIG_NO_EXCEPTIONS
 
 namespace detail {
-    bool text( char const * /*text*/ ) { return true; }
+    inline bool text( char const * /*text*/ ) { return true; }
 }
+
 template< typename Error >
 struct error_traits
 {
