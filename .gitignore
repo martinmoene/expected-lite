@@ -27,3 +27,12 @@
 *.out
 *.app
 test/expected.t
+
+# CodeBlocks IDE files
+*.layout
+
+# Visual Studio Code
+/.vscode/
+
+# Visual Studio
+/.vs/
