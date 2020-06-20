@@ -28,6 +28,9 @@
 *.app
 test/expected.t
 
+# Build folder
+/build/
+
 # CodeBlocks IDE files
 *.layout
 
