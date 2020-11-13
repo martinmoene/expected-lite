@@ -3,6 +3,7 @@ version: "{branch} #{build}"
 shallow_clone: true
 
 image:
+    - Visual Studio 2019
     - Visual Studio 2017
     - Visual Studio 2015
 
@@ -14,31 +15,54 @@ configuration:
     - Debug
     - Release
 
+build:
+    parallel: true
+
 environment:
     matrix:
+        - generator: "Visual Studio 16 2019"
+          select_sv: -DEXPECTED_LITE_OPT_SELECT_STD=ON
+        - generator: "Visual Studio 16 2019"
+          select_sv: -DEXPECTED_LITE_OPT_SELECT_NONSTD=ON
         - generator: "Visual Studio 15 2017"
+          select_sv: -DEXPECTED_LITE_OPT_SELECT_STD=ON
+        - generator: "Visual Studio 15 2017"
+          select_sv: -DEXPECTED_LITE_OPT_SELECT_NONSTD=ON
         - generator: "Visual Studio 14 2015"
-#        - generator: "Visual Studio 12 2013"
-#        - generator: "Visual Studio 11 2012"
-#        - generator: "Visual Studio 10 2010"
+        - generator: "Visual Studio 12 2013"
+        - generator: "Visual Studio 11 2012"
+        - generator: "Visual Studio 10 2010"
 
 matrix:
-    fast_finish: true
     exclude:
+        - image:      Visual Studio 2015
+          generator: "Visual Studio 16 2019"
+        - image:      Visual Studio 2019
+          generator: "Visual Studio 15 2017"
+        - image:      Visual Studio 2019
+          generator: "Visual Studio 14 2015"
+        - image:      Visual Studio 2019
+          generator: "Visual Studio 12 2013"
+        - image:      Visual Studio 2019
+          generator: "Visual Studio 11 2012"
+        - image:      Visual Studio 2019
+          generator: "Visual Studio 10 2010"
         - image:      Visual Studio 2015
           generator: "Visual Studio 15 2017"
         - image:      Visual Studio 2017
+          generator: "Visual Studio 16 2019"
+        - image:      Visual Studio 2017
           generator: "Visual Studio 14 2015"
-#        - image:      Visual Studio 2017
-#          generator: "Visual Studio 12 2013"
-#        - image:      Visual Studio 2017
-#          generator: "Visual Studio 11 2012"
-#        - image:      Visual Studio 2017
-#          generator: "Visual Studio 10 2010"
+        - image:      Visual Studio 2017
+          generator: "Visual Studio 12 2013"
+        - image:      Visual Studio 2017
+          generator: "Visual Studio 11 2012"
+        - image:      Visual Studio 2017
+          generator: "Visual Studio 10 2010"
 
 before_build:
     - mkdir build && cd build
-    - cmake -A %platform% -G "%generator%" -DEXPECTED_LITE_OPT_SELECT_NONSTD=ON -DEXPECTED_LITE_OPT_BUILD_TESTS=ON -DEXPECTED_LITE_OPT_BUILD_EXAMPLES=OFF ..
+    - cmake -A %platform% -G "%generator%" "%select_sv%" -DEXPECTED_LITE_OPT_BUILD_TESTS=ON -DEXPECTED_LITE_OPT_BUILD_EXAMPLES=OFF ..
 
 build_script:
     - cmake --build . --config %configuration%
