@@ -89,14 +89,18 @@ Synopsis
 --------
 
 **Contents**  
-- [Configuration macros](#configuration-macros)
+- [Configuration](#configuration)
 - [Types in namespace nonstd](#types-in-namespace-nonstd)  
 - [Interface of expected](#interface-of-expected)  
 - [Algorithms for expected](#algorithms-for-expected)  
 - [Interface of unexpected_type](#interface-of-unexpected_type)  
 - [Algorithms for unexpected_type](#algorithms-for-unexpected_type)  
 
-### Configuration macros
+### Configuration
+
+#### Tweak header
+
+If the compiler supports [`__has_include()`](https://en.cppreference.com/w/cpp/preprocessor/include), *expected lite* supports the [tweak header](https://vector-of-bool.github.io/2020/10/04/lib-configuration.html) mechanism. Provide your *tweak header* as `nonstd/expected.tweak.hpp` in a folder in the include-search-path. In the tweak header, provide definitions as documented below, like `#define expected_CPLUSPLUS 201103L`.
 
 #### Standard selection macro
 \-D<b>nsel\_CPLUSPLUS</b>=199711L  
@@ -329,7 +333,7 @@ The version of *expected lite* is available via tag `[.version]`. The following 
 
 ### A.2 Expected lite test specification
 
-```
+```Text
 unexpected_type: Disallows default construction
 unexpected_type: Allows to copy-construct from unexpected_type, default
 unexpected_type: Allows to move-construct from unexpected_type, default
@@ -445,4 +449,5 @@ expected<void>: Throws bad_expected_access on value access when disengaged
 operators: Provides expected relational operators
 swap: Allows expected to be swapped
 std::hash: Allows to compute hash value for expected
+tweak header: reads tweak header if supported [tweak]
 ```

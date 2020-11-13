@@ -1705,6 +1705,15 @@ CASE( "make_expected_from_call(): void return type" "[.deprecated]" )
 #endif
 }
 
+CASE( "tweak header: reads tweak header if supported " "[tweak]" )
+{
+#if expected_HAVE_TWEAK_HEADER
+    EXPECT( EXPECTED_TWEAK_VALUE == 42 );
+#else
+    EXPECT( !!"Tweak header is not available (expected_HAVE_TWEAK_HEADER: 0)." );
+#endif
+}
+
 // -----------------------------------------------------------------------
 // expected: issues
 

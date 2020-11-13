@@ -27,6 +27,20 @@
 #define nsel_EXPECTED_NONSTD   1
 #define nsel_EXPECTED_STD      2
 
+// tweak header support:
+
+#ifdef __has_include
+# if __has_include(<nonstd/expected.tweak.hpp>)
+#  include <nonstd/expected.tweak.hpp>
+# endif
+#define expected_HAVE_TWEAK_HEADER  1
+#else
+#define expected_HAVE_TWEAK_HEADER  0
+//# pragma message("expected.hpp: Note: Tweak header not supported.")
+#endif
+
+// expected selection and configuration:
+
 #if !defined( nsel_CONFIG_SELECT_EXPECTED )
 # define nsel_CONFIG_SELECT_EXPECTED  ( nsel_HAVE_STD_EXPECTED ? nsel_EXPECTED_STD : nsel_EXPECTED_NONSTD )
 #endif
@@ -94,7 +108,7 @@
 #define  nsel_USES_STD_EXPECTED  ( (nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) || ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) && nsel_HAVE_STD_EXPECTED) )
 
 //
-// in_place: code duplicated in any-lite, expected-lite, optional-lite, value-ptr-lite, variant-lite:
+// in_place: code duplicated in any-lite, expected-lite, expected-lite, value-ptr-lite, variant-lite:
 //
 
 #ifndef nonstd_lite_HAVE_IN_PLACE_TYPES

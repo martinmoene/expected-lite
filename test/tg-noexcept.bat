@@ -29,7 +29,7 @@ rem -flto / -fwhole-program
 set  optflags=-O2 -fno-exceptions
 set warnflags=-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wno-padded -Wno-missing-noreturn
 
-%gpp% -std=%std% %optflags% %warnflags% %unit_select% %unit_config% -o %unit%-main.t.exe -Dlest_FEATURE_AUTO_REGISTER=1 -I../include %unit%-noexcept.t.cpp && %unit%-main.t.exe
+%gpp% -std=%std% %optflags% %warnflags% %unit_select% %unit_config% -o %unit%-main.t.exe -Dlest_FEATURE_AUTO_REGISTER=1 -I../include -I. %unit%-noexcept.t.cpp && %unit%-main.t.exe
 
 endlocal & goto :EOF
 
