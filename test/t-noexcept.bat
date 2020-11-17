@@ -26,12 +26,15 @@ set msvc_defines=^
     -Dlest_FEATURE_AUTO_REGISTER=1 ^
     -D_CRT_SECURE_NO_WARNINGS ^
     -D_SCL_SECURE_NO_WARNINGS ^
-    -Dnsel_CONFIG_NO_EXCEPTIONS=1
+    -D_HAS_EXCEPTIONS=0 ^
+    -Dnsel_CONFIG_NO_SEH=0
+
+::    -Dnsel_CONFIG_NO_EXCEPTIONS=1
 
 set CppCoreCheckInclude=%VCINSTALLDIR%\Auxiliary\VS\include
 
 :: -EHsc
-cl -W3 %std% %unit_select% %unit_config% %msvc_defines% -I"%CppCoreCheckInclude%" -I../include -I. %unit%-noexcept.t.cpp && %unit%-noexcept.t.exe
+cl -kernel -GR- -W3 %std% %unit_select% %unit_config% %msvc_defines% -I"%CppCoreCheckInclude%" -I../include -I. %unit%-noexcept.t.cpp && %unit%-noexcept.t.exe
 endlocal & goto :EOF
 
 :: subroutines:
