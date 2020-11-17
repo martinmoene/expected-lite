@@ -69,14 +69,12 @@ CASE( "Compiler version" "[.compiler]" )
 #endif
 }
 
-#if 0
-
 CASE( "presence of C++ language features" "[.stdlanguage]" )
 {
 #if nsel_USES_STD_EXPECTED
     std::cout << "(Presence of C++ language features not available: using std::expected)\n";
 #else
-    REQUIRE( true );
+    std::cout << "[.stdlanguage]: none\n";
 #endif
 }
 
@@ -85,11 +83,33 @@ CASE( "presence of C++ library features" "[.stdlibrary]" )
 #if nsel_USES_STD_EXPECTED
     std::cout << "(Presence of C++ library features not available: using std::expected)\n";
 #else
-    REQUIRE( true );
+
+#ifdef __cpp_exceptions
+    expected_PRESENT( __cpp_exceptions );
+#else
+    expected_ABSENT(  __cpp_exceptions );
+#endif
+
+#ifdef __EXCEPTIONS
+    expected_PRESENT( __EXCEPTIONS );
+#else
+    expected_ABSENT(  __EXCEPTIONS );
+#endif
+
+#ifdef _HAS_EXCEPTIONS
+    expected_PRESENT( _HAS_EXCEPTIONS );
+#else
+    expected_ABSENT(  _HAS_EXCEPTIONS );
+#endif
+
+#ifdef _CPPUNWIND
+    expected_PRESENT( _CPPUNWIND );
+#else
+    expected_ABSENT(  _CPPUNWIND );
+#endif
+
 #endif
 }
-
-#endif // 0
 
 int main( int argc, char * argv[] )
 {
