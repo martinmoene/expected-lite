@@ -117,7 +117,11 @@ Define this to the proposal revision number to control the presence and behavior
 
 #### Disable exceptions
 -D<b>nsel\_CONFIG\_NO\_EXCEPTIONS</b>=0
-Define this to 1 if you want to compile without exceptions. If not defined, the header tries and detect if exceptions have been disabled (e.g. via `-fno-exceptions`). Default is undefined.
+Define this to 1 if you want to compile without exceptions. If not defined, the header tries and detect if exceptions have been disabled (e.g. via `-fno-exceptions` or `/kernel`). Default determined in header.
+
+#### Enable SEH exceptions
+-D<b>nsel\_CONFIG\_NO\_EXCEPTIONS\_SEH</b>=0
+Define this to 1 or 0 to control the use of SEH when C++ exceptions are disabled (see above). If not defined, the header tries and detect if SEH is available if C++ exceptions have been disabled (e.g. via `-fno-exceptions` or `/kernel`). Default determined in header.
 
 #### Enable compilation errors
 \-D<b>nsel\_CONFIG\_CONFIRMS\_COMPILATION\_ERRORS</b>=0  

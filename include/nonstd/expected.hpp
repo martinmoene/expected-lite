@@ -1,6 +1,6 @@
 // This version targets C++11 and later.
 //
-// Copyright (C) 2016-2018 Martin Moene.
+// Copyright (C) 2016-2020 Martin Moene.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -66,17 +66,23 @@
 # define nsel_P0323R  7
 #endif
 
-// Control presence of exception handling (try and auto discover):
+// Control presence of C++ exception handling (try and auto discover):
 
 #ifndef nsel_CONFIG_NO_EXCEPTIONS
 # if _MSC_VER
-# include <cstddef>     // for _HAS_EXCEPTIONS
+#  include <cstddef>    // for _HAS_EXCEPTIONS
 # endif
 # if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || (_HAS_EXCEPTIONS)
 #  define nsel_CONFIG_NO_EXCEPTIONS  0
 # else
 #  define nsel_CONFIG_NO_EXCEPTIONS  1
 # endif
+#endif
+
+// at default use SEH with MSVC for no C++ exceptions
+
+#ifndef  nsel_CONFIG_NO_EXCEPTIONS_SEH
+# define nsel_CONFIG_NO_EXCEPTIONS_SEH  ( nsel_CONFIG_NO_EXCEPTIONS && _MSC_VER )
 #endif
 
 // C++ language version detection (C++20 is speculative):
@@ -227,7 +233,11 @@ namespace nonstd {
 // additional includes:
 
 #if nsel_CONFIG_NO_EXCEPTIONS
+# if nsel_CONFIG_NO_EXCEPTIONS_SEH
+#  include <windows.h>   // for ExceptionCodes
+# else
 // already included: <cassert>
+# endif
 #else
 # include <stdexcept>
 #endif
@@ -1263,7 +1273,11 @@ struct error_traits
 {
     static void rethrow( Error const & /*e*/ )
     {
+#if nsel_CONFIG_NO_EXCEPTIONS_SEH
+        RaiseException( EXCEPTION_ACCESS_VIOLATION, EXCEPTION_NONCONTINUABLE, 0, NULL );
+#else
         assert( false && detail::text("throw bad_expected_access<Error>{ e };") );
+#endif
     }
 };
 
@@ -1272,7 +1286,11 @@ struct error_traits< std::exception_ptr >
 {
     static void rethrow( std::exception_ptr const & /*e*/ )
     {
+#if nsel_CONFIG_NO_EXCEPTIONS_SEH
+        RaiseException( EXCEPTION_ACCESS_VIOLATION, EXCEPTION_NONCONTINUABLE, 0, NULL );
+#else
         assert( false && detail::text("throw bad_expected_access<std::exception_ptr>{ e };") );
+#endif
     }
 };
 
@@ -1281,7 +1299,11 @@ struct error_traits< std::error_code >
 {
     static void rethrow( std::error_code const & /*e*/ )
     {
+#if nsel_CONFIG_NO_EXCEPTIONS_SEH
+        RaiseException( EXCEPTION_ACCESS_VIOLATION, EXCEPTION_NONCONTINUABLE, 0, NULL );
+#else
         assert( false && detail::text("throw std::system_error( e );") );
+#endif
     }
 };
 
