@@ -42,6 +42,12 @@ void report()
 #else
     expected_ABSENT(  _CPPUNWIND );
 #endif
+
+#ifdef _CPPRTTI
+    expected_PRESENT( _CPPRTTI  );
+#else
+    expected_ABSENT(  _CPPRTTI  );
+#endif
 }
 
 int violate_access()
