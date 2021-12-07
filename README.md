@@ -402,6 +402,7 @@ expected: Allows to move-assign from expected, error
 expected: Allows to forward-assign from value
 expected: Allows to copy-assign from unexpected
 expected: Allows to move-assign from unexpected
+expected: Allows to move-assign from move-only unexpected
 expected: Allows to emplace value
 expected: Allows to emplace value from initializer_list
 expected: Allows to be swapped

@@ -29,6 +29,18 @@ using namespace nonstd;
 
 struct Implicit { int x;          Implicit(int v) : x(v) {} };
 struct Explicit { int x; explicit Explicit(int v) : x(v) {} };
+struct MoveOnly {
+    int x;
+    explicit MoveOnly(int x) :x{x} {}
+    MoveOnly(const MoveOnly&) = delete;
+    MoveOnly(MoveOnly&& other) noexcept :x{other.x} {}
+    MoveOnly& operator=(const MoveOnly&) = delete;
+    MoveOnly& operator=(MoveOnly&& other) noexcept {
+        if (&other == this) return *this;
+        x = other.x;
+        return *this;
+    }
+};
 
 bool operator==( Implicit a, Implicit b ) { return a.x == b.x; }
 bool operator==( Explicit a, Explicit b ) { return a.x == b.x; }
@@ -896,6 +908,16 @@ CASE( "expected: Allows to move-assign from unexpected" )
 {
     expected<char, int>  e;
     unexpected_type<int> u{ 7 } ;
+
+    e = std::move( u );
+
+    EXPECT( e.error() == 7 );
+}
+
+CASE( "expected: Allows to move-assign from move-only unexpected" )
+{
+    expected<char, MoveOnly> e;
+    unexpected_type<MoveOnly> u{7};
 
     e = std::move( u );
 
