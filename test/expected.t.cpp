@@ -45,8 +45,12 @@ struct MoveOnly {
 bool operator==( Implicit a, Implicit b ) { return a.x == b.x; }
 bool operator==( Explicit a, Explicit b ) { return a.x == b.x; }
 
+template< typename R >
+bool operator==( MoveOnly const & a, R const & r ) { return a.x == r; }
+
 std::ostream & operator<<( std::ostream & os, Implicit i ) { return os << "Implicit:" << i.x; }
 std::ostream & operator<<( std::ostream & os, Explicit e ) { return os << "Explicit:" << e.x; }
+std::ostream & operator<<( std::ostream & os, MoveOnly const & m ) { return os << "MoveOnly:" << m.x; }
 
 struct InitList
 {
