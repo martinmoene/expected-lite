@@ -1804,6 +1804,16 @@ nonstd::expected< MyNonCopyableObject, Error > create_moveable()
 
 } // namespace issue_32
 
+CASE( "pr-41" )
+{
+    expected<int, int> a{7};
+    expected<int, int> b{unexpect, 7};
+    expected<void, int> c{unexpect, 7};
+    EXPECT( *std::move(a) == 7 );
+    EXPECT( std::move(b).error() == 7 );
+    EXPECT( std::move(c).error() == 7 );
+}
+
 // -----------------------------------------------------------------------
 //  using as optional
 
