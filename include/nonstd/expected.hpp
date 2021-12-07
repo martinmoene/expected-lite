@@ -1664,10 +1664,11 @@ public:
         return *this;
     }
 
-    template< typename G
+    template< typename G = E
         nsel_REQUIRES_T(
-            std::is_copy_constructible<E>::value    // TODO: std::is_nothrow_copy_constructible<E>
-            && std::is_copy_assignable<E>::value
+            std::is_constructible<E, G const&>::value &&
+            std::is_copy_constructible<G>::value    // TODO: std::is_nothrow_copy_constructible<G>
+            && std::is_copy_assignable<G>::value
         )
     >
     expected & operator=( nonstd::unexpected_type<G> const & error )
@@ -1676,10 +1677,11 @@ public:
         return *this;
     }
 
-    template< typename G
+    template< typename G = E
         nsel_REQUIRES_T(
-            std::is_move_constructible<E>::value    // TODO: std::is_nothrow_move_constructible<E>
-            && std::is_move_assignable<E>::value
+            std::is_constructible<E, G&&>::value &&
+            std::is_move_constructible<G>::value    // TODO: std::is_nothrow_move_constructible<G>
+            && std::is_move_assignable<G>::value
         )
     >
     expected & operator=( nonstd::unexpected_type<G> && error )
