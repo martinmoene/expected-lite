@@ -331,6 +331,10 @@ The version of *expected lite* is available via tag `[.version]`. The following 
 
 ### A.2 Expected lite test specification
 
+<details>
+<summary>click to expand</summary>
+<p>
+
 ```Text
 unexpected_type: Disallows default construction
 unexpected_type: Allows to copy-construct from unexpected_type, default
@@ -450,3 +454,6 @@ swap: Allows expected to be swapped
 std::hash: Allows to compute hash value for expected
 tweak header: reads tweak header if supported [tweak]
 ```
+
+</p>
+</details>
