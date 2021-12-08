@@ -18,9 +18,8 @@
 - [Notes and references](#notes-and-references)
 - [Appendix](#appendix)
 
+## Example usage
 
-Example usage
--------------
 ```Cpp
 #include "nonstd/expected.hpp"
 
@@ -50,14 +49,16 @@ int main( int argc, char * argv[] )
     else      std::cout << "Error: " << ei.error();
 }
 ```
+
 ### Compile and run
+
 ```
 prompt> g++ -std=c++14 -Wall -I../include -o 01-basic.exe 01-basic.cpp && 01-basic.exe 123 && 01-basic.exe abc
 '123' is 123, Error: 'abc' isn't a number
 ```
 
-In a nutshell
--------------
+## In a nutshell
+
 **expected lite** is a single-file header-only library to represent value objects that either contain a valid value or an error. The library is a partly implementation of the  proposal for [std:&#58;expected](http://wg21.link/p0323) [1,2,3] for use with C++11 and later.
 
 **Some Features and properties of expected lite** are ease of installation (single header), default and explicit construction of an expected, construction and assignment from a value that is convertible to the underlying type, copy- and move-construction and copy- and move-assignment from another expected of the same type, testing for the presence of a value, operators for unchecked access to the value or the error (pointer or reference), value() and value_or() for checked access to the value, relational operators, swap() and various factory functions.
@@ -68,25 +69,19 @@ In a nutshell
 
 For more examples, see [1].
 
+## License
 
-License
--------
 *expected lite* is distributed under the [Boost Software License](https://github.com/martinmoene/XXXX-lite/blob/master/LICENSE.txt).
 
+## Dependencies
 
-Dependencies
-------------
 *expected lite* has no other dependencies than the [C++ standard library](http://en.cppreference.com/w/cpp/header).
 
-
-Installation
-------------
+## Installation
 
 *expected lite* is a single-file header-only library. Put `expected.hpp` directly into the project source tree or somewhere reachable from your project.
 
-
-Synopsis
---------
+## Synopsis
 
 **Contents**  
 - [Configuration](#configuration)
@@ -103,10 +98,12 @@ Synopsis
 If the compiler supports [`__has_include()`](https://en.cppreference.com/w/cpp/preprocessor/include), *expected lite* supports the [tweak header](https://vector-of-bool.github.io/2020/10/04/lib-configuration.html) mechanism. Provide your *tweak header* as `nonstd/expected.tweak.hpp` in a folder in the include-search-path. In the tweak header, provide definitions as documented below, like `#define expected_CPLUSPLUS 201103L`.
 
 #### Standard selection macro
+
 \-D<b>nsel\_CPLUSPLUS</b>=199711L  
 Define this macro to override the auto-detection of the supported C++ standard, or if your compiler does not set the `__cplusplus` macro correctly.
 
 #### Select `std::expected` or `nonstd::expected`
+
 At default, *expected lite* uses `std::expected` if it is available and lets you use it via namespace `nonstd`. You can however override this default and explicitly request to use `std::expected` or expected lite's `nonstd::expected` as `nonstd::expected` via the following macros.
 
 -D<b>nsel\_CONFIG\_SELECT\_EXPECTED</b>=nsel_EXPECTED_DEFAULT  
@@ -116,14 +113,17 @@ Define this to `nsel_EXPECTED_STD` to select `std::expected` as `nonstd::expecte
 Define this to the proposal revision number to control the presence and behavior of features (see tables). Default is 7 for the latest revision.   
 
 #### Disable C++ exceptions
+
 -D<b>nsel\_CONFIG\_NO\_EXCEPTIONS</b>=0
 Define this to 1 if you want to compile without exceptions. If not defined, the header tries and detect if exceptions have been disabled (e.g. via `-fno-exceptions` or `/kernel`). Default determined in header.
 
 #### Enable SEH exceptions
+
 -D<b>nsel\_CONFIG\_NO\_EXCEPTIONS\_SEH</b>=0
 Define this to 1 or 0 to control the use of SEH when C++ exceptions are disabled (see above). If not defined, the header tries and detect if SEH is available if C++ exceptions have been disabled (e.g. via `-fno-exceptions` or `/kernel`). Default determined in header.
 
 #### Enable compilation errors
+
 \-D<b>nsel\_CONFIG\_CONFIRMS\_COMPILATION\_ERRORS</b>=0  
 Define this macro to 1 to experience the by-design compile-time errors of the library in the test suite. Default is 0.
 
@@ -245,10 +245,8 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | Make unexpected from          | nsel_P0323R <= 3 | 
 | &emsp;Current exception       | [constexpr] auto **make_unexpected_from_current_exception**() -><br>&emsp;unexpected_type< std::exception_ptr>| 
 
-
 <a id="comparison"></a>
-Comparison with like types
---------------------------
+## Comparison with like types
 
 |Feature               |<br>std::pair|std:: optional |std:: expected |nonstd:: expected |Boost. Expected |Nonco expected |Andrei Expected |Hagan required |
 |----------------------|-------------|---------------|---------------|------------------|----------------|---------------|----------------|---------------|
@@ -276,25 +274,23 @@ Note 1: std:&#58;*experimental*:&#58;expected
 
 Note 2: sources for [Nonco expected](https://github.com/martinmoene/spike-expected/tree/master/nonco), [Andrei Expected](https://github.com/martinmoene/spike-expected/tree/master/alexandrescu) and [Hagan required](https://github.com/martinmoene/spike-expected/tree/master/hagan) can befound in the [spike-expected](https://github.com/martinmoene/spike-expected) repository.
 
+## Reported to work with
 
-Reported to work with
----------------------
+TBD
 
+## Implementation notes
 
-Implementation notes
---------------------
+TBD
 
+## Other implementations of expected
 
-Other implementations of expected
----------------------------------
 - Simon Brand. [C++11/14/17 std::expected with functional-style extensions](https://github.com/TartanLlama/expected). Single-header.
 - Isabella Muerte. [MNMLSTC Core](https://github.com/mnmlstc/core) (C++11).
 - Vicente J. Botet Escriba. [stdmake's expected](https://github.com/viboes/std-make/tree/master/include/experimental/fundamental/v3/expected) (C++17).
 - Facebook. [ Folly's Expected.h](https://github.com/facebook/folly/blob/master/folly/Expected.h) (C++14).
 
+## Notes and references
 
-Notes and references
---------------------
 [1] Vicente J. Botet Escriba. [p0323 - A proposal to add a utility class to represent expected object (latest)](http://wg21.link/p0323) (HTML). ([r9](http://wg21.link/p0323r9), [r8](http://wg21.link/p0323r8), [r7](http://wg21.link/p0323r7), [r6](http://wg21.link/p0323r6), [r5](http://wg21.link/p0323r5), [r4](http://wg21.link/p0323r4), [r3](http://wg21.link/p0323r3), [r2](http://wg21.link/p0323r2), [r1](http://wg21.link/n4109), [r0](http://wg21.link/n4015), [draft](https://github.com/viboes/std-make/blob/master/doc/proposal/expected/DXXXXR0_expected.pdf)).
 
 [2] Vicente J. Botet Escriba. [JASEL: Just a simple experimental library for C++](https://github.com/viboes/std-make). Reference implementation of [expected](https://github.com/viboes/std-make/tree/master/include/experimental/fundamental/v3/expected).
@@ -327,9 +323,7 @@ Notes and references
 
 [16] Niall Douglas. [p0762 - Concerns about expected&lt;T, E> from the Boost.Outcome peer review](http://wg21.link/p0762). 15 October 2017.
 
-
-Appendix
---------
+## Appendix
 
 ### A.1 Compile-time information
 
