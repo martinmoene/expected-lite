@@ -1769,14 +1769,12 @@ public:
 
     constexpr value_type const && operator *() const &&
     {
-        assert( has_value() );
-        return std::move( contained.value() );
+        return std::move( ( assert( has_value() ), contained.value() ) );
     }
 
     nsel_constexpr14 value_type && operator *() &&
     {
-        assert( has_value() );
-        return std::move( contained.value() );
+        return std::move( ( assert( has_value() ), contained.value() ) );
     }
 
 #endif
@@ -1837,14 +1835,12 @@ public:
 
     constexpr error_type const && error() const &&
     {
-        assert( ! has_value() );
-        return std::move( contained.error() );
+        return std::move( ( assert( ! has_value() ), contained.error() ) );
     }
 
     error_type && error() &&
     {
-        assert( ! has_value() );
-        return std::move( contained.error() );
+        return std::move( ( assert( ! has_value() ), contained.error() ) );
     }
 
 #endif
@@ -2111,14 +2107,12 @@ public:
 
     constexpr error_type const && error() const &&
     {
-        assert( ! has_value() );
-        return std::move( contained.error() );
+        return std::move( ( assert( ! has_value() ), contained.error() ) );
     }
 
     error_type && error() &&
     {
-        assert( ! has_value() );
-        return std::move( contained.error() );
+        return std::move( ( assert( ! has_value() ), contained.error() ) );
     }
 
 #endif
