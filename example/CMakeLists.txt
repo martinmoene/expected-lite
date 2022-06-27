@@ -1,10 +1,12 @@
-# Copyright (c) 2016-2018 Martin Moene.
+# Copyright (c) 2016-2022 Martin Moene.
+#
+# https://github.com/martinmoene/expected-lite
 #
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 if( NOT DEFINED CMAKE_MINIMUM_REQUIRED_VERSION )
-    cmake_minimum_required( VERSION 3.5 FATAL_ERROR )
+    cmake_minimum_required( VERSION 3.8 FATAL_ERROR )
 endif()
 
 project( example LANGUAGES CXX )
@@ -12,7 +14,14 @@ project( example LANGUAGES CXX )
 set( unit_name "expected" )
 set( PACKAGE   ${unit_name}-lite )
 
-message( STATUS "Subproject '${PROJECT_NAME}'")
+message( STATUS "Subproject '${PROJECT_NAME}', various examples")
+
+# Target default options and definitions:
+
+set( OPTIONS "" )
+#set( DEFINITIONS "" )
+
+# Sources (.cpp), normal and no-exception, and their base names:
 
 set( SOURCES_CPP11
     02-required.cpp
