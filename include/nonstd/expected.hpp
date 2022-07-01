@@ -429,7 +429,7 @@ struct conjunction<B1, Bn...> : std::conditional<bool(B1::value), conjunction<Bn
 
 namespace std20 {
 
-#if nsel_CPP20_OR_GREATER
+#if defined(__cpp_lib_remove_cvref)
 
 using std::remove_cvref;
 
