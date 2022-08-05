@@ -75,7 +75,7 @@ jobs:
   msvc:
     strategy:
       matrix:
-        os: [windows-2019]
+        os: [windows-2019, windows-2022]
 
     runs-on: ${{ matrix.os }}
 
