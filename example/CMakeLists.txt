@@ -11,7 +11,7 @@ endif()
 
 project( example LANGUAGES CXX )
 
-set( unit_name "expected" )
+# unit_name provided by toplevel CMakeLists.txt
 set( PACKAGE   ${unit_name}-lite )
 
 message( STATUS "Subproject '${PROJECT_NAME}', various examples")
