@@ -1002,11 +1002,12 @@ public:
 
     // x.x.5.2.4 Swap
 
+    template< typename U=E >
     nsel_REQUIRES_R( void,
-        std17::is_swappable<E>::value
+        std17::is_swappable<U>::value
     )
     swap( unexpected_type & other ) noexcept (
-        std17::is_nothrow_swappable<E>::value
+        std17::is_nothrow_swappable<U>::value
     )
     {
         using std::swap;

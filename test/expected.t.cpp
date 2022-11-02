@@ -1820,6 +1820,24 @@ CASE( "pr-41" )
     EXPECT( std::move(cc).error() == 7 );
 }
 
+// issue #50, https://github.com/martinmoene/expected-lite/issues/50
+
+namespace issue_50 {
+
+struct MyConstMemberNonMoveableObject
+{
+    const int x;
+    MyConstMemberNonMoveableObject( int x_ ) : x( x_ ) {}
+    MyConstMemberNonMoveableObject( MyConstMemberNonMoveableObject const & ) = default;
+};
+
+nonstd::unexpected_type<MyConstMemberNonMoveableObject> create_nonmoveable()
+{
+    return nonstd::make_unexpected<MyConstMemberNonMoveableObject>( MyConstMemberNonMoveableObject(3) );
+}
+
+} // namespace issue_50
+
 // -----------------------------------------------------------------------
 //  using as optional
 
