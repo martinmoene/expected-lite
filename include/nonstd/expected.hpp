@@ -2165,7 +2165,11 @@ private:
 
 // x.x.4.6 expected<>: comparison operators
 
-template< typename T1, typename E1, typename T2, typename E2 >
+template< typename T1, typename E1, typename T2, typename E2
+    nsel_REQUIRES_T(
+        !std::is_void<T1>::value && !std::is_void<T2>::value
+    )
+>
 constexpr bool operator==( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
     return bool(x) != bool(y) ? false : bool(x) == false ? x.error() == y.error() : *x == *y;
@@ -2213,13 +2217,21 @@ constexpr bool operator>=( expected<T,E> const & x, expected<T,E> const & y )
 
 // x.x.4.7 expected: comparison with T
 
-template< typename T1, typename E1, typename T2 >
+template< typename T1, typename E1, typename T2
+    nsel_REQUIRES_T(
+        !std::is_void<T1>::value
+    )
+>
 constexpr bool operator==( expected<T1,E1> const & x, T2 const & v )
 {
     return bool(x) ? *x == v : false;
 }
 
-template< typename T1, typename E1, typename T2 >
+template< typename T1, typename E1, typename T2
+    nsel_REQUIRES_T(
+        !std::is_void<T1>::value
+    )
+>
 constexpr bool operator==(T2 const & v, expected<T1,E1> const & x )
 {
     return bool(x) ? v == *x : false;

@@ -1838,6 +1838,24 @@ nonstd::unexpected_type<MyConstMemberNonMoveableObject> create_nonmoveable()
 
 } // namespace issue_50
 
+namespace issue_51 {
+
+int compare_equal_with_expected_void()
+{
+    auto ev1 = nonstd::expected<void, int>{};
+    auto ev2 = nonstd::expected<void, int>{};
+    return ev1 == ev2;
+}
+
+int compare_not_equal_with_expected_void()
+{
+    auto ev1 = nonstd::expected<void, int>{};
+    auto ev2 = nonstd::expected<void, int>{};
+    return ev1 != ev2;
+}
+
+} // namespace issue_51
+
 // -----------------------------------------------------------------------
 //  using as optional
 
