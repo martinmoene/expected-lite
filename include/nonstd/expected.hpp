@@ -2178,7 +2178,7 @@ constexpr bool operator!=( expected<T1,E1> const & x, expected<T2,E2> const & y 
 }
 
 template< typename E1, typename E2 >
-constexpr bool operator==( expected<void,E1> const & x, expected<void,E1> const & y )
+constexpr bool operator==( expected<void,E1> const & x, expected<void,E2> const & y )
 {
     return bool(x) != bool(y) ? false : bool(x) == false ? x.error() == y.error() : true;
 }
