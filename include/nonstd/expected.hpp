@@ -2172,19 +2172,23 @@ template< typename T1, typename E1, typename T2, typename E2
 >
 constexpr bool operator==( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
-    return bool(x) != bool(y) ? false : bool(x) == false ? x.error() == y.error() : *x == *y;
+    return bool(x) != bool(y) ? false : bool(x) ? *x == *y : x.error() == y.error();
+}
+
+template< typename T1, typename E1, typename T2, typename E2
+    nsel_REQUIRES_T(
+        std::is_void<T1>::value && std::is_void<T2>::value
+    )
+>
+constexpr bool operator==( expected<T1,E1> const & x, expected<T2,E2> const & y )
+{
+    return bool(x) != bool(y) ? false : bool(x) || static_cast<bool>( x.error() == y.error() );
 }
 
 template< typename T1, typename E1, typename T2, typename E2 >
 constexpr bool operator!=( expected<T1,E1> const & x, expected<T2,E2> const & y )
 {
     return !(x == y);
-}
-
-template< typename E1, typename E2 >
-constexpr bool operator==( expected<void,E1> const & x, expected<void,E2> const & y )
-{
-    return bool(x) != bool(y) ? false : bool(x) == false ? x.error() == y.error() : true;
 }
 
 #if nsel_P0323R <= 2
