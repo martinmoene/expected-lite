@@ -647,6 +647,7 @@ CASE( "expected: Allows to move-construct from expected: value" )
 
     EXPECT( b              );
     EXPECT( b.value() == 7 );
+    EXPECT( a              );   // postcondition: unchanged!
 }
 
 CASE( "expected: Allows to move-construct from expected: error" )
@@ -1247,6 +1248,7 @@ CASE( "expected<void>: Allows to move-construct from expected<void>: value" )
     expected<void, int> b{ std::move( a ) };
 
     EXPECT( b );
+    EXPECT( a );    // postcondition: unchanged!
 }
 
 CASE( "expected<void>: Allows to move-construct from expected<void>: error" )
@@ -1586,6 +1588,25 @@ CASE( "operators: Provides expected relational operators" )
     SECTION( "unexpected >= disengaged" ) { EXPECT    ( u  >= d  ); }
 #endif
 
+    }
+}
+
+CASE( "operators: Provides expected relational operators (void)" )
+{
+    SETUP( "" ) {
+        expected<void, char> ev1;
+        expected<void, char> ev2;
+        expected<void, char> evu{ unexpect };
+
+    // compare engaged expected with engaged expected
+
+    SECTION( "  engaged == engaged"     ) { EXPECT(     ev1 == ev2 ); }
+    SECTION( "!(engaged != engaged)"    ) { EXPECT_NOT( ev1 != ev2 ); }
+
+    // compare engaged expected with disengaged expected
+
+    SECTION( "  engaged != disengaged"  ) { EXPECT(     ev1 != evu ); }
+    SECTION( "!(engaged == disengaged)" ) { EXPECT_NOT( ev1 == evu ); }
     }
 }
 

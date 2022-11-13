@@ -450,6 +450,7 @@ expected<void>: Allows to observe its error as unexpected
 expected<void>: Allows to query if it contains an exception of a specific base type
 expected<void>: Throws bad_expected_access on value access when disengaged
 operators: Provides expected relational operators
+operators: Provides expected relational operators (void)
 swap: Allows expected to be swapped
 std::hash: Allows to compute hash value for expected
 tweak header: reads tweak header if supported [tweak]
