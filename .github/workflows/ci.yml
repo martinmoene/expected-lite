@@ -16,7 +16,7 @@ jobs:
   gcc:
     strategy:
       matrix:
-        version: [8, 9, 10, 11]
+        version: [9, 10, 11]
 
     runs-on: ubuntu-latest
 
@@ -45,7 +45,7 @@ jobs:
   clang:
     strategy:
       matrix:
-        version: [8, 9, 10, 11, 12]
+        version: [11, 12]
 
     runs-on: ubuntu-latest
 
