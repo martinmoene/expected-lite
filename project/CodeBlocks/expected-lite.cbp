@@ -24,7 +24,6 @@
 		</Compiler>
 		<Unit filename="../../.gitattributes" />
 		<Unit filename="../../.gitignore" />
-		<Unit filename="../../.travis.yml" />
 		<Unit filename="../../CHANGES.txt" />
 		<Unit filename="../../CMakeLists.txt" />
 		<Unit filename="../../LICENSE.txt" />
