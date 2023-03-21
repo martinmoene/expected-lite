@@ -405,7 +405,7 @@ struct is_nothrow_swappable
 };
 } // namespace detail
 
-// is [nothow] swappable:
+// is [nothrow] swappable:
 
 template< typename T >
 struct is_swappable : decltype( detail::is_swappable::test<T>(0) ){};
