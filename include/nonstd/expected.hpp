@@ -14,7 +14,7 @@
 
 #define expected_lite_MAJOR  0
 #define expected_lite_MINOR  6
-#define expected_lite_PATCH  2
+#define expected_lite_PATCH  3
 
 #define expected_lite_VERSION  expected_STRINGIFY(expected_lite_MAJOR) "." expected_STRINGIFY(expected_lite_MINOR) "." expected_STRINGIFY(expected_lite_PATCH)
 
