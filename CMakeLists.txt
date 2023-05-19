@@ -141,4 +141,6 @@ export(
     FILE         "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-targets.cmake"
 )
 
+include(CPack)
+
 # end of file
