@@ -24,6 +24,19 @@ set( package_nspace  "nonstd" )
 set( package_name    "${unit_name}-lite" )
 set( package_version "${${PROJECT_NAME}_VERSION}" )
 
+set( CPACK_PACKAGE_NAME "expected-lite" )
+set( CPACK_PACKAGECPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}" )
+set( CPACK_DEBIAN_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-dev" )
+set( CPACK_RPM_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-devel" )
+set( CPACK_PACKAGE_HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}" )
+set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all" )
+set( CPACK_PACKAGE_MAINTAINER "Martin Moene" )
+set( CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_MAINTAINER}" )
+set( CPACK_DEBIAN_COMPRESSION_TYPE "xz" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
+set( CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}" )
+
 message( STATUS "Project '${PROJECT_NAME}', package '${package_name}' version: '${package_version}'")
 
 # Toplevel or subproject:
