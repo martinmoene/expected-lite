@@ -12,9 +12,10 @@ cmake_minimum_required( VERSION 3.5 FATAL_ERROR )
 project(
     expected_lite
     VERSION 0.6.3
-#   DESCRIPTION "Expected objects in C++11 and later in a single-file header-only library"
-#   HOMEPAGE_URL "https://github.com/martinmoene/expected-lite"
     LANGUAGES CXX )
+
+set(PROJECT_DESCRIPTION "Expected objects in C++11 and later in a single-file header-only library")
+set(PROJECT_HOMEPAGE_URL "https://github.com/martinmoene/expected-lite")
 
 # Package information:
 
