@@ -12,9 +12,10 @@ cmake_minimum_required( VERSION 3.5 FATAL_ERROR )
 project(
     expected_lite
     VERSION 0.6.3
-#   DESCRIPTION "Expected objects in C++11 and later in a single-file header-only library"
-#   HOMEPAGE_URL "https://github.com/martinmoene/expected-lite"
     LANGUAGES CXX )
+
+set(PROJECT_DESCRIPTION "Expected objects in C++11 and later in a single-file header-only library")
+set(PROJECT_HOMEPAGE_URL "https://github.com/martinmoene/expected-lite")
 
 # Package information:
 
@@ -22,6 +23,19 @@ set( unit_name       "expected" )
 set( package_nspace  "nonstd" )
 set( package_name    "${unit_name}-lite" )
 set( package_version "${${PROJECT_NAME}_VERSION}" )
+
+set( CPACK_PACKAGE_NAME "expected-lite" )
+set( CPACK_PACKAGECPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}" )
+set( CPACK_DEBIAN_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-dev" )
+set( CPACK_RPM_PACKAGE_NAME "lib${CPACK_PACKAGE_NAME}-devel" )
+set( CPACK_PACKAGE_HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}" )
+set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE "all" )
+set( CPACK_PACKAGE_MAINTAINER "Martin Moene" )
+set( CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_MAINTAINER}" )
+set( CPACK_DEBIAN_COMPRESSION_TYPE "xz" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
+set( CPACK_PACKAGE_DESCRIPTION "${PROJECT_DESCRIPTION}" )
 
 message( STATUS "Project '${PROJECT_NAME}', package '${package_name}' version: '${package_version}'")
 
@@ -126,5 +140,7 @@ export(
     NAMESPACE    ${package_nspace}::
     FILE         "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-targets.cmake"
 )
+
+include(CPack)
 
 # end of file
