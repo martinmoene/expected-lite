@@ -455,6 +455,152 @@ namespace detail {
 /// discriminated union to hold value or 'error'.
 
 template< typename T, typename E >
+class storage_t_noncopy_nonmove_impl
+{
+    template< typename, typename > friend class nonstd::expected_lite::expected;
+
+public:
+    using value_type = T;
+    using error_type = E;
+
+    // no-op construction
+    storage_t_noncopy_nonmove_impl() {}
+    ~storage_t_noncopy_nonmove_impl() {}
+
+    explicit storage_t_noncopy_nonmove_impl( bool has_value )
+        : m_has_value( has_value )
+    {}
+
+    void construct_value()
+    {
+        new( &m_value ) value_type();
+    }
+
+    // void construct_value( value_type const & e )
+    // {
+    //     new( &m_value ) value_type( e );
+    // }
+
+    // void construct_value( value_type && e )
+    // {
+    //     new( &m_value ) value_type( std::move( e ) );
+    // }
+
+    template< class... Args >
+    void emplace_value( Args&&... args )
+    {
+        new( &m_value ) value_type( std::forward<Args>(args)...);
+    }
+
+    template< class U, class... Args >
+    void emplace_value( std::initializer_list<U> il, Args&&... args )
+    {
+        new( &m_value ) value_type( il, std::forward<Args>(args)... );
+    }
+
+    void destruct_value()
+    {
+        m_value.~value_type();
+    }
+
+    // void construct_error( error_type const & e )
+    // {
+    //     // new( &m_error ) error_type( e );
+    // }
+
+    // void construct_error( error_type && e )
+    // {
+    //     // new( &m_error ) error_type( std::move( e ) );
+    // }
+
+    template< class... Args >
+    void emplace_error( Args&&... args )
+    {
+        new( &m_error ) error_type( std::forward<Args>(args)...);
+    }
+
+    template< class U, class... Args >
+    void emplace_error( std::initializer_list<U> il, Args&&... args )
+    {
+        new( &m_error ) error_type( il, std::forward<Args>(args)... );
+    }
+
+    void destruct_error()
+    {
+        m_error.~error_type();
+    }
+
+    constexpr value_type const & value() const &
+    {
+        return m_value;
+    }
+
+    value_type & value() &
+    {
+        return m_value;
+    }
+
+    constexpr value_type const && value() const &&
+    {
+        return std::move( m_value );
+    }
+
+    nsel_constexpr14 value_type && value() &&
+    {
+        return std::move( m_value );
+    }
+
+    value_type const * value_ptr() const
+    {
+        return &m_value;
+    }
+
+    value_type * value_ptr()
+    {
+        return &m_value;
+    }
+
+    error_type const & error() const &
+    {
+        return m_error;
+    }
+
+    error_type & error() &
+    {
+        return m_error;
+    }
+
+    constexpr error_type const && error() const &&
+    {
+        return std::move( m_error );
+    }
+
+    nsel_constexpr14 error_type && error() &&
+    {
+        return std::move( m_error );
+    }
+
+    bool has_value() const
+    {
+        return m_has_value;
+    }
+
+    void set_has_value( bool v )
+    {
+        m_has_value = v;
+    }
+
+private:
+    union
+    {
+        value_type m_value;
+        error_type m_error;
+    };
+
+    bool m_has_value = false;
+};
+
+template< typename T, typename E >
 class storage_t_impl
 {
     template< typename, typename > friend class nonstd::expected_lite::expected;
@@ -470,6 +616,11 @@ public:
     explicit storage_t_impl( bool has_value )
         : m_has_value( has_value )
     {}
+
+    void construct_value()
+    {
+        new( &m_value ) value_type();
+    }
 
     void construct_value( value_type const & e )
     {
@@ -685,15 +836,22 @@ template< typename T, typename E, bool isConstructable, bool isMoveable >
 class storage_t
 {
 public:
+};
+
+template< typename T, typename E >
+class storage_t<T, E, false, false> : public storage_t_noncopy_nonmove_impl<T, E>
+{
+public:
     storage_t() = default;
     ~storage_t() = default;
 
     explicit storage_t( bool has_value )
-        : storage_t_impl<T, E>( has_value )
+        : storage_t_noncopy_nonmove_impl<T, E>( has_value )
     {}
 
     storage_t( storage_t const & other ) = delete;
     storage_t( storage_t &&      other ) = delete;
+
 };
 
 template< typename T, typename E >
@@ -1380,7 +1538,7 @@ public:
     nsel_constexpr14 expected()
     : contained( true )
     {
-        contained.construct_value( value_type() );
+        contained.construct_value();
     }
 
     nsel_constexpr14 expected( expected const & ) = default;
