@@ -29,17 +29,33 @@ using namespace nonstd;
 
 struct Implicit { int x;          Implicit(int v) : x(v) {} };
 struct Explicit { int x; explicit Explicit(int v) : x(v) {} };
-struct MoveOnly {
+
+struct MoveOnly
+{
     int x;
     explicit MoveOnly(int x) :x{x} {}
-    MoveOnly(const MoveOnly&) = delete;
-    MoveOnly(MoveOnly&& other) noexcept :x{other.x} {}
-    MoveOnly& operator=(const MoveOnly&) = delete;
-    MoveOnly& operator=(MoveOnly&& other) noexcept {
-        if (&other == this) return *this;
+
+    MoveOnly( MoveOnly const &  ) = delete;
+    MoveOnly( MoveOnly && other ) noexcept : x{ other.x } {}
+
+    MoveOnly& operator=( MoveOnly const &  ) = delete;
+    MoveOnly& operator=( MoveOnly && other ) noexcept
+    {
+        if (&other == this)
+            return *this;
         x = other.x;
         return *this;
     }
+};
+
+struct NonMovableNonCopyable
+{
+    NonMovableNonCopyable() = default;
+
+    NonMovableNonCopyable( NonMovableNonCopyable const & ) = delete;
+    NonMovableNonCopyable( NonMovableNonCopyable &&      ) = delete;
+    NonMovableNonCopyable& operator=( NonMovableNonCopyable const & ) = delete;
+    NonMovableNonCopyable& operator=( NonMovableNonCopyable &&      ) = delete;
 };
 
 bool operator==( Implicit a, Implicit b ) { return a.x == b.x; }
@@ -617,6 +633,20 @@ CASE( "expected: Allows to default construct" )
     expected<int, char> e;
 
     EXPECT( e.has_value() );
+}
+
+CASE( "expected: Allows to default construct from noncopyable, noncopyable value type" )
+{
+    expected<NonMovableNonCopyable, NonMovableNonCopyable> e;
+
+    EXPECT( e.has_value() );
+}
+
+CASE( "expected: Allows to default construct from noncopyable, noncopyable error type" )
+{
+    expected<NonMovableNonCopyable, NonMovableNonCopyable> e{ unexpect_t{} };
+
+    EXPECT( !e.has_value() );
 }
 
 CASE( "expected: Allows to copy-construct from expected: value" )
@@ -1892,13 +1922,11 @@ struct NonMovableNonCopyable
 
 CASE( "issue-58" )
 {
-    using namespace issue_59;
+    static_assert( !std::is_copy_constructible<issue_59::NonMovableNonCopyable>::value, "is not copy constructible" );
+    static_assert( !std::is_move_constructible<issue_59::NonMovableNonCopyable>::value, "is not move constructible" );
 
-    static_assert( !std::is_copy_constructible<NonMovableNonCopyable>::value, "is not copy constructible" );
-    static_assert( !std::is_move_constructible<NonMovableNonCopyable>::value, "is not move constructible" );
-
-    nonstd::expected<NonMovableNonCopyable, NonMovableNonCopyable> expected;
-    nonstd::expected<NonMovableNonCopyable, NonMovableNonCopyable> unexpected( nonstd::unexpect_t{} );
+    nonstd::expected<issue_59::NonMovableNonCopyable, issue_59::NonMovableNonCopyable> expected;
+    nonstd::expected<issue_59::NonMovableNonCopyable, issue_59::NonMovableNonCopyable> unexpected( nonstd::unexpect_t{} );
 
     EXPECT(  expected.has_value()   );
     EXPECT( !unexpected.has_value() );

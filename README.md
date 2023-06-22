@@ -371,6 +371,8 @@ bad_expected_access: Allows to observe its error
 bad_expected_access: Allows to change its error
 bad_expected_access: Provides non-empty what()
 expected: Allows to default construct
+expected: Allows to default construct from noncopyable, noncopyable value type
+expected: Allows to default construct from noncopyable, noncopyable error type
 expected: Allows to copy-construct from expected: value
 expected: Allows to copy-construct from expected: error
 expected: Allows to move-construct from expected: value
