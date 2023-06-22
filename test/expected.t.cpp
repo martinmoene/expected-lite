@@ -1877,6 +1877,33 @@ int compare_not_equal_with_expected_void()
 
 } // namespace issue_51
 
+namespace issue_59 {
+
+struct NonMovableNonCopyable
+{
+    NonMovableNonCopyable() = default;
+
+    NonMovableNonCopyable( NonMovableNonCopyable const &  ) = delete;
+    NonMovableNonCopyable( NonMovableNonCopyable       && ) = delete;
+    NonMovableNonCopyable& operator=( NonMovableNonCopyable const &  ) = delete;
+    NonMovableNonCopyable& operator=( NonMovableNonCopyable       && ) = delete;
+};
+} // namespace issue_59
+
+CASE( "issue-58" )
+{
+    using namespace issue_59;
+
+    static_assert( !std::is_copy_constructible<NonMovableNonCopyable>::value, "is not copy constructible" );
+    static_assert( !std::is_move_constructible<NonMovableNonCopyable>::value, "is not move constructible" );
+
+    nonstd::expected<NonMovableNonCopyable, NonMovableNonCopyable> expected;
+    nonstd::expected<NonMovableNonCopyable, NonMovableNonCopyable> unexpected( nonstd::unexpect_t{} );
+
+    EXPECT(  expected.has_value()   );
+    EXPECT( !unexpected.has_value() );
+}
+
 // -----------------------------------------------------------------------
 //  using as optional
 
