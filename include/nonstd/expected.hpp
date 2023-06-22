@@ -682,7 +682,7 @@ private:
 };
 
 template< typename T, typename E, bool isConstructable, bool isMoveable >
-class storage_t
+class storage_t : public storage_t_impl<T, E>
 {
 public:
     storage_t() = default;
