@@ -1004,11 +1004,12 @@ struct is_reference_wrapper< std::reference_wrapper< T > > : std::true_type {};
 
 template< typename FnT, typename ClassT, typename ObjectT, typename... Args
     nsel_REQUIRES_T(
-        std::is_same< ClassT, typename std20::remove_cvref< ObjectT >::type >::value
-        || std::is_base_of< ClassT, typename std20::remove_cvref< ObjectT >::type >::value
+        std::is_function<FnT>::value
+        && ( std::is_same< ClassT, typename std20::remove_cvref< ObjectT >::type >::value
+        || std::is_base_of< ClassT, typename std20::remove_cvref< ObjectT >::type >::value )
     )
 >
-nsel_constexpr auto invoke_member_function_impl( FnT ( ClassT::* memfnptr), ObjectT && obj, Args && ... args )
+nsel_constexpr auto invoke_member_function_impl( FnT ClassT::* memfnptr, ObjectT && obj, Args && ... args )
         noexcept( noexcept( (std::forward< ObjectT >( obj ).*memfnptr)( std::forward< Args >( args )... ) ) )
         -> decltype( (std::forward< ObjectT >( obj ).*memfnptr)( std::forward< Args >( args )...) )
 {
@@ -1017,10 +1018,11 @@ nsel_constexpr auto invoke_member_function_impl( FnT ( ClassT::* memfnptr), Obje
 
 template< typename FnT, typename ClassT, typename ObjectT, typename... Args
     nsel_REQUIRES_T(
-        is_reference_wrapper< typename std20::remove_cvref< ObjectT >::type >::value
+        std::is_function<FnT>::value
+        && is_reference_wrapper< typename std20::remove_cvref< ObjectT >::type >::value
     )
 >
-nsel_constexpr auto invoke_member_function_impl( FnT ( ClassT::* memfnptr ), ObjectT && obj, Args && ... args )
+nsel_constexpr auto invoke_member_function_impl( FnT ClassT::* memfnptr, ObjectT && obj, Args && ... args )
         noexcept( noexcept( (obj.get().*memfnptr)( std::forward< Args >( args ) ... ) ) )
         -> decltype( (obj.get().*memfnptr)( std::forward< Args >( args ) ... ) )
 {
@@ -1029,12 +1031,13 @@ nsel_constexpr auto invoke_member_function_impl( FnT ( ClassT::* memfnptr ), Obj
 
 template< typename FnT, typename ClassT, typename ObjectT, typename... Args
     nsel_REQUIRES_T(
-        !std::is_same< ClassT, typename std20::remove_cvref< ObjectT >::type >::value
+        std::is_function<FnT>::value
+        && !std::is_same< ClassT, typename std20::remove_cvref< ObjectT >::type >::value
         && !std::is_base_of< ClassT, typename std20::remove_cvref< ObjectT >::type >::value
         && !is_reference_wrapper< typename std20::remove_cvref< ObjectT >::type >::value
     )
 >
-nsel_constexpr auto invoke_member_function_impl( FnT ( ClassT::* memfnptr ), ObjectT && obj, Args && ... args )
+nsel_constexpr auto invoke_member_function_impl( FnT ClassT::* memfnptr, ObjectT && obj, Args && ... args )
         noexcept( noexcept( ((*std::forward< ObjectT >( obj )).*memfnptr)( std::forward< Args >( args ) ... ) ) )
         -> decltype( ((*std::forward< ObjectT >( obj )).*memfnptr)( std::forward< Args >( args ) ... ) )
 {
