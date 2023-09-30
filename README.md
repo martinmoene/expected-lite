@@ -133,7 +133,7 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 
 By default, *expected lite* provides monadic operations as described in [P2505R5](http://wg21.link/p2505r5). You can disable these operations by defining the following macro.
 
--D<b>nsel\_P2505R</b>=
+-D<b>nsel\_P2505R</b>=0
 
 You can use the R3 revision of P2505, which lacks `error_or`, and uses `remove_cvref` for transforms, by defining the following macro.
 
