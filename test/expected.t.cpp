@@ -1240,6 +1240,20 @@ CASE( "expected: Throws bad_expected_access on value access when disengaged" )
     EXPECT_THROWS_AS( std::move(ec).value(), bad_expected_access<int> );
 }
 
+#if nsel_P2505R >= 4
+CASE( "expected: Allows to observe its unexpected value, or fallback to the specified value with error_or" )
+{
+    const auto ve = 3;
+    const auto vu = 7;
+    expected<int, int> e{ ve };
+    expected<int, int> u{ unexpect, 0 };
+
+    EXPECT( e.error_or( vu ) == vu );
+    EXPECT( u.error_or( vu ) ==  0 );
+}
+#endif // nsel_P2505R >= 4
+
+#if nsel_P2505R >= 3
 CASE( "expected: Allows to map value with and_then" )
 {
     const auto mul2 = []( int n ) -> expected<int, int> { return n * 2; };
@@ -1308,7 +1322,13 @@ CASE( "expected: transform values" )
         EXPECT( ue.transform( mul2 ).error() == 42 );
     }
 
+#if nsel_P2505R >= 5
+    // R5 changed remove_cvref_t to remove_cv_t in transform/transform_error, which broke data member pointer transforms,
+    // because the result type must be a valid expected value type, but expressions with reference types are not.
+    const auto moveonly_map_to_x = [](MoveOnly val) { return val.x; };
+#else
     const auto moveonly_map_to_x = &MoveOnly::x;
+#endif // nsel_P2505R >= 5
     const auto moveonly_x_mul2 = [](MoveOnly val) -> int { return val.x * 2; };
     EXPECT( (expected<MoveOnly, int>{ MoveOnly{ 33 } }).transform( moveonly_map_to_x ).value() == 33 );
     EXPECT( (expected<MoveOnly, int>{ MoveOnly{ 33 } }).transform( moveonly_map_to_x ).transform( mul2 ).value() == 66 );
@@ -1340,6 +1360,7 @@ CASE( "expected: Mapping errors with transform_error" )
         EXPECT( ue.transform_error( to_43 ).error() == 43 );
     }
 }
+#endif // nsel_P2505R >= 3
 
 // -----------------------------------------------------------------------
 // expected<void> specialization
@@ -1638,6 +1659,19 @@ CASE( "expected<void>: Throws bad_expected_access on value access when disengage
     EXPECT_THROWS_AS( std::move(ec).value(), bad_expected_access<int> );
 }
 
+#if nsel_P2505R >= 4
+CASE( "expected<void>: Observe unexpected value, or fallback to a default value with error_or" )
+{
+    const auto vu = 7;
+    expected<void, int> e;
+    expected<void, int> u{ unexpect, 0 };
+
+    EXPECT( e.error_or( vu ) == vu );
+    EXPECT( u.error_or( vu ) == 0 );
+}
+#endif // nsel_P2505R >= 4
+
+#if nsel_P2505R >= 3
 CASE( "expected<void>: calling argless functions with and_then" )
 {
     const auto ret22 = []() -> expected<int, int> { return 22; };
@@ -1713,6 +1747,16 @@ CASE( "expected<void>: or_else unexpected handling works" )
     }
 }
 
+CASE( "expected<void>: using transform to assign a new expected value" )
+{
+    const auto make_int_32 = [] { return 32; };
+    const auto mul2 = [](int v) { return v * 2; };
+    expected<void, int> e;
+    static_assert( std::is_same< decltype( e.transform( make_int_32 ) )::value_type, int >::value, "" );
+    EXPECT( e.transform( make_int_32 ).value() == 32 );
+    EXPECT( e.transform( make_int_32 ).transform( mul2 ).value() == 64 );
+}
+
 CASE( "expected<void>: transform_error maps unexpected values" )
 {
     const auto mul2 = []( int v ) -> int { return v * 2; };
@@ -1730,6 +1774,7 @@ CASE( "expected<void>: transform_error maps unexpected values" )
         EXPECT( ue.transform_error( map_to_my_error ).error() == my_error::einval );
     }
 }
+#endif // nsel_P2505R >= 3
 
 // [expected<> unwrap()]
 
