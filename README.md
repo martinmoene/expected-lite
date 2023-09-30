@@ -63,6 +63,8 @@ prompt> g++ -std=c++14 -Wall -I../include -o 01-basic.exe 01-basic.cpp && 01-bas
 
 **Some Features and properties of expected lite** are ease of installation (single header), default and explicit construction of an expected, construction and assignment from a value that is convertible to the underlying type, copy- and move-construction and copy- and move-assignment from another expected of the same type, testing for the presence of a value, operators for unchecked access to the value or the error (pointer or reference), value() and value_or() for checked access to the value, relational operators, swap() and various factory functions.
 
+Version 0.7.0 introduces the monadic operations of propsoal [p2505](http://wg21.link/p2505).
+
 *expected lite* shares the approach to in-place tags with [any-lite](https://github.com/martinmoene/any-lite), [optional-lite](https://github.com/martinmoene/optional-lite) and with [variant-lite](https://github.com/martinmoene/variant-lite) and these libraries can be used together.
 
 **Not provided** are reference-type expecteds. *expected lite* doesn't honour triviality of value and error types. *expected lite* doesn't handle overloaded *address of* operators.
