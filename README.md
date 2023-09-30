@@ -296,7 +296,7 @@ You can use the R3 revision of P2505, which lacks `error_or`, and uses `remove_c
 |                      |             |               |               |                  |                |               |                |               |
 |Proxy (rel.ops)       | no          | yes           | yes           | yes              | yes            | no            | no             | no            |
 |References            | no          | yes           | no/not yet    | no/not yet       | no/not yet     | yes           | no             | no            |
-|Chained visitor(s)    | no          | no            | yes           | maybe            | yes            | no            | no             | no            |
+|Chained visitor(s)    | no          | no            | yes           | yes              | yes            | no            | no             | no            |
 
 Note 1: std:&#58;*experimental*:&#58;expected
 
@@ -350,6 +350,8 @@ TBD
 [15] Niall Douglas. [Outcome](https://ned14.github.io/outcome/). Very lightweight outcome&lt;T> and result&lt;T> (non-Boost edition). 
 
 [16] Niall Douglas. [p0762 - Concerns about expected&lt;T, E> from the Boost.Outcome peer review](http://wg21.link/p0762). 15 October 2017.
+
+[17] Jeff Garland. [p2505 - Monadic Functions for `std::expected`](http://wg21.link/p2505) (HTML). ([r0](http://wg21.link/p2505r0), [r1](http://wg21.link/p2505r1), [r2](http://wg21.link/p2505r2), [r3](http://wg21.link/p2505r3), [r4](http://wg21.link/p2505r4), [r5](http://wg21.link/p2505r5)).
 
 ## Appendix
 
