@@ -1241,7 +1241,7 @@ CASE( "expected: Throws bad_expected_access on value access when disengaged" )
 }
 
 #if nsel_P2505R >= 4
-CASE( "expected: Allows to observe its unexpected value, or fallback to the specified value with error_or" )
+CASE( "expected: Allows to observe its unexpected value, or fallback to the specified value with error_or" " [monadic p2505r4]")
 {
     const auto ve = 3;
     const auto vu = 7;
@@ -1254,7 +1254,7 @@ CASE( "expected: Allows to observe its unexpected value, or fallback to the spec
 #endif // nsel_P2505R >= 4
 
 #if nsel_P2505R >= 3
-CASE( "expected: Allows to map value with and_then" )
+CASE( "expected: Allows to map value with and_then" " [monadic p2505r3]" )
 {
     const auto mul2 = []( int n ) -> expected<int, int> { return n * 2; };
     const auto to_unexpect42 = []( int ) -> expected<int, int> { return make_unexpected( 42 ); };
@@ -1285,7 +1285,7 @@ CASE( "expected: Allows to map value with and_then" )
     EXPECT( (expected<int, int>(3)).and_then( map_to_void_unexpect42 ).error() == 42 );
 }
 
-CASE( "expected: Handling unexpected with or_else" )
+CASE( "expected: Allows to map unexpected with or_else" " [monadic p2505r3]" )
 {
     const auto to_unexpect43 = []( int ) -> expected<int, int> { return make_unexpected( 43 ); };
 
@@ -1308,7 +1308,7 @@ CASE( "expected: Handling unexpected with or_else" )
     EXPECT( (expected<MoveOnly, int>{ unexpect, 15 }).or_else(moveonly_fallback_to_66).value() == 66 );
 }
 
-CASE( "expected: transform values" )
+CASE( "expected: Allows to transform value" " [monadic p2505r3]" )
 {
     const auto mul2 = []( int n ) -> int { return n * 2; };
 
@@ -1345,7 +1345,7 @@ CASE( "expected: transform values" )
         "transform to void results in void value" );
 }
 
-CASE( "expected: Mapping errors with transform_error" )
+CASE( "expected: Allows to map errors with transform_error" " [monadic p2505r3]" )
 {
     const auto to_43 = []( int ) -> int { return 43; };
 
@@ -1660,7 +1660,7 @@ CASE( "expected<void>: Throws bad_expected_access on value access when disengage
 }
 
 #if nsel_P2505R >= 4
-CASE( "expected<void>: Observe unexpected value, or fallback to a default value with error_or" )
+CASE( "expected<void>: Allows to observe unexpected value, or fallback to a default value with error_or" " [monadic p2505r4]" )
 {
     const auto vu = 7;
     expected<void, int> e;
@@ -1672,7 +1672,7 @@ CASE( "expected<void>: Observe unexpected value, or fallback to a default value 
 #endif // nsel_P2505R >= 4
 
 #if nsel_P2505R >= 3
-CASE( "expected<void>: calling argless functions with and_then" )
+CASE( "expected<void>: Allows to call argless functions with and_then" " [monadic p2505r3]" )
 {
     const auto ret22 = []() -> expected<int, int> { return 22; };
     const auto unexpect32 = []() -> expected<int, int> { return make_unexpected( 32 ); };
@@ -1724,7 +1724,7 @@ CASE( "expected<void>: calling argless functions with and_then" )
     EXPECT( map_to_unexpect_success );
 }
 
-CASE( "expected<void>: or_else unexpected handling works" )
+CASE( "expected<void>: Allows to map to expected or unexpected with or_else" " [monadic p2505r3]" )
 {
     const auto make_valid = [](int) -> expected<void, int> { return {}; };
     const auto unexpect32 = [](int) -> expected<void, int> { return make_unexpected( 32 ); };
@@ -1747,7 +1747,7 @@ CASE( "expected<void>: or_else unexpected handling works" )
     }
 }
 
-CASE( "expected<void>: using transform to assign a new expected value" )
+CASE( "expected<void>: Allows to assign a new expected value using transform" " [monadic p2505r3]" )
 {
     const auto make_int_32 = [] { return 32; };
     const auto mul2 = [](int v) { return v * 2; };
@@ -1757,7 +1757,7 @@ CASE( "expected<void>: using transform to assign a new expected value" )
     EXPECT( e.transform( make_int_32 ).transform( mul2 ).value() == 64 );
 }
 
-CASE( "expected<void>: transform_error maps unexpected values" )
+CASE( "expected<void>: Allows to map unexpected error value via transform_error" " [monadic p2505r3]" )
 {
     const auto mul2 = []( int v ) -> int { return v * 2; };
     enum class my_error { einval };

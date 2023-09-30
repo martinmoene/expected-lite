@@ -455,11 +455,11 @@ expected: Allows to query if it contains an exception of a specific base type
 expected: Allows to observe its value if available, or obtain a specified value otherwise
 expected: Allows to move its value if available, or obtain a specified value otherwise
 expected: Throws bad_expected_access on value access when disengaged
-expected: Allows to observe its unexpected value, or fallback to the specified value with error_or
-expected: Allows to map value with and_then
-expected: Handling unexpected with or_else
-expected: transform values
-expected: Mapping errors with transform_error
+expected: Allows to observe its unexpected value, or fallback to the specified value with error_or [monadic p2505r4]
+expected: Allows to map value with and_then [monadic p2505r3]
+expected: Allows to map unexpected with or_else [monadic p2505r3]
+expected: Allows to transform value [monadic p2505r3]
+expected: Allows to map errors with transform_error [monadic p2505r3]
 expected<void>: Allows to default-construct
 expected<void>: Allows to copy-construct from expected<void>: value
 expected<void>: Allows to copy-construct from expected<void>: error
@@ -486,11 +486,11 @@ expected<void>: Allows to move its error
 expected<void>: Allows to observe its error as unexpected
 expected<void>: Allows to query if it contains an exception of a specific base type
 expected<void>: Throws bad_expected_access on value access when disengaged
-expected<void>: Observe unexpected value, or fallback to a default value with error_or
-expected<void>: calling argless functions with and_then
-expected<void>: or_else unexpected handling works
-expected<void>: using transform to assign a new expected value
-expected<void>: transform_error maps unexpected values
+expected<void>: Allows to observe unexpected value, or fallback to a default value with error_or [monadic p2505r4]
+expected<void>: Allows to call argless functions with and_then [monadic p2505r3]
+expected<void>: Allows to map to expected or unexpected with or_else [monadic p2505r3]
+expected<void>: Allows to assign a new expected value using transform [monadic p2505r3]
+expected<void>: Allows to map unexpected error value via transform_error [monadic p2505r3]
 operators: Provides expected relational operators
 operators: Provides expected relational operators (void)
 swap: Allows expected to be swapped
