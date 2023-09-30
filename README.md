@@ -127,6 +127,16 @@ Define this to 1 or 0 to control the use of SEH when C++ exceptions are disabled
 \-D<b>nsel\_CONFIG\_CONFIRMS\_COMPILATION\_ERRORS</b>=0  
 Define this macro to 1 to experience the by-design compile-time errors of the library in the test suite. Default is 0.
 
+#### Configure P2505 monadic operations
+
+By default, *expected lite* provides monadic operations as described in [P2505R5](http://wg21.link/p2505r5). You can disable these operations by defining the following macro.
+
+-D<b>nsel\_P2505R</b>=
+
+You can use the R3 revision of P2505, which lacks `error_or`, and uses `remove_cvref` for transforms, by defining the following macro.
+
+-D<b>nsel\_P2505R</b>=3
+
 ### Types in namespace nonstd
 
 | Purpose         | Type | Note / Object |
@@ -182,6 +192,24 @@ Define this macro to 1 to experience the by-design compile-time errors of the li
 | &nbsp;       | template&lt;typename Ex><br>bool **has_exception**() const               | true of contains exception (as base) |
 | &nbsp;       | value_type **value_or**( U && v ) const &                               | value or move from v |
 | &nbsp;       | value_type **value_or**( U && v ) &&                                    | move from value or move from v |
+| &nbsp;       | constexpr error_type **error_or**( G && e ) const &                     | return current error or v [requires nsel_P2505R >= 4] |
+| &nbsp;       | constexpr error_type **error_or**( G && e ) &&                          | move from current error or from v [requires nsel_P2505R >=4] |
+| Monadic operations<br>(requires nsel_P2505R >= 3) | constexpr auto **and_then**( F && f ) & G| return f(value()) if has value, otherwise the error |
+| &nbsp;       | constexpr auto **and_then**( F && f ) const &                           | return f(value()) if has value, otherwise the error |
+| &nbsp;       | constexpr auto **and_then**( F && f ) &&                                | return f(std::move(value())) if has value, otherwise the error |
+| &nbsp;       | constexpr auto **and_then**( F && f ) const &&                          | return f(std::move(value())) if has value, otherwise the error |
+| &nbsp;       | constexpr auto **or_else**( F && f ) &                                  | return the value, or f(error()) if there is no value |
+| &nbsp;       | constexpr auto **or_else**( F && f ) const &                            | return the value, or f(error()) if there is no value |
+| &nbsp;       | constexpr auto **or_else**( F && f ) &&                                 | return the value, or f(std::move(error())) if there is no value |
+| &nbsp;       | constexpr auto **or_else**( F && f ) const &&                           | return the value, or f(std::move(error())) if there is no value |
+| &nbsp;       | constexpr auto **transform**( F && f ) &                                | return f(value()) wrapped if has value, otherwise the error |
+| &nbsp;       | constexpr auto **transform**( F && f ) const &                          | return f(value()) wrapped if has value, otherwise the error |
+| &nbsp;       | constexpr auto **transform**( F && f ) &&                               | return f(std::move(value())) wrapped if has value, otherwise the error |
+| &nbsp;       | constexpr auto **transform**( F && f ) const &&                         | return f(std::move(value())) wrapped if has value, otherwise the error |
+| &nbsp;       | constexpr auto **transform_error**( F && f ) &                          | return the value if has value, or f(error()) otherwise |
+| &nbsp;       | constexpr auto **transform_error**( F && f ) const &                    | return the value if has value, or f(error()) otherwise |
+| &nbsp;       | constexpr auto **transform_error**( F && f ) &&                         | return the value if has value, or f(std::move(error())) otherwise |
+| &nbsp;       | constexpr auto **transform_error**( F && f ) const &&                   | return the value if has value, or f(std::move(error())) otherwise |
 | &nbsp;       | ... | &nbsp; |
 
 <a id="note1"></a>Note 1: checked access: if no content, for std::exception_ptr rethrows error(), otherwise throws bad_expected_access(error()).
@@ -425,6 +453,11 @@ expected: Allows to query if it contains an exception of a specific base type
 expected: Allows to observe its value if available, or obtain a specified value otherwise
 expected: Allows to move its value if available, or obtain a specified value otherwise
 expected: Throws bad_expected_access on value access when disengaged
+expected: Allows to observe its unexpected value, or fallback to the specified value with error_or
+expected: Allows to map value with and_then
+expected: Handling unexpected with or_else
+expected: transform values
+expected: Mapping errors with transform_error
 expected<void>: Allows to default-construct
 expected<void>: Allows to copy-construct from expected<void>: value
 expected<void>: Allows to copy-construct from expected<void>: error
@@ -451,6 +484,11 @@ expected<void>: Allows to move its error
 expected<void>: Allows to observe its error as unexpected
 expected<void>: Allows to query if it contains an exception of a specific base type
 expected<void>: Throws bad_expected_access on value access when disengaged
+expected<void>: Observe unexpected value, or fallback to a default value with error_or
+expected<void>: calling argless functions with and_then
+expected<void>: or_else unexpected handling works
+expected<void>: using transform to assign a new expected value
+expected<void>: transform_error maps unexpected values
 operators: Provides expected relational operators
 operators: Provides expected relational operators (void)
 swap: Allows expected to be swapped
