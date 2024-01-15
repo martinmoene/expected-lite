@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install GCC ${{ matrix.version }}
         run: sudo apt-get install -y gcc-${{ matrix.version }} g++-${{ matrix.version }}
@@ -52,7 +52,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      # Workaround for incompatible clang and libstc++ versions, see
+      # <https://github.com/actions/runner-images/issues/8659> for more info.
+      # The basic idea here is to remove g++ 13 and its C++ standard library
+      # and replace that with a compatible version of libstdc++.
+      - name: Workaround for GHA issue 8659
+        run: |
+          sudo apt-get purge -y g++-13 gcc-13 libstdc++-13-dev
+          sudo apt-get install -y --allow-downgrades libstdc++-12-dev libstdc++6=12.* libgcc-s1=12.*
 
       - name: Install Clang ${{ matrix.version }}
         run: sudo apt-get install -y clang-${{ matrix.version }}
@@ -61,7 +70,7 @@ jobs:
         env:
           CXX: clang-${{ matrix.version }}
         run: cmake -S . -B build
-          -D CMAKE_CXX_COMPILER=clang++
+          -D CMAKE_CXX_COMPILER=clang++-${{ matrix.version }}
           -D CMAKE_BUILD_TYPE:STRING=Release
           -D ${{ env.PROJECT }}_OPT_SELECT_NONSTD=ON
           -D ${{ env.PROJECT }}_OPT_BUILD_TESTS=ON
@@ -83,7 +92,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Configure tests
         run: cmake -S . -B build
