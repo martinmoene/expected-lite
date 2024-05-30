@@ -350,20 +350,23 @@ namespace nonstd {
 #endif // __clang__
 
 #if nsel_COMPILER_MSVC_VERSION >= 140
-# pragma warning( push )
-# define nsel_DISABLE_MSVC_WARNINGS(codes)  __pragma( warning(disable: codes) )
+# define nsel_DISABLE_MSVC_WARNINGS(codes)  __pragma( warning(push) )  __pragma( warning(disable: codes) )
 #else
 # define nsel_DISABLE_MSVC_WARNINGS(codes)
 #endif
 
 #ifdef __clang__
-# define nsel_RESTORE_WARNINGS()  _Pragma("clang diagnostic pop")
+# define nsel_RESTORE_WARNINGS()        _Pragma("clang diagnostic pop")
+# define nsel_RESTORE_MSVC_WARNINGS()
 #elif defined __GNUC__
-# define nsel_RESTORE_WARNINGS()  _Pragma("GCC diagnostic pop")
+# define nsel_RESTORE_WARNINGS()        _Pragma("GCC diagnostic pop")
+# define nsel_RESTORE_MSVC_WARNINGS()
 #elif nsel_COMPILER_MSVC_VERSION >= 140
-# define nsel_RESTORE_WARNINGS()  __pragma( warning( pop ) )
+# define nsel_RESTORE_WARNINGS()        __pragma( warning( pop ) )
+# define nsel_RESTORE_MSVC_WARNINGS()   nsel_RESTORE_WARNINGS()
 #else
 # define nsel_RESTORE_WARNINGS()
+# define nsel_RESTORE_MSVC_WARNINGS()
 #endif
 
 // Suppress the following MSVC (GSL) warnings:
@@ -2130,6 +2133,8 @@ public:
         return contained.has_value();
     }
 
+    nsel_DISABLE_MSVC_WARNINGS( 4702 )  // warning C4702: unreachable code, see issue 65.
+
     constexpr value_type const & value() const &
     {
         return has_value()
@@ -2143,6 +2148,7 @@ public:
             ? ( contained.value() )
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
+    nsel_RESTORE_MSVC_WARNINGS()
 
 #if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
 
