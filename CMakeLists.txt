@@ -11,7 +11,7 @@ cmake_minimum_required( VERSION 3.5 FATAL_ERROR )
 
 project(
     expected_lite
-    VERSION 0.6.3
+    VERSION 0.7.0
     LANGUAGES CXX )
 
 set(PROJECT_DESCRIPTION "Expected objects in C++11 and later in a single-file header-only library")
