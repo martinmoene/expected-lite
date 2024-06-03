@@ -14,8 +14,8 @@ if NOT "%1" == "" set std=%1 & shift
 set UCAP=%unit%
 call :toupper UCAP
 
-set unit_select=%unit%_%UCAP%_NONSTD
-::set unit_select=%unit%_CONFIG_SELECT_%UCAP%_NONSTD
+set unit_select=nsel_%UCAP%_NONSTD
+::set unit_select=nsel_%UCAP%_STD
 if NOT "%1" == "" set unit_select=%1 & shift
 
 set args=%1 %2 %3 %4 %5 %6 %7 %8 %9
@@ -29,7 +29,7 @@ set unit_config=^
     -Dlest_FEATURE_AUTO_REGISTER=1 ^
     -D%unit%_%UCAP%_HEADER=\"nonstd/%unit%.hpp\" ^
     -D%unit%_TEST_NODISCARD=0 ^
-    -D%unit%_CONFIG_SELECT_%UCAP%=%unit_select%
+    -Dnsel_CONFIG_SELECT_%UCAP%=%unit_select%
 
 rem -flto / -fwhole-program
 set  optflags=-O2

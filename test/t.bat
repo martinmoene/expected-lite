@@ -16,9 +16,9 @@ echo VC%version%: %args%
 set UCAP=%unit%
 call :toupper UCAP
 
-set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_DEFAULT
-::set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_NONSTD
-::set unit_select=-D%unit%_CONFIG_SELECT_%UCAP%=%unit%_%UCAP%_STD
+set unit_select=-Dnsel_CONFIG_SELECT_%UCAP%=nsel_%UCAP%_DEFAULT
+::set unit_select=-Dnsel_CONFIG_SELECT_%UCAP%=nsel_%UCAP%_NONSTD
+::set unit_select=-Dnsel_CONFIG_SELECT_%UCAP%=nsel_%UCAP%_STD
 
 set unit_config=
 
