@@ -231,7 +231,22 @@ inline in_place_t in_place_index( detail::in_place_index_tag<K> = detail::in_pla
 namespace nonstd {
 
     using std::expected;
-//  ...
+
+#if nsel_P0323R <= 3
+
+    template< typename T >
+    constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type >
+    {
+        return expected< typename std::decay<T>::type >( std::forward<T>( v ) );
+    }
+
+    // expected<void> specialization:
+
+    auto inline make_expected() -> expected<void>
+    {
+        return expected<void>( in_place );
+    }
+#endif // nsel_P0323R <= 3
 }
 
 #else // nsel_USES_STD_EXPECTED
