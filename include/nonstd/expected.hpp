@@ -1252,7 +1252,7 @@ public:
         )
     >
     constexpr explicit unexpected_type( unexpected_type<E2> const & error )
-    : m_error( E{ error.value() } )
+    : m_error( E{ error.error() } )
     {}
 
     template< typename E2
@@ -1270,7 +1270,7 @@ public:
         )
     >
     constexpr /*non-explicit*/ unexpected_type( unexpected_type<E2> const & error )
-    : m_error( error.value() )
+    : m_error( error.error() )
     {}
 
     template< typename E2
@@ -1288,7 +1288,7 @@ public:
         )
     >
     constexpr explicit unexpected_type( unexpected_type<E2> && error )
-    : m_error( E{ std::move( error.value() ) } )
+    : m_error( E{ std::move( error.error() ) } )
     {}
 
     template< typename E2
@@ -1306,7 +1306,7 @@ public:
         )
     >
     constexpr /*non-explicit*/ unexpected_type( unexpected_type<E2> && error )
-    : m_error( std::move( error.value() ) )
+    : m_error( std::move( error.error() ) )
     {}
 
     // x.x.5.2.2 Assignment
@@ -1317,23 +1317,53 @@ public:
     template< typename E2 = E >
     nsel_constexpr14 unexpected_type & operator=( unexpected_type<E2> const & other )
     {
-        unexpected_type{ other.value() }.swap( *this );
+        unexpected_type{ other.error() }.swap( *this );
         return *this;
     }
 
     template< typename E2 = E >
     nsel_constexpr14 unexpected_type & operator=( unexpected_type<E2> && other )
     {
-        unexpected_type{ std::move( other.value() ) }.swap( *this );
+        unexpected_type{ std::move( other.error() ) }.swap( *this );
         return *this;
     }
 
     // x.x.5.2.3 Observers
 
+    nsel_constexpr14 E & error() & noexcept
+    {
+        return m_error;
+    }
+
+    constexpr E const & error() const & noexcept
+    {
+        return m_error;
+    }
+
+#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+
+    nsel_constexpr14 E && error() && noexcept
+    {
+        return std::move( m_error );
+    }
+
+    constexpr E const && error() const && noexcept
+    {
+        return std::move( m_error );
+    }
+
+#endif
+
+    // x.x.5.2.3 Observers - deprecated
+
+    nsel_deprecated("replace value() with error()")
+
     nsel_constexpr14 E & value() & noexcept
     {
         return m_error;
     }
+
+    nsel_deprecated("replace value() with error()")
 
     constexpr E const & value() const & noexcept
     {
@@ -1342,10 +1372,14 @@ public:
 
 #if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
 
+    nsel_deprecated("replace value() with error()")
+
     nsel_constexpr14 E && value() && noexcept
     {
         return std::move( m_error );
     }
+
+    nsel_deprecated("replace value() with error()")
 
     constexpr E const && value() const && noexcept
     {
@@ -1435,7 +1469,7 @@ private:
 template< typename E1, typename E2 >
 constexpr bool operator==( unexpected_type<E1> const & x, unexpected_type<E2> const & y )
 {
-    return x.value() == y.value();
+    return x.error() == y.error();
 }
 
 template< typename E1, typename E2 >
@@ -1449,7 +1483,7 @@ constexpr bool operator!=( unexpected_type<E1> const & x, unexpected_type<E2> co
 template< typename E >
 constexpr bool operator<( unexpected_type<E> const & x, unexpected_type<E> const & y )
 {
-    return x.value() < y.value();
+    return x.error() < y.error();
 }
 
 template< typename E >
@@ -1906,7 +1940,7 @@ public:
     nsel_constexpr14 explicit expected( nonstd::unexpected_type<G> const & error )
     : contained( false )
     {
-        contained.construct_error( E{ error.value() } );
+        contained.construct_error( E{ error.error() } );
     }
 
     template< typename G = E
@@ -1918,7 +1952,7 @@ public:
     nsel_constexpr14 /*non-explicit*/ expected( nonstd::unexpected_type<G> const & error )
     : contained( false )
     {
-        contained.construct_error( error.value() );
+        contained.construct_error( error.error() );
     }
 
     template< typename G = E
@@ -1930,7 +1964,7 @@ public:
     nsel_constexpr14 explicit expected( nonstd::unexpected_type<G> && error )
     : contained( false )
     {
-        contained.construct_error( E{ std::move( error.value() ) } );
+        contained.construct_error( E{ std::move( error.error() ) } );
     }
 
     template< typename G = E
@@ -1942,7 +1976,7 @@ public:
     nsel_constexpr14 /*non-explicit*/ expected( nonstd::unexpected_type<G> && error )
     : contained( false )
     {
-        contained.construct_error( std::move( error.value() ) );
+        contained.construct_error( std::move( error.error() ) );
     }
 
     // in-place construction, value
@@ -2047,7 +2081,7 @@ public:
     >
     expected & operator=( nonstd::unexpected_type<G> const & error )
     {
-        expected( unexpect, error.value() ).swap( *this );
+        expected( unexpect, error.error() ).swap( *this );
         return *this;
     }
 
@@ -2060,7 +2094,7 @@ public:
     >
     expected & operator=( nonstd::unexpected_type<G> && error )
     {
-        expected( unexpect, std::move( error.value() ) ).swap( *this );
+        expected( unexpect, std::move( error.error() ) ).swap( *this );
         return *this;
     }
 
@@ -2646,7 +2680,7 @@ public:
     nsel_constexpr14 explicit expected( nonstd::unexpected_type<G> const & error )
         : contained( false )
     {
-        contained.construct_error( E{ error.value() } );
+        contained.construct_error( E{ error.error() } );
     }
 
     template< typename G = E
@@ -2657,7 +2691,7 @@ public:
     nsel_constexpr14 /*non-explicit*/ expected( nonstd::unexpected_type<G> const & error )
         : contained( false )
     {
-        contained.construct_error( error.value() );
+        contained.construct_error( error.error() );
     }
 
     template< typename G = E
@@ -2668,7 +2702,7 @@ public:
     nsel_constexpr14 explicit expected( nonstd::unexpected_type<G> && error )
         : contained( false )
     {
-        contained.construct_error( E{ std::move( error.value() ) } );
+        contained.construct_error( E{ std::move( error.error() ) } );
     }
 
     template< typename G = E
@@ -2679,7 +2713,7 @@ public:
     nsel_constexpr14 /*non-explicit*/ expected( nonstd::unexpected_type<G> && error )
         : contained( false )
     {
-        contained.construct_error( std::move( error.value() ) );
+        contained.construct_error( std::move( error.error() ) );
     }
 
     template< typename... Args
