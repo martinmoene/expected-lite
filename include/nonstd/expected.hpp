@@ -231,23 +231,19 @@ inline in_place_t in_place_index( detail::in_place_index_tag<K> = detail::in_pla
 namespace nonstd {
 
     using std::expected;
+    using std::unexpected;
+    using std::bad_expected_access;
+    using std::unexpect_t;
+    using std::unexpect;
 
-#if nsel_P0323R <= 3
+    // Unconditionally provide make_unexpected():
 
-    template< typename T >
-    constexpr auto make_expected( T && v ) -> expected< typename std::decay<T>::type >
+    template< typename E>
+    constexpr auto make_unexpected( E && value ) -> unexpected< typename std::decay<E>::type >
     {
-        return expected< typename std::decay<T>::type >( std::forward<T>( v ) );
+        return unexpected< typename std::decay<E>::type >( std::forward<E>(value) );
     }
-
-    // expected<void> specialization:
-
-    auto inline make_expected() -> expected<void>
-    {
-        return expected<void>( in_place );
-    }
-#endif // nsel_P0323R <= 3
-}
+}  // namespace nonstd
 
 #else // nsel_USES_STD_EXPECTED
 
