@@ -254,8 +254,10 @@ You can use the R3 revision of P2505, which lacks `error_or`, and uses `remove_c
 | Construction | **unexpected_type**() = delete;                           | no default construction |
 | &nbsp;       | constexpr explicit **unexpected_type**( E const & error ) | copy-constructed from an E |
 | &nbsp;       | constexpr explicit **unexpected_type**( E && error )      | move-constructed from an E |
-| Observers    | constexpr error_type const & **value**() const            | can observe contained error |
-| &nbsp;       | error_type & **value**()                                  | can modify contained error |
+| Observers    | constexpr error_type const & **error**() const            | can observe contained error |
+| &nbsp;       | error_type & **error**()                                  | can modify contained error |
+| deprecated   | constexpr error_type const & **value**() const            | can observe contained error |
+| deprecated   | error_type & **value**()                                  | can modify contained error |
 
 ### Algorithms for unexpected_type
 
