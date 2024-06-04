@@ -236,6 +236,11 @@ namespace nonstd {
     using std::unexpect_t;
     using std::unexpect;
 
+    //[[deprecated("replace unexpected_type with unexpected")]]
+
+    template< typename E >
+    using unexpected_type = unexpected<E>;
+
     // Unconditionally provide make_unexpected():
 
     template< typename E>
