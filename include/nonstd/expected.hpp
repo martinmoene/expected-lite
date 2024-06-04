@@ -342,16 +342,6 @@ namespace nonstd {
 #define nsel_REQUIRES_A(...) \
     , typename std::enable_if< (__VA_ARGS__), void*>::type = nullptr
 
-// Presence of language and library features:
-
-#ifdef _HAS_CPP0X
-# define nsel_HAS_CPP0X  _HAS_CPP0X
-#else
-# define nsel_HAS_CPP0X  0
-#endif
-
-//#define nsel_CPP11_140  (nsel_CPP11_OR_GREATER || nsel_COMPILER_MSVC_VER >= 1900)
-
 // Clang, GNUC, MSVC warning suppression macros:
 
 #ifdef __clang__
@@ -384,6 +374,30 @@ namespace nonstd {
 // - C26409: Avoid calling new and delete explicitly, use std::make_unique<T> instead (r.11)
 
 nsel_DISABLE_MSVC_WARNINGS( 26409 )
+
+// Presence of language and library features:
+
+#ifdef _HAS_CPP0X
+# define nsel_HAS_CPP0X  _HAS_CPP0X
+#else
+# define nsel_HAS_CPP0X  0
+#endif
+
+// Presence of language and library features:
+
+#define nsel_CPP17_000  (nsel_CPP17_OR_GREATER)
+
+// Presence of C++17 language features:
+
+#define nsel_HAVE_DEPRECATED  nsel_CPP17_000
+
+// C++ feature usage:
+
+#if nsel_HAVE_DEPRECATED
+# define nsel_deprecated(msg) [[deprecated(msg)]]
+#else
+# define nsel_deprecated(msg) /*[[deprecated]]*/
+#endif
 
 //
 // expected:
