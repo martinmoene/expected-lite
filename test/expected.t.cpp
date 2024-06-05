@@ -1200,18 +1200,26 @@ CASE( "expected: Allows to move its error" )
 
 CASE( "expected: Allows to observe its error as unexpected" )
 {
+#if !nsel_USES_STD_EXPECTED
     const auto v = 7;
     expected<char, Implicit> e{ unexpect, v };
 
     EXPECT( e.get_unexpected().error() == v );
+#else
+    EXPECT( !!"expected::get_unexpected() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected: Allows to query if it contains an exception of a specific base type" )
 {
+#if !nsel_USES_STD_EXPECTED
     expected<int, std::out_of_range> e{ unexpect, std::out_of_range( "oor" ) };
 
     EXPECT(  e.has_exception< std::logic_error   >() );
     EXPECT( !e.has_exception< std::runtime_error >() );
+#else
+    EXPECT( !!"expected::has_exception() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected: Allows to observe its value if available, or obtain a specified value otherwise" )
@@ -1641,18 +1649,26 @@ CASE( "expected<void>: Allows to move its error" )
 
 CASE( "expected<void>: Allows to observe its error as unexpected" )
 {
+#if !nsel_USES_STD_EXPECTED
     const auto value = 7;
     expected<void, int> e{ unexpect, value };
 
     EXPECT( e.get_unexpected().error() == value );
+#else
+    EXPECT( !!"expected::get_unexpected() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected<void>: Allows to query if it contains an exception of a specific base type" )
 {
+#if !nsel_USES_STD_EXPECTED
     expected<void, std::out_of_range> e{ unexpect, std::out_of_range( "oor" ) };
 
     EXPECT(  e.has_exception< std::logic_error   >() );
     EXPECT( !e.has_exception< std::runtime_error >() );
+#else
+    EXPECT( !!"expected::has_exception() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected<void>: Throws bad_expected_access on value access when disengaged" )
