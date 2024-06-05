@@ -2124,7 +2124,7 @@ public:
 
 nonstd::expected< MyNonMoveableObject, Error > create_copyable()
 {
-    return MyNonMoveableObject{};
+    return nonstd::expected< MyNonMoveableObject, Error >{};
 }
 
 class MyNonCopyableObject
