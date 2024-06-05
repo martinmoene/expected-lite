@@ -292,30 +292,22 @@ CASE( "unexpected_type: Allows to move-construct from unexpected_type, non-expli
 
 CASE( "unexpected_type: Allows to copy-assign from unexpected_type, default" )
 {
-#if !nsel_USES_STD_EXPECTED
-    unexpected_type<int> a{ 7   };
+    unexpected_type<int> a{ 7 };
     unexpected_type<int> b{ 0 };
 
     b = a;
 
     EXPECT( b.error() == 7 );
-#else
-    EXPECT( !!"no assignment for std::unexpected (C++23)." );
-#endif
 }
 
 CASE( "unexpected_type: Allows to move-assign from unexpected_type, default" )
 {
-#if !nsel_USES_STD_EXPECTED
     unexpected_type<int> a{ 7 };
     unexpected_type<int> b{ 0 };
 
     b = std::move( a );
 
     EXPECT( b.error() == 7 );
-#else
-    EXPECT( !!"no assignment for std::unexpected (C++23)." );
-#endif
 }
 
 CASE( "unexpected_type: Allows to copy-assign from unexpected_type, converting" )
@@ -1007,7 +999,7 @@ CASE( "expected: Allows to emplace value" )
 
 CASE( "expected: Allows to emplace value from initializer_list" )
 {
-    expected<InitList, char> e{ {}, 'x'};
+    expected<InitList, char> e{ in_place, std::initializer_list<int>{}, 'x'};
 
     auto ve = e.emplace( { 7, 8, 9 }, 'a' );
 
