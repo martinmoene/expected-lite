@@ -1977,10 +1977,14 @@ CASE( "swap: Allows expected to be swapped" )
 
 CASE( "std::hash: Allows to compute hash value for expected" )
 {
+#if !nsel_USES_STD_EXPECTED
     expected<int, char> a{ 7 };
     expected<int, char> b{ 7 };
 
     EXPECT( (std::hash< expected<int, char> >{}( a )) == (std::hash< expected<int, char> >{}( b )) );
+#else
+    EXPECT( !!"std::hash<std::expected<>> is not available for std::unexpected (C++23)." );
+#endif
 }
 
 #if nsel_P0323R <= 3
