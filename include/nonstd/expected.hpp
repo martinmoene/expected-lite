@@ -1567,6 +1567,18 @@ make_unexpected( E && value ) -> unexpected_type< typename std::decay<E>::type >
     return unexpected_type< typename std::decay<E>::type >( std::forward<E>(value) );
 }
 
+template<
+    typename E, typename... Args,
+    typename = std::enable_if<
+        std::is_constructible<E, Args...>::value
+    >
+>
+nsel_constexpr14 auto
+make_unexpected(in_place_t inplace, Args... args) -> unexpected_type< typename std::decay<E> >
+{
+    return unexpected_type< typename std::decay<E>::type >(inplace, std::forward<Args>(args)...);
+}
+
 #if nsel_P0323R <= 3
 
 /*nsel_constexpr14*/ auto inline
