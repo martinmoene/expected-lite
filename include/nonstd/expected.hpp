@@ -243,7 +243,7 @@ namespace nonstd {
 
     // Unconditionally provide make_unexpected():
 
-    template< typename E>
+    template< typename E >
     constexpr auto make_unexpected( E && value ) -> unexpected< typename std::decay<E>::type >
     {
         return unexpected< typename std::decay<E>::type >( std::forward<E>(value) );
@@ -805,7 +805,7 @@ private:
 /// discriminated union to hold only 'error'.
 
 template< typename E >
-struct storage_t_impl<void, E>
+struct storage_t_impl< void, E >
 {
     template< typename, typename > friend class nonstd::expected_lite::expected;
 
@@ -1548,10 +1548,10 @@ inline constexpr bool operator>=( unexpected_type<std::exception_ptr> const & x,
 
 #if nsel_P0323R <= 3
 
-template< typename E>
+template< typename E >
 struct is_unexpected : std::false_type {};
 
-template< typename E>
+template< typename E >
 struct is_unexpected< unexpected_type<E> > : std::true_type {};
 
 #endif // nsel_P0323R
@@ -1560,23 +1560,24 @@ struct is_unexpected< unexpected_type<E> > : std::true_type {};
 
 // keep make_unexpected() removed in p0323r2 for pre-C++17:
 
-template< typename E>
+template< typename E >
 nsel_constexpr14 auto
 make_unexpected( E && value ) -> unexpected_type< typename std::decay<E>::type >
 {
     return unexpected_type< typename std::decay<E>::type >( std::forward<E>(value) );
 }
 
-template<
+template
+<
     typename E, typename... Args,
     typename = std::enable_if<
         std::is_constructible<E, Args...>::value
     >
 >
 nsel_constexpr14 auto
-make_unexpected(in_place_t inplace, Args... args) -> unexpected_type< typename std::decay<E> >
+make_unexpected( in_place_t inplace, Args... args ) -> unexpected_type< typename std::decay<E> >
 {
-    return unexpected_type< typename std::decay<E>::type >(inplace, std::forward<Args>(args)...);
+    return unexpected_type< typename std::decay<E>::type >( inplace, std::forward<Args>(args)...);
 }
 
 #if nsel_P0323R <= 3
@@ -2661,7 +2662,7 @@ private:
 /// class expected, void specialization
 
 template< typename E >
-class expected<void, E>
+class expected< void, E >
 {
 private:
     template< typename, typename > friend class expected;
