@@ -1590,9 +1590,7 @@ template
 nsel_constexpr14 auto
 make_unexpected( nonstd_lite_in_place_t(E), Args &&... args ) -> unexpected_type< typename std::decay<E>::type >
 {
-    return std::forward< unexpected_type< typename std::decay<E>::type > >(
-        unexpected_type< typename std::decay<E>::type >( nonstd_lite_in_place(E), std::forward<Args>(args)...)
-    );
+    return std::move( unexpected_type< typename std::decay<E>::type >( nonstd_lite_in_place(E), std::forward<Args>(args)...) );
 }
 
 #if nsel_P0323R <= 3
