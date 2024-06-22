@@ -273,7 +273,8 @@ You can use the R3 revision of P2505, which lacks `error_or`, and uses `remove_c
 | <&ensp;>&ensp;<=&ensp;>=      | constexpr bool operator ***op***(<br>&emsp;unexpected_type&lt;std::exception_ptr> const & x,<br>&emsp;unexpected_type&lt;std::exception_ptr> const & y ) |
 | Specialized algorithms        | &nbsp;   | 
 | Make unexpected from          | &nbsp;   | 
-| &emsp;Error                   | template&lt;typename E><br>[constexpr] auto **make_unexpected**( E && v) -><br>&emsp;unexpected_type< typename std::decay&lt;E>::type>| 
+| &emsp;Error                   | template&lt;typename E><br>[constexpr] auto **make_unexpected**(E && v) -><br>&emsp;unexpected_type< typename std::decay&lt;E>::type>| 
+| &emsp;Arguments (in-place)    | template&lt;typename E, typename... Args><br>[constexpr] auto **make_unexpected**(in_place_t, Args &&... args) -><br>&emsp;unexpected_type< typename std::decay&lt;E>::type>| 
 | Make unexpected from          | nsel_P0323R <= 3 | 
 | &emsp;Current exception       | [constexpr] auto **make_unexpected_from_current_exception**() -><br>&emsp;unexpected_type< std::exception_ptr>| 
 
@@ -398,6 +399,7 @@ unexpected_type<std::exception_ptr>: Allows to modify its value
 unexpected_type: Provides relational operators
 unexpected_type: Provides relational operators, std::exception_ptr specialization
 make_unexpected(): Allows to create an unexpected_type<E> from an E
+make_unexpected(): Allows to in-place create an unexpected_type<E> from an E
 unexpected: C++17 and later provide unexpected_type as unexpected
 bad_expected_access: Disallows default construction
 bad_expected_access: Allows construction from error_type
