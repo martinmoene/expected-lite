@@ -248,6 +248,19 @@ namespace nonstd {
     {
         return unexpected< typename std::decay<E>::type >( std::forward<E>(value) );
     }
+
+    template
+    <
+        typename E, typename... Args,
+        typename = std::enable_if<
+            std::is_constructible<E, Args...>::value
+        >
+    >
+    constexpr auto
+    make_unexpected( std::in_place_t inplace, Args &&... args ) -> unexpected_type< typename std::decay<E>::type >
+    {
+        return unexpected_type< typename std::decay<E>::type >( inplace, std::forward<Args>(args)...);
+    }
 }  // namespace nonstd
 
 #else // nsel_USES_STD_EXPECTED
@@ -1575,9 +1588,11 @@ template
     >
 >
 nsel_constexpr14 auto
-make_unexpected( in_place_t inplace, Args... args ) -> unexpected_type< typename std::decay<E> >
+make_unexpected( nonstd_lite_in_place_t(E), Args &&... args ) -> unexpected_type< typename std::decay<E>::type >
 {
-    return unexpected_type< typename std::decay<E>::type >( inplace, std::forward<Args>(args)...);
+    return std::forward< unexpected_type< typename std::decay<E>::type > >(
+        unexpected_type< typename std::decay<E>::type >( nonstd_lite_in_place(E), std::forward<Args>(args)...)
+    );
 }
 
 #if nsel_P0323R <= 3

@@ -566,6 +566,17 @@ CASE( "make_unexpected(): Allows to create an unexpected_type<E> from an E" )
     EXPECT( u.error() == error );
 }
 
+CASE( "make_unexpected(): Allows to in-place create an unexpected_type<E> from an E" )
+{
+    const auto a = 'a';
+    const auto b =  7;
+
+    auto u = make_unexpected< std::pair<char, int> >( in_place, a, b );
+
+    EXPECT( u.error().first  == a );
+    EXPECT( u.error().second == b );
+}
+
 CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_type<std::exception_ptr> from the current exception" "[.deprecated]" )
 {
 #if nsel_P0323R <= 2
