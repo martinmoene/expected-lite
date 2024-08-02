@@ -276,7 +276,7 @@ namespace nonstd {
 #include <utility>
 
 // additional includes:
-
+#define WIN32_LEAN_AND_MEAN
 #if nsel_CONFIG_NO_EXCEPTIONS
 # if nsel_CONFIG_NO_EXCEPTIONS_SEH
 #  include <windows.h>   // for ExceptionCodes
