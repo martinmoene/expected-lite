@@ -10,6 +10,9 @@
 #define expected_PRESENT( x ) \
     std::cout << #x << ": " << x << "\n"
 
+#define expected_DEFINED( x ) \
+    std::cout << #x << ": (defined)\n"
+
 #define expected_ABSENT( x ) \
     std::cout << #x << ": (undefined)\n"
 
@@ -35,7 +38,7 @@ CASE( "expected-lite version" "[.expected][.version]" )
     expected_PRESENT( expected_lite_VERSION );
 }
 
-CASE( "any configuration" "[.expected][.config]" )
+CASE( "expected-lite configuration" "[.expected][.config]" )
 {
     expected_PRESENT( nsel_HAVE_STD_EXPECTED );
     expected_PRESENT( nsel_USES_STD_EXPECTED );
@@ -43,7 +46,9 @@ CASE( "any configuration" "[.expected][.config]" )
     expected_PRESENT( nsel_EXPECTED_NONSTD );
     expected_PRESENT( nsel_EXPECTED_STD );
     expected_PRESENT( nsel_CONFIG_SELECT_EXPECTED );
+    expected_PRESENT( nsel_CONFIG_WIN32_LEAN_AND_MEAN );
     expected_PRESENT( nsel_CONFIG_NO_EXCEPTIONS );
+    expected_PRESENT( nsel_CONFIG_NO_EXCEPTIONS_SEH );
     expected_PRESENT( nsel_CPLUSPLUS );
 }
 
@@ -83,6 +88,12 @@ CASE( "presence of C++ library features" "[.stdlibrary]" )
 #if nsel_USES_STD_EXPECTED
     std::cout << "(Presence of C++ library features not available: using std::expected)\n";
 #else
+
+#ifdef WIN32_LEAN_AND_MEAN
+    expected_DEFINED( WIN32_LEAN_AND_MEAN );
+#else
+    expected_ABSENT(  WIN32_LEAN_AND_MEAN );
+#endif
 
 #ifdef __cpp_exceptions
     expected_PRESENT( __cpp_exceptions );

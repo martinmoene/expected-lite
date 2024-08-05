@@ -112,7 +112,12 @@ At default, *expected lite* uses `std::expected` if it is available and lets you
 Define this to `nsel_EXPECTED_STD` to select `std::expected` as `nonstd::expected`. Define this to `nsel_EXPECTED_NONSTD` to select `nonstd::expected` as `nonstd::expected`. Default is undefined, which has the same effect as defining to `nsel_EXPECTED_DEFAULT`.
 
 -D<b>nsel\_P0323R</b>=7  *(default)*  
-Define this to the proposal revision number to control the presence and behavior of features (see tables). Default is 7 for the latest revision.   
+Define this to the proposal revision number to control the presence and behavior of features (see tables). Default is 7 for the latest revision.
+
+#### Define `WIN32_LEAN_AND_MEAN`
+
+-D<b>nsel\_CONFIG\_WIN32\_LEAN\_AND\_MEAN</b>=1  
+Define this to 0 if you want to omit automatic definition of `WIN32_LEAN_AND_MEAN`. Default is 1 when `_MSC_VER` is present.
 
 #### Disable C++ exceptions
 

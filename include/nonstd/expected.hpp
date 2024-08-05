@@ -81,6 +81,12 @@
 # define nsel_P2505R  5
 #endif
 
+// Lean and mean inclusion of Windows.h, if applicable; default on for MSVC:
+
+#if !defined(nsel_CONFIG_WIN32_LEAN_AND_MEAN) && defined(_MSC_VER)
+# define nsel_CONFIG_WIN32_LEAN_AND_MEAN  1
+#endif
+
 // Control presence of C++ exception handling (try and auto discover):
 
 #ifndef nsel_CONFIG_NO_EXCEPTIONS
@@ -276,6 +282,12 @@ namespace nonstd {
 #include <utility>
 
 // additional includes:
+
+#if nsel_CONFIG_WIN32_LEAN_AND_MEAN
+# ifndef  WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+#endif
 
 #if nsel_CONFIG_NO_EXCEPTIONS
 # if nsel_CONFIG_NO_EXCEPTIONS_SEH
