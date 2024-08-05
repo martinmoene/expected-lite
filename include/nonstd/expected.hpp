@@ -85,6 +85,8 @@
 
 #if !defined(nsel_CONFIG_WIN32_LEAN_AND_MEAN) && defined(_MSC_VER)
 # define nsel_CONFIG_WIN32_LEAN_AND_MEAN  1
+#else
+# define nsel_CONFIG_WIN32_LEAN_AND_MEAN  0
 #endif
 
 // Control presence of C++ exception handling (try and auto discover):
@@ -102,8 +104,10 @@
 
 // at default use SEH with MSVC for no C++ exceptions
 
-#ifndef  nsel_CONFIG_NO_EXCEPTIONS_SEH
-# define nsel_CONFIG_NO_EXCEPTIONS_SEH  ( nsel_CONFIG_NO_EXCEPTIONS && _MSC_VER )
+#if !defined(nsel_CONFIG_NO_EXCEPTIONS_SEH) && defined(_MSC_VER)
+# define nsel_CONFIG_NO_EXCEPTIONS_SEH  nsel_CONFIG_NO_EXCEPTIONS
+#else
+# define nsel_CONFIG_NO_EXCEPTIONS_SEH  0
 #endif
 
 // C++ language version detection (C++23 is speculative):
