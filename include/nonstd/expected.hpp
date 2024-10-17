@@ -419,7 +419,12 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 
 // Presence of language and library features:
 
+#define nsel_CPP11_000  (nsel_CPP11_OR_GREATER)
 #define nsel_CPP17_000  (nsel_CPP17_OR_GREATER)
+
+// Presence of C++11 library features:
+
+#define nsel_HAVE_ADDRESSOF   nsel_CPP11_000
 
 // Presence of C++17 language features:
 
@@ -438,6 +443,25 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 //
 
 namespace nonstd { namespace expected_lite {
+
+// library features C++11:
+
+namespace std11 {
+
+// #if 0 && nsel_HAVE_ADDRESSOF
+#if nsel_HAVE_ADDRESSOF
+    using std::addressof;
+#else
+    template< class T >
+    T * addressof( T & arg ) noexcept
+    {
+        return &arg;
+    }
+
+    template< class T >
+    const T * addressof( const T && ) = delete;    
+#endif
+} // namespace std11
 
 // type traits C++17:
 
@@ -558,29 +582,29 @@ public:
 
     void construct_value()
     {
-        new( &m_value ) value_type();
+        new( std11::addressof(m_value) ) value_type();
     }
 
     // void construct_value( value_type const & e )
     // {
-    //     new( &m_value ) value_type( e );
+    //     new( std11::addressof(m_value) ) value_type( e );
     // }
 
     // void construct_value( value_type && e )
     // {
-    //     new( &m_value ) value_type( std::move( e ) );
+    //     new( std11::addressof(m_value) ) value_type( std::move( e ) );
     // }
 
     template< class... Args >
     void emplace_value( Args&&... args )
     {
-        new( &m_value ) value_type( std::forward<Args>(args)...);
+        new( std11::addressof(m_value) ) value_type( std::forward<Args>(args)...);
     }
 
     template< class U, class... Args >
     void emplace_value( std::initializer_list<U> il, Args&&... args )
     {
-        new( &m_value ) value_type( il, std::forward<Args>(args)... );
+        new( std11::addressof(m_value) ) value_type( il, std::forward<Args>(args)... );
     }
 
     void destruct_value()
@@ -637,12 +661,12 @@ public:
 
     value_type const * value_ptr() const
     {
-        return &m_value;
+        return std11::addressof(m_value);
     }
 
     value_type * value_ptr()
     {
-        return &m_value;
+        return std11::addressof(m_value);
     }
 
     error_type const & error() const &
@@ -704,29 +728,29 @@ public:
 
     void construct_value()
     {
-        new( &m_value ) value_type();
+        new( std11::addressof(m_value) ) value_type();
     }
 
     void construct_value( value_type const & e )
     {
-        new( &m_value ) value_type( e );
+        new( std11::addressof(m_value) ) value_type( e );
     }
 
     void construct_value( value_type && e )
     {
-        new( &m_value ) value_type( std::move( e ) );
+        new( std11::addressof(m_value) ) value_type( std::move( e ) );
     }
 
     template< class... Args >
     void emplace_value( Args&&... args )
     {
-        new( &m_value ) value_type( std::forward<Args>(args)...);
+        new( std11::addressof(m_value) ) value_type( std::forward<Args>(args)...);
     }
 
     template< class U, class... Args >
     void emplace_value( std::initializer_list<U> il, Args&&... args )
     {
-        new( &m_value ) value_type( il, std::forward<Args>(args)... );
+        new( std11::addressof(m_value) ) value_type( il, std::forward<Args>(args)... );
     }
 
     void destruct_value()
@@ -783,12 +807,12 @@ public:
 
     value_type const * value_ptr() const
     {
-        return &m_value;
+        return std11::addressof(m_value);
     }
 
     value_type * value_ptr()
     {
-        return &m_value;
+        return std11::addressof(m_value);
     }
 
     error_type const & error() const &

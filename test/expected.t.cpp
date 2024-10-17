@@ -2226,6 +2226,23 @@ CASE( "issue-58" )
     EXPECT( !unexpected.has_value() );
 }
 
+namespace issue_70 {
+
+    struct overload_addressof
+    {
+        overload_addressof * operator & ()
+        {
+            assert( 0 && "operator&() called");
+            return this;
+        } 
+    };
+} // namespace issue_70
+
+CASE("issue-70")
+{
+    nonstd::expected<issue_70::overload_addressof, int> e;
+}
+
 #if !nsel_USES_STD_EXPECTED && nsel_P2505R >= 3
 CASE( "invoke" )
 {
