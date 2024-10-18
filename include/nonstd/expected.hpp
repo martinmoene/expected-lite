@@ -614,24 +614,24 @@ public:
 
     // void construct_error( error_type const & e )
     // {
-    //     // new( &m_error ) error_type( e );
+    //     // new( std11::addressof(m_error) ) error_type( e );
     // }
 
     // void construct_error( error_type && e )
     // {
-    //     // new( &m_error ) error_type( std::move( e ) );
+    //     // new( std11::addressof(m_error) ) error_type( std::move( e ) );
     // }
 
     template< class... Args >
     void emplace_error( Args&&... args )
     {
-        new( &m_error ) error_type( std::forward<Args>(args)...);
+        new( std11::addressof(m_error) ) error_type( std::forward<Args>(args)...);
     }
 
     template< class U, class... Args >
     void emplace_error( std::initializer_list<U> il, Args&&... args )
     {
-        new( &m_error ) error_type( il, std::forward<Args>(args)... );
+        new( std11::addressof(m_error) ) error_type( il, std::forward<Args>(args)... );
     }
 
     void destruct_error()
@@ -760,24 +760,24 @@ public:
 
     void construct_error( error_type const & e )
     {
-        new( &m_error ) error_type( e );
+        new( std11::addressof(m_error) ) error_type( e );
     }
 
     void construct_error( error_type && e )
     {
-        new( &m_error ) error_type( std::move( e ) );
+        new( std11::addressof(m_error) ) error_type( std::move( e ) );
     }
 
     template< class... Args >
     void emplace_error( Args&&... args )
     {
-        new( &m_error ) error_type( std::forward<Args>(args)...);
+        new( std11::addressof(m_error) ) error_type( std::forward<Args>(args)...);
     }
 
     template< class U, class... Args >
     void emplace_error( std::initializer_list<U> il, Args&&... args )
     {
-        new( &m_error ) error_type( il, std::forward<Args>(args)... );
+        new( std11::addressof(m_error) ) error_type( il, std::forward<Args>(args)... );
     }
 
     void destruct_error()
@@ -876,24 +876,24 @@ public:
 
     void construct_error( error_type const & e )
     {
-        new( &m_error ) error_type( e );
+        new( std11::addressof(m_error) ) error_type( e );
     }
 
     void construct_error( error_type && e )
     {
-        new( &m_error ) error_type( std::move( e ) );
+        new( std11::addressof(m_error) ) error_type( std::move( e ) );
     }
 
     template< class... Args >
     void emplace_error( Args&&... args )
     {
-        new( &m_error ) error_type( std::forward<Args>(args)...);
+        new( std11::addressof(m_error) ) error_type( std::forward<Args>(args)...);
     }
 
     template< class U, class... Args >
     void emplace_error( std::initializer_list<U> il, Args&&... args )
     {
-        new( &m_error ) error_type( il, std::forward<Args>(args)... );
+        new( std11::addressof(m_error) ) error_type( il, std::forward<Args>(args)... );
     }
 
     void destruct_error()
