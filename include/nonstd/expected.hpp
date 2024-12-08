@@ -2330,7 +2330,7 @@ public:
     template< typename Ex >
     bool has_exception() const
     {
-        using ContainedEx = typename std::remove_reference< decltype( get_unexpected().value() ) >::type;
+        using ContainedEx = typename std::remove_reference< decltype( get_unexpected().error() ) >::type;
         return ! has_value() && std::is_base_of< Ex, ContainedEx>::value;
     }
 
@@ -2912,7 +2912,7 @@ public:
     template< typename Ex >
     bool has_exception() const
     {
-        using ContainedEx = typename std::remove_reference< decltype( get_unexpected().value() ) >::type;
+        using ContainedEx = typename std::remove_reference< decltype( get_unexpected().error() ) >::type;
         return ! has_value() && std::is_base_of< Ex, ContainedEx>::value;
     }
 
