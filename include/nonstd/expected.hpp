@@ -1824,10 +1824,10 @@ namespace expected_lite {
 
 #if nsel_P0323R <= 2
 template< typename T, typename E = std::exception_ptr >
-class expected
+class [[nodiscard]] expected
 #else
 template< typename T, typename E >
-class expected
+class [[nodiscard]] expected
 #endif // nsel_P0323R
 {
 private:
