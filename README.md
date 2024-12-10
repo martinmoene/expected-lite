@@ -129,6 +129,11 @@ Define this to 1 if you want to compile without exceptions. If not defined, the 
 -D<b>nsel\_CONFIG\_NO\_EXCEPTIONS\_SEH</b>=0
 Define this to 1 or 0 to control the use of SEH when C++ exceptions are disabled (see above). If not defined, the header tries and detect if SEH is available if C++ exceptions have been disabled (e.g. via `-fno-exceptions` or `/kernel`). Default determined in header.
 
+#### Disable \[\[nodiscard\]\]
+
+-D<b>nsel\_CONFIG\_NO\_NODISCARD</b>=0
+Define this to 1 if you want to compile without \[\[nodiscard\]\]. Note that the default of marking `class expected` with \[\[nodiscard\]\] is not part of the C++23 standard. The rationale to use \[\[nodiscard\]\] is that unnoticed discarded expected error values may break the error handling flow.
+
 #### Enable compilation errors
 
 \-D<b>nsel\_CONFIG\_CONFIRMS\_COMPILATION\_ERRORS</b>=0  

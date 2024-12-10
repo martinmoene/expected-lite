@@ -89,6 +89,14 @@
 # define nsel_CONFIG_WIN32_LEAN_AND_MEAN  0
 #endif
 
+// Control marking class expected with [[nodiscard]]]:
+
+#if !defined(nsel_CONFIG_NO_NODISCARD)
+# define nsel_CONFIG_NO_NODISCARD  0
+#else
+# define nsel_CONFIG_NO_NODISCARD  1
+#endif
+
 // Control presence of C++ exception handling (try and auto discover):
 
 #ifndef nsel_CONFIG_NO_EXCEPTIONS
@@ -429,6 +437,7 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 // Presence of C++17 language features:
 
 #define nsel_HAVE_DEPRECATED  nsel_CPP17_000
+#define nsel_HAVE_NODISCARD   nsel_CPP17_000
 
 // C++ feature usage:
 
@@ -436,6 +445,12 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 # define nsel_deprecated(msg) [[deprecated(msg)]]
 #else
 # define nsel_deprecated(msg) /*[[deprecated]]*/
+#endif
+
+#if nsel_HAVE_NODISCARD && !nsel_CONFIG_NO_NODISCARD
+# define nsel_NODISCARD  [[nodiscard]]
+#else
+# define nsel_NODISCARD  /*[[nodiscard]]*/
 #endif
 
 //
@@ -459,7 +474,7 @@ namespace std11 {
     }
 
     template< class T >
-    const T * addressof( const T && ) = delete;    
+    const T * addressof( const T && ) = delete;
 #endif
 } // namespace std11
 
@@ -1824,10 +1839,10 @@ namespace expected_lite {
 
 #if nsel_P0323R <= 2
 template< typename T, typename E = std::exception_ptr >
-class expected
+class nsel_NODISCARD expected
 #else
 template< typename T, typename E >
-class expected
+class nsel_NODISCARD expected
 #endif // nsel_P0323R
 {
 private:
