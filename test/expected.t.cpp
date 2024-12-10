@@ -1344,7 +1344,7 @@ CASE( "expected: Allows to map unexpected with or_else" " [monadic p2505r3]" )
     }
 
     const auto fallback_throw = []( int ) -> expected<int, int> { throw std::runtime_error( "or_else" ); };
-    EXPECT_THROWS_AS( (expected<int, int>{ unexpect, 42 }).or_else( fallback_throw ), std::runtime_error );
+    EXPECT_THROWS_AS( (void)(expected<int, int>{ unexpect, 42 }).or_else( fallback_throw ), std::runtime_error );
 
     const auto moveonly_fallback_to_66 = [](int) -> expected<MoveOnly, int> { return MoveOnly{ 66 }; };
     EXPECT( (expected<MoveOnly, int>{ MoveOnly{ 33 } }).or_else( moveonly_fallback_to_66 ).value() == 33 );
