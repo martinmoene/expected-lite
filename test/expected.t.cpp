@@ -15,6 +15,14 @@
 #define nsel_CONFIG_CONFIRMS_COMPILATION_ERRORS  0
 #endif
 
+#define nsel_HAVE_MAYBE_UNUSED  nsel_CPP17_000
+
+#if nsel_HAVE_MAYBE_UNUSED
+# define nsel_MAYBE_UNUSED  [[maybe_unused]]
+#else
+# define nsel_MAYBE_UNUSED  /*[[maybe_unused]]*/
+#endif
+
 // Suppress:
 // - unused parameter, for cases without assertions such as [.std...]
 #if defined(__clang__)
@@ -607,7 +615,7 @@ CASE( "make_unexpected_from_current_exception(): Allows to create an unexpected_
 CASE( "unexpected: C++17 and later provide unexpected_type as unexpected" )
 {
 #if nsel_CPP17_OR_GREATER || nsel_COMPILER_MSVC_VERSION > 141
-    [[maybe_unused]] nonstd::unexpected<int> u{7};
+    nsel_MAYBE_UNUSED nonstd::unexpected<int> u{7};
 #else
     EXPECT( !!"unexpected is not available (no C++17)." );
 #endif
@@ -2281,7 +2289,7 @@ CASE( "invoke" )
 
 struct nullopt_t{};
 
-[[maybe_unused]] const nullopt_t nullopt{};
+nsel_MAYBE_UNUSED const nullopt_t nullopt{};
 
 /// optional expressed in expected
 
