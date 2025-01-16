@@ -1240,11 +1240,11 @@ nsel_constexpr auto invoke( F && f, Args && ... args )
 }
 
 template< typename F, typename ... Args >
-using invoke_result_nocvref_t = typename std20::remove_cvref< decltype( invoke( std::declval< F >(), std::declval< Args >()... ) ) >::type;
+using invoke_result_nocvref_t = typename std20::remove_cvref< decltype( ::nonstd::expected_lite::detail::invoke( std::declval< F >(), std::declval< Args >()... ) ) >::type;
 
 #if nsel_P2505R >= 5
 template< typename F, typename ... Args >
-using transform_invoke_result_t = typename std::remove_cv< decltype( invoke( std::declval< F >(), std::declval< Args >()... ) ) >::type;
+using transform_invoke_result_t = typename std::remove_cv< decltype( ::nonstd::expected_lite::detail::invoke( std::declval< F >(), std::declval< Args >()... ) ) >::type;
 #else
 template< typename F, typename ... Args >
 using transform_invoke_result_t = invoke_result_nocvref_t

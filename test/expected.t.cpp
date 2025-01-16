@@ -1373,6 +1373,8 @@ CASE( "expected: Allows to transform value" " [monadic p2505r3]" )
         EXPECT( ue.transform( mul2 ).error() == 42 );
     }
 
+    expected<std::vector<int>, int>{std::vector<int>{}}.transform([](const std::vector<int>&) { });
+
 #if nsel_P2505R >= 5
     // R5 changed remove_cvref_t to remove_cv_t in transform/transform_error, which broke data member pointer transforms,
     // because the result type must be a valid expected value type, but expressions with reference types are not.
