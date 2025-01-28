@@ -1661,12 +1661,12 @@ make_unexpected_from_current_exception() -> unexpected_type< std::exception_ptr 
 /// x.x.6, x.x.7 expected access error
 
 template< typename E >
-class bad_expected_access;
+class nsel_NODISCARD bad_expected_access;
 
 /// x.x.7 bad_expected_access<void>: expected access error
 
 template <>
-class bad_expected_access< void > : public std::exception
+class nsel_NODISCARD bad_expected_access< void > : public std::exception
 {
 public:
     explicit bad_expected_access()
@@ -1679,7 +1679,7 @@ public:
 #if !nsel_CONFIG_NO_EXCEPTIONS
 
 template< typename E >
-class bad_expected_access : public bad_expected_access< void >
+class nsel_NODISCARD bad_expected_access : public bad_expected_access< void >
 {
 public:
     using error_type = E;
