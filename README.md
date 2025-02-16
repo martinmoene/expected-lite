@@ -73,7 +73,7 @@ For more examples, see [1].
 
 ## License
 
-*expected lite* is distributed under the [Boost Software License](https://github.com/martinmoene/XXXX-lite/blob/master/LICENSE.txt).
+*expected lite* is distributed under the [Boost Software License](LICENSE.txt).
 
 ## Dependencies
 
