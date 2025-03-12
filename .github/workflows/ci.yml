@@ -47,9 +47,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [11, 12]
+        include:
+          - version: 11
+            os: 'ubuntu-22.04'
+          - version: 12
+            os: 'ubuntu-22.04'
+          - version: 16
+            os: 'ubuntu-24.04'
+          - version: 19
+            os: 'ubuntu-24.04'
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
