@@ -2293,7 +2293,6 @@ public:
             ? ( contained.value() )
             : ( error_traits<error_type>::rethrow( contained.error() ), contained.value() );
     }
-    nsel_RESTORE_MSVC_WARNINGS()
 
 #if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
 
@@ -2312,6 +2311,7 @@ public:
     }
 
 #endif
+    nsel_RESTORE_MSVC_WARNINGS()
 
     constexpr error_type const & error() const &
     {
