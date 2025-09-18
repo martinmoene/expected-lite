@@ -2730,7 +2730,7 @@ private:
 /// class expected, void specialization
 
 template< typename E >
-class expected< void, E >
+class nsel_NODISCARD expected< void, E >
 {
 private:
     template< typename, typename > friend class expected;
